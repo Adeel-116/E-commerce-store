@@ -17,18 +17,13 @@ import { AuthProvider } from "./context/AuthContext";
 import CartSidebar from "./components/CartSidebar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
-import MetaPixel from "./components/MetaPixel";
-import TikTokPixel from "./components/TikTokPixel";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 
 
 export const metadata: Metadata = {
-  title: "Monk Scents",
+  title: "Azan Collection",
   description:
-    "Monk Scents is an online store selling perfumes and fragrances.",
-  verification: {
-    google: "googleecda28151414802b",
-  },
+    "Azan Collection is an online clothing store offering premium everyday and occasion wear.",
 };
 
 export default function RootLayout({
@@ -39,8 +34,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={playfairDisplay.variable}>
       <body>
-        <MetaPixel />
-        <TikTokPixel />
         <AuthProvider>
           <FilterProvider>
             <WishlistProvider>

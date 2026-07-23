@@ -17,8 +17,8 @@ function page() {
                     <p className="shop-page__breadcrumb"><Link href="/">HOME</Link> / ABOUT US</p>
                     <h1 className="shop-page__hero-title">About Us</h1>
                     <p className="shop-page__hero-subtitle">
-                        Shop from Our Extensive Cologne Collection and Buy Perfume That Truly
-                        Speaks to Your Individuality and Marks Your Signature Smell.
+                        Discover Azan Collection — thoughtfully designed clothing that brings
+                        together comfort, quality, and everyday style.
                     </p>
                 </div>
             </div>
@@ -26,32 +26,30 @@ function page() {
             {/* Our Story */}
             <section className="about-story">
                 <div className="about-story__text">
-                    {/* <p className="about-tag">Since 2021</p> */}
-                    <h2 className="about-story__heading">Our Story</h2>
+                    <p className="about-tag">Our Story</p>
+                    <h2 className="about-story__heading">Crafted For Everyday Style</h2>
                     <p className="about-story__para">
-                        At Monk Perfumes, our journey began with a profound realization: niche perfumes were either overpriced or
-                        hard to access. We built this platform to change that, to offer fragrance lovers a trusted space to explore
-                        authentic, carefully selected scents without inflated prices or confusion. Since then, our collection has
-                        grown into a refined catalog of rare and designer scents, trusted by thousands and praised by respected
-                        voices in the fragrance world.
+                        At Azan Collection, our journey began with a simple belief: quality clothing shouldn&apos;t come with
+                        an inflated price tag. We built this platform to bring you thoughtfully designed, comfortable pieces
+                        without the markup you&apos;d expect from boutique fashion houses.
                     </p>
                     <p className="about-story__para">
-                        Fast forward to today, we&apos;re incredibly proud of how far we&apos;ve come. We&apos;ve processed over
-                        10,000 orders, earning the trust of a rapidly expanding global community. From worldwide shipping, to
-                        giveaways, loyalty rewards, and seasonal sales, everything we do is built to make your fragrance journey
-                        personal, seamless, and truly unforgettable.
+                        Since then, our collection has grown into a curated range of everyday and occasion wear, loved by
+                        customers across Pakistan for its fit, fabric quality, and attention to detail — from flowing maxis
+                        to tailored suits. Every piece is chosen to help you feel confident, comfortable, and effortlessly
+                        put together.
                     </p>
                 </div>
 
                 <div className="about-story__images">
                     <div className="about-story__img-wrap about-story__img--left">
-                        <img src="/card1.avif" alt="Monk Perfumes story" className="about-story__img" />
+                        <img src="/category-maxi.jpg" alt="Azan Collection maxi dresses" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-top">
-                        <img src="/card2.avif" alt="Monk Perfumes fragrances" className="about-story__img" />
+                        <img src="/category-fashion.png" alt="Azan Collection fashion wear" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-bot">
-                        <img src="/card3.avif" alt="Monk Perfumes collection" className="about-story__img" />
+                        <img src="/category-western.png" alt="Azan Collection western wear" className="about-story__img" />
                     </div>
                 </div>
             </section>
@@ -61,26 +59,24 @@ function page() {
                 <h2 className="about-mission__heading">Our Mission &amp; Values</h2>
                 <div className="about-mission__grid">
                     <div className="about-mission__card">
-                        <h3 className="about-mission__card-title">Accessible Luxury</h3>
+                        <h3 className="about-mission__card-title">Accessible Style</h3>
                         <p className="about-mission__card-text">
-                            At Monk Scents, we believe exceptional fragrances shouldn&apos;t come with an exceptional price tag. Our
-                            carefully curated collection brings premium niche scents within reach, making luxury fragrance an
-                            everyday experience.
+                            We believe great style shouldn&apos;t come with a great price tag. Our curated collection brings
+                            quality fashion within reach, making it an everyday experience rather than a luxury.
                         </p>
                     </div>
                     <div className="about-mission__card">
-                        <h3 className="about-mission__card-title">Authenticity &amp; Quality</h3>
+                        <h3 className="about-mission__card-title">Quality &amp; Craftsmanship</h3>
                         <p className="about-mission__card-text">
-                            Every fragrance at Monk Scents is sourced from trusted suppliers and carefully inspected before it
-                            reaches you. We&apos;re committed to delivering authentic, high-quality perfumes that meet the
-                            standards fragrance enthusiasts expect.
+                            Every piece at Azan Collection is cut from carefully selected fabric and finished with attention
+                            to detail, so you can count on comfort and durability with every wear.
                         </p>
                     </div>
                     <div className="about-mission__card">
                         <h3 className="about-mission__card-title">Customer-Centric</h3>
                         <p className="about-mission__card-text">
-                            Your satisfaction is our priority. With worldwide shipping, secure payments, and dedicated chat
-                            support, we ensure your fragrance experience is smooth, reliable, and enjoyable.
+                            Your satisfaction comes first. With nationwide delivery, secure payments, and responsive
+                            support, we make sure your shopping experience is smooth from cart to doorstep.
                         </p>
                     </div>
                 </div>

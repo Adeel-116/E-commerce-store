@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import "../styles/WhatsAppFloat.css";
 
-const WHATSAPP_NUMBER = "971585478910";
+const WHATSAPP_NUMBER = "923001234567"; // TODO: replace with real store number
 const DEFAULT_MESSAGE = "Hi! I have an enquiry regarding your products.";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     DEFAULT_MESSAGE
@@ -44,7 +44,7 @@ export default function WhatsAppFloat() {
                             </svg>
                         </span>
                         <div>
-                            <p className="whatsapp-popup__title">Monk Scents</p>
+                            <p className="whatsapp-popup__title">Azan Collection</p>
                             <p className="whatsapp-popup__status">
                                 <span className="whatsapp-popup__dot" />
                                 Typically replies instantly
@@ -52,7 +52,7 @@ export default function WhatsAppFloat() {
                         </div>
                     </div>
                     <div className="whatsapp-popup__bubble">
-                        Hi there! 👋 Have a question about our fragrances? Chat with us
+                        Hi there! 👋 Have a question about our collection? Chat with us
                         on WhatsApp.
                     </div>
                     <a

@@ -48,22 +48,22 @@ const AboutUsContact = () => {
                     <p className="about-tag">Reach Out</p>
                     <h2 className="au-contact__heading">Get In Touch</h2>
                     <p className="au-contact__subtext">
-                        Have a question, a special request, or just want to talk fragrances?
+                        Have a question, a special request, or just want to talk style?
                         We&apos;d love to hear from you. Our team typically responds within 24 hours.
                     </p>
                     <div className="au-contact__details">
                         <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">✉</span>
-                            <a href="mailto:info@monkscents.com">info@monkscents.com</a>
+                            <a href="mailto:support@azancollection.com">support@azancollection.com</a>
                         </div>
                         <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">☎</span>
-                            <a href="tel:+971585478910">+971 585478910</a>
+                            <a href="tel:+923001234567">+92 300 1234567</a>
                         </div>
-                        {/* <div className="au-contact__detail-item">
+                        <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">◎</span>
-                            <span>Dubai, United Arab Emirates</span>
-                        </div> */}
+                            <span>Lahore, Pakistan</span>
+                        </div>
                     </div>
                 </div>
 

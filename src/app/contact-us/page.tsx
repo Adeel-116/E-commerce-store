@@ -15,8 +15,8 @@ function page() {
           <p className="shop-page__breadcrumb"><Link href="/">HOME</Link> / CONTACT US</p>
           <h1 className="shop-page__hero-title">Contact Us</h1>
           <p className="shop-page__hero-subtitle">
-            Shop from Our Extensive Cologne Collection and Buy Perfume That Truly
-            Speaks to Your Individuality and Marks Your Signature Smell.
+            Have a question about sizing, an order, or just want to say hello?
+            We&apos;re here to help.
           </p>
         </div>
       </div>

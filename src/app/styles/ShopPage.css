@@ -964,7 +964,8 @@
     }
 
     .shop-page__grid--list .shop-page__card-image-wrap {
-        width: 120px;
+        width: 100px;
+        height: 130px;
     }
 
     .shop-page__title {

@@ -1,0 +1,243 @@
+.category-section {
+  width: 100%;
+  padding: 25px 60px;
+}
+
+#category-title{
+  padding: 0px;
+  margin:0px; 
+  margin-top: 8px;
+  margin-bottom: 15px;
+
+}
+
+.category-swiper {
+  width: 100%;
+  padding: 8px 4px 0;
+}
+
+/* Mobile grid — hidden by default, shown ≤786px instead of the carousel */
+.category-grid {
+  display: none;
+}
+
+/* Pagination dots — mobile only (desktop shows all 4 cards at once) */
+.category-pagination {
+  display: none;
+}
+
+.category-swiper .swiper-slide {
+  height: 500px;
+}
+
+/* Card */
+.category-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+}
+
+.category-card-image {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  object-fit-position:center;
+}
+
+.category-card:hover .category-card-image {
+  transform: scale(1.05);
+}
+
+/* .category-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(13, 13, 13,0.85) 0%,
+      rgba(13, 13, 13,0.35) 55%,
+      rgba(13, 13, 13,0) 100%);
+  transition: background 0.4s ease;
+} */
+
+/* .category-card:hover .category-card-overlay {
+  background: linear-gradient(to top,
+      rgba(13, 13, 13,0.9) 0%,
+      rgba(13, 13, 13,0.45) 55%,
+      rgba(13, 13, 13,0.05) 100%);
+} */
+
+/* Bottom content */
+.category-card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-inline: 20px;
+  padding-block: 15px;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(13, 13, 13, 0.00) 0%, rgba(13, 13, 13, 0.70) 100%);
+  backdrop-filter: blur(15px);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.category-card-title {
+  color: var(--brandcream);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  margin: 0;
+}
+
+.category-card-description {
+  color: rgba(255, 255, 242, 0.75);
+  font-size: 14px;
+  margin: 4px 0 0;
+  letter-spacing: 0.3px;
+}
+
+.category-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 7px;
+  color: var(--brandcream);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.category-card-arrow {
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover .category-card-arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Responsive */
+
+@media (max-width: 1200px) {
+  .category-section {
+    padding: 50px 30px;
+  }
+
+
+  .category-swiper .swiper-slide {
+    height: 440px;
+  }
+}
+
+@media (max-width: 767px) {
+  .category-section {
+    padding: 10px 13px;
+    margin-block: 10px;
+  }
+  #category-title{
+    margin-bottom: 10px;
+  } 
+
+  .category-swiper .swiper-slide {
+    height: 420px;
+  }
+
+  .category-card-title {
+    font-size: 18px;
+  }
+
+  .category-card-description {
+    font-size: 13px;
+  }
+
+  .category-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .category-pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: var(--muted, #999);
+    opacity: 0.4;
+    border-radius: 50%;
+    margin: 0;
+    transition: opacity 0.2s ease, background 0.2s ease, width 0.2s ease;
+  }
+
+  .category-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: var(--brandgreen);
+    width: 20px;
+    border-radius: 4px;
+  }
+}
+
+/* Mobile: 2x2 grid instead of the carousel, so nothing needs to be scrolled */
+@media (max-width: 786px) {
+  .category-swiper,
+  .category-pagination {
+    display: none;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .category-grid-item {
+    position: relative;
+    height: 230px;
+  }
+
+  .category-grid-item .category-card {
+    border-radius: 6px;
+  }
+
+  .category-grid-item .category-card-content {
+    padding-inline: 12px;
+    padding-block: 4px;
+  }
+
+  .category-grid-item .category-card-title {
+    font-size: 15px;
+     position: relative;
+    top: 4px;
+  }
+
+  .category-grid-item .category-card-description {
+    font-size: 11px;
+    margin-top: 2px;
+    display:none;
+  }
+
+  .category-grid-item .category-card-link {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .category-grid-item .category-card-arrow {
+    width: 12px;
+    height: 12px;
+      position: relative;
+    top: 1px;
+    right:2px
+  }
+  .category-grid-item {
+    height: 280px;
+  }
+
+}
+
+@media (max-width: 420px) {
+}

@@ -1,0 +1,580 @@
+/* ═══════════════════════════════════════════
+   SECTION WRAPPER
+═══════════════════════════════════════════ */
+.dc-section {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER  — base (desktop)
+═══════════════════════════════════════════ */
+.dc-section-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 56px 0;
+}
+
+.dc-section-title {
+  font-size: 40px;
+  padding-top: 25px;
+  padding-inline: 0px;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--brandgreen);
+}
+
+.dc-section-category-text{
+  margin-bottom: 10px;
+}
+
+/* ═══════════════════════════════════════════
+   WRAPPER + SWIPER  — base (desktop)
+═══════════════════════════════════════════ */
+.draggable-cards-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 0 56px 24px;
+}
+
+.product-swiper {
+  width: 100%;
+  padding: 16px 0 !important;
+}
+
+.product-swiper .swiper-slide {
+  height: auto;
+}
+
+.product-swiper .swiper-slide:focus {
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════
+   CARD  — base (desktop)
+═══════════════════════════════════════════ */
+.card {
+  position: relative;
+  width: 100%;
+  height: 491px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: var(--brandcream); */
+  /* border: 1px solid var(--bg-soft-2); */
+  
+  border: 1px solid #1f1f1f1f;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: box-shadow 0.25s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Card Top ── */
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-items: center;
+  padding: 12px 12px 0;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.card-tag-pill {
+  background: var(--brandgreen);
+  color: var(--brandcream);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.card-wishlist-btn {
+  opacity: 1;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--muted);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(13, 13, 13, 0.12);
+  transition:
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.card-wishlist-btn:hover {
+  color: var(--brandgreen);
+  transform: scale(1.05);
+}
+
+.card-wishlist-btn--active {
+  color: var(--brandgreen);
+}
+
+/* ── Card Image ── */
+.card-image-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  scale: 0.8;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.4s ease;
+}
+
+.card:hover .card-image {
+  transform: scale(1.04);
+}
+
+/* ── Card Bottom (title + price + cart) ── */
+.card-bottom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 14px;
+}
+
+.card-heading {
+  color: var(--lightblack);
+  -webkit-user-select: none;
+  user-select: none;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 340px;
+}
+
+.card-discount-tag {
+  position: absolute;
+  top: 3px;
+  left: -35px;
+  width: 110px;
+  color: var(--brandcream);
+  text-align: center;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  background: red;
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(13, 13, 13, 0.3);
+  transform: rotate(-45deg);
+  transform-origin: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.card-tag-pill-margin {
+  margin-left: 20px;
+}
+
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-price-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.card-price-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.card-discount-badge {
+  background: var(--brandgreen);
+  color: var(--brandcream);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 3px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.card-price {
+  color: var(--lightblack);
+  white-space: nowrap;
+  -webkit-user-select: none;
+  user-select: none;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-price--original {
+  color: var(--gold-soft);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.card-price--original .card-price-value {
+  text-decoration: line-through;
+}
+
+.card-price--discounted {
+  color: var(--lightblack);
+  font-weight: 600;
+}
+
+.card-cart-btn {
+  opacity: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition:
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.card-cart-btn:hover {
+  color: var(--brandblack);
+  transform: scale(1.05);
+}
+
+.card-cart-btn--added {
+  color: var(--brandgreen) !important;
+}
+
+/* ═══════════════════════════════════════════
+   NAV ARROWS  — base (desktop)
+═══════════════════════════════════════════ */
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.arrow-button.swiper-button-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.arrow-left {
+  left: 8px;
+}
+
+.arrow-right {
+  right: 8px;
+}
+
+.arrow-button:hover {
+  color: var(--brandblack);
+}
+
+/* ═══════════════════════════════════════════
+   LOADING / EMPTY
+═══════════════════════════════════════════ */
+.slider-loading,
+.slider-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 300px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY
+═══════════════════════════════════════════ */
+.arrow-button:focus:not(:focus-visible),
+.card-wishlist-btn:focus:not(:focus-visible),
+.card-cart-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS (desktop-first)
+───────────────────────────────────────────── */
+
+/* 1469px — desktop */
+@media (max-width: 1469px) {
+  .dc-section-header {
+    padding: 24px 60px 0;
+  }
+  .card-heading {
+    width: 300px;
+  }
+
+  .dc-section-title {
+    font-size: 40px;
+  }
+
+  .draggable-cards-wrapper {
+    padding: 0 50px 24px;
+  }
+
+  .card {
+    height: 460px;
+  }
+
+  .arrow-button {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* 1199px — laptop */
+@media (max-width: 1200px) {
+  .dc-section-header {
+    padding: 24px 50px 0;
+  }
+
+  .card-heading {
+    width: 260px;
+    font-size: 14px;
+  }
+
+  .dc-section-title {
+    font-size: 40px;
+  }
+
+  .draggable-cards-wrapper {
+    padding: 0 44px 24px;
+  }
+
+  .card {
+    height: 420px;
+  }
+
+  .arrow-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .arrow-left {
+    left: 6px;
+  }
+
+  .arrow-right {
+    right: 6px;
+  }
+}
+
+/* 991px — landscape tablet */
+@media (max-width: 991px) {
+  .dc-section-header {
+    padding: 20px 40px 0;
+  }
+
+  .card-heading {
+    width: 240px;
+  }
+
+  .dc-section-title {
+    font-size: 40px;
+  }
+
+  .draggable-cards-wrapper {
+    padding: 0 36px 20px;
+  }
+
+  .card {
+    height: 400px;
+  }
+
+  .arrow-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .arrow-left {
+    left: 4px;
+  }
+
+  .arrow-right {
+    right: 4px;
+  }
+}
+
+/* 767px — tablet */
+@media (max-width: 767px) {
+  .dc-section-header {
+    padding: 20px 24px 0;
+  }
+
+  .card-heading {
+    width: 240px;
+  }
+
+  .card-discount-tag {
+    font-size: 11px;
+    padding: 3px 0px;
+  }
+
+  .dc-section-title {
+    font-size: 28px;
+  }
+
+  .draggable-cards-wrapper {
+    padding: 0 28px 20px;
+  }
+
+  .card {
+    height: 360px;
+  }
+
+  .arrow-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .arrow-left {
+    left: -5px;
+  }
+
+  .arrow-right {
+    right: -5px;
+  }
+
+  .card-price {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .card-heading {
+    font-size: 13px;
+  }
+
+  .card-tag-pill {
+    font-size: 9px;
+    padding: 4px 10px;
+  }
+  .arrow-button {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .card-heading {
+    width: 100%;
+  }
+
+  .card-top-row {
+    padding: 8px 10px 0px;
+  }
+  .draggable-cards-wrapper {
+    padding: 0 15px;
+  }
+}
+/* 479px — large mobile */
+@media (max-width: 479px) {
+  .dc-section-header {
+    padding: 0;
+  }
+
+  .card-heading {
+    width: 100%;
+  }
+
+  .card-discount-tag {
+    font-size: 9px;
+    top: 2px;
+    left: -42px;
+  }
+
+  .dc-section-title {
+    font-size: 28px;
+    padding-inline: 15px;
+  }
+
+  /* .draggable-cards-wrapper {
+    padding: 0 23px;
+  } */
+
+  .card {
+    height: 293px;
+  }
+
+  .card-price {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .card-heading {
+    font-size: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* Show only 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-bottom-section {
+    padding: 6px 10px 10px;
+    gap: 6px;
+  }
+
+  .card-tag-pill {
+    font-size: 8px;
+    padding: 3px 8px;
+  }
+
+  .card-wishlist-btn {
+    width: 26px;
+    height: 26px;
+  }
+}

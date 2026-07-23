@@ -1,0 +1,507 @@
+.home-hero {
+  width: 100%;
+  height: 100vh;
+  cursor: grab;
+}
+
+.hero-swiper {
+  width: 100%;
+  height: 100%;
+  background: var(--brandblack);
+  position: relative;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.hero-swiper:active {
+  cursor: grabbing;
+}
+
+.hero-slide {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-slide.hero-slide-active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.hero-slide-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  transform-origin: center center;
+  will-change: transform;
+  filter: brightness(0.9);
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: var(--brandcream);
+}
+
+.hero-content h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.hero-content p {
+  font-size: 19px;
+  opacity: 0.8;
+}
+
+/* Navigation Arrows — base (desktop) */
+.hero-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: transparent;
+  border: none;
+  color: var(--brandcream);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 19px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.hero-nav-btn:hover {
+  background: rgba(255, 255, 242, 0.3);
+}
+
+.hero-btn-prev {
+  left: 24px;
+}
+
+.hero-btn-next {
+  right: 24px;
+}
+
+/* Bottom CTA button — base (desktop, bottom-right) */
+.hero-button {
+  position: absolute;
+  bottom: 32px;
+  right: 4%;
+  left: auto;
+  transform: none;
+  z-index: 10;
+  display: flex;
+  gap: 32px;
+  white-space: nowrap;
+}
+
+.hero-button button {
+  text-transform: capitalize;
+  color: var(--brandcream);
+  cursor: pointer;
+  z-index: 0;
+  font-size: 25px;
+  font-weight: 300;
+  font-family: var(--font-birthstone);
+  background-color: #0000;
+  border: 1px solid var(--brandcream);
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 10px 35px;
+  transition: color .4s;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-button button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--brandcream);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+.hero-button button:hover::before {
+  transform: translateX(0);
+}
+
+.hero-button button:hover {
+  color: var(--brandblack);
+}
+
+/* Bottom Pagination — base (desktop) */
+.hero-pagination {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.hero-page-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.4s;
+}
+
+.hero-page-item.active {
+  opacity: 1;
+}
+
+.hero-page-num {
+  color: var(--brandcream);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.hero-page-line {
+  display: block;
+  width: 32px;
+  height: 1.5px;
+  background: var(--brandcream);
+  transition: width 0.4s;
+}
+
+.hero-page-item.active .hero-page-line {
+  width: 48px;
+}
+
+/* ── Hero profile avatar ── */
+.hero-profile-avatar {
+  position: absolute;
+  top: 28px;
+  right: 5%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hero-profile-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--brandgreen);
+  border: 2px solid rgba(255, 255, 242, 0.8);
+  color: var(--brandcream);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-profile-avatar:hover .hero-profile-initials {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(90, 90, 90, 0.45);
+}
+
+.hero-profile-name {
+  color: var(--brandcream);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 4px rgba(13, 13, 13, 0.5);
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS (desktop-first)
+───────────────────────────────────────────── */
+
+/* 1469px — desktop */
+@media (max-width: 1469px) {
+  .hero-nav-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+  }
+
+  .hero-btn-prev {
+    left: 22px;
+  }
+
+  .hero-btn-next {
+    right: 22px;
+  }
+
+  .hero-button button {
+    font-size: 23px;
+    padding: 8px 25px;
+  }
+
+  .hero-pagination {
+    gap: 30px;
+  }
+
+  .hero-page-num {
+    font-size: 13px;
+  }
+
+  .hero-page-item.active .hero-page-line {
+    width: 46px;
+  }
+}
+
+
+@media (max-width: 1370px) {
+  .hero-slide-img {
+    /* object-fit: fill; */
+  }
+
+}
+
+/* 1199px — laptop */
+@media (max-width: 1200px) {
+  .hero-content h1 {
+    font-size: 45px;
+  }
+
+  .hero-content p {
+    font-size: 18px;
+  }
+
+  .hero-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .hero-btn-prev {
+    left: 20px;
+  }
+
+  .hero-btn-next {
+    right: 20px;
+  }
+
+  .hero-button {
+    bottom: 30px;
+    gap: 30px;
+  }
+
+  .hero-button button {
+    font-size: 22px;
+    padding: 8px 20px;
+  }
+
+  .hero-pagination {
+    bottom: 30px;
+    gap: 26px;
+  }
+
+  .hero-page-line {
+    width: 30px;
+  }
+
+  .hero-page-item.active .hero-page-line {
+    width: 44px;
+  }
+}
+
+/* 991px — landscape tablet */
+@media (max-width: 991px) {
+  .hero-content h1 {
+    font-size: 38px;
+  }
+
+  .hero-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .hero-btn-prev {
+    left: 16px;
+  }
+
+  .hero-btn-next {
+    right: 16px;
+  }
+
+  .hero-button {
+    bottom: 28px;
+    gap: 28px;
+  }
+
+  .hero-button button {
+    font-size: 34px;
+    padding: 5px 30px;
+  }
+
+  .hero-pagination {
+    bottom: 28px;
+    gap: 20px;
+  }
+
+  .hero-page-line {
+    width: 28px;
+  }
+
+  .hero-page-item.active .hero-page-line {
+    width: 40px;
+  }
+}
+
+/* 767px — tablet */
+@media (max-width: 767px) {
+  .home-hero {
+    height: 75vh;
+    /* height: 55dvh; */
+    min-height: 340px;
+    aspect-ratio: unset;
+  }
+
+  .hero-slide {
+    height: 100%;
+  }
+
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .hero-slide-img {
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+  .info-strip-content {
+    width: 94px;
+    /* border: 1px solid wheat; */
+}
+
+  .hero-nav-btn {
+    top: 74%;
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+
+  .hero-btn-prev {
+    left: 12px;
+  }
+
+  .hero-btn-next {
+    right: 12px;
+  }
+
+  .hero-button {
+    right: -34px;
+    transform: translateX(-50%);
+    bottom: 20px;
+    gap: 24px;
+  }
+
+  .hero-button button {
+    font-size: 28px;
+    padding: 5px 24px;
+  }
+
+  .hero-pagination {
+    bottom: 20px;
+    gap: 16px;
+  }
+
+  .hero-page-num {
+    font-size: 12px;
+  }
+
+  .hero-page-line {
+    width: 24px;
+  }
+
+  .hero-page-item.active .hero-page-line {
+    width: 36px;
+  }
+}
+
+/* 539px — large mobile */
+@media (max-width: 539px) {
+  .hero-content h1 {
+    font-size: 26px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .hero-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    top: 70%;
+  }
+
+  .hero-btn-prev {
+    left: 8px;
+  }
+
+  .hero-btn-next {
+    right: 8px;
+  }
+
+  .hero-button button {
+    font-size: 15px;
+    padding: 7px 20px;
+    display: none;
+  }
+
+  .hero-button {
+    bottom: 10px;
+  }
+
+  .hero-pagination {
+    gap: 12px;
+  }
+
+  .hero-page-line {
+    width: 20px;
+  }
+
+  .hero-page-item.active .hero-page-line {
+    width: 32px;
+  }
+}
+
+
+

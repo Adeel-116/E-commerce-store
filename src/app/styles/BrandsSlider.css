@@ -1,0 +1,135 @@
+.partner-logo-slider {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  position: relative;
+}
+
+
+.brand-items {
+  /* border: 1px solid blue; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Left fade overlay */
+.partner-logo-slider::before {
+  content: "";
+  background: linear-gradient(to right, var(--brandcream) 0%, rgba(255, 255, 242, 0) 100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 9;
+  pointer-events: none;
+}
+
+/* Right fade overlay */
+.partner-logo-slider::after {
+  content: "";
+  background: linear-gradient(to left, var(--brandcream) 0%, rgba(13, 13, 13, 0) 100%);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.partner-logo-slide {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: max-content;
+  animation: partner-logo linear infinite;
+}
+
+/* Pause the marquee whenever the track is hovered */
+.partner-logo-slider:hover .partner-logo-slide {
+  animation-play-state: paused;
+}
+
+/* Dim all brand items when slider is hovered */
+.partner-logo-slider:hover .brand-items img {
+  opacity: 0.35;
+}
+
+.partner-logo-slider:hover .brand-items #brand-name {
+  opacity: 0.35;
+}
+
+/* Highlight the hovered brand item (img + text) */
+.partner-logo-slider:hover .brand-items:hover img {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.partner-logo-slider:hover .brand-items:hover #brand-name {
+  opacity: 1;
+}
+
+.partner-logo-slide img {
+  width: 150px;
+  scale: 0.9;
+  padding: 20px;
+  border-radius: 10px;
+  background: var(--brandcream);
+  display: block;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  object-fit: contain;
+}
+
+#brand-name {
+  position: relative;
+  white-space: normal;
+  overflow-wrap: break-word;
+  top: -15px;
+  color: var(--brandblack);
+  font-size: 14px;
+  text-align: center;
+  font-weight: 400;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  /* border: 1px solid red; */
+  width: 170px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+@keyframes partner-logo {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media only screen and (max-width: 1025px) {
+  .partner-logo-slide {
+    gap: 20px;
+  }
+
+  .partner-logo-slide img {
+    width: 100px;
+    padding: 15px;
+  }
+
+  .partner-logo-slider::before,
+  .partner-logo-slider::after {
+    width: 60px;
+  }
+}

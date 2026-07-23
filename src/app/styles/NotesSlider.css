@@ -1,0 +1,121 @@
+/* ── Section container ── */
+.circular-nodes-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* min-height: 100vh; */
+    /* border: 1px solid red; */
+    padding-inline: var(--paddinginline);
+}
+.circular-nodes-section h1{
+    font-family: var(--font-birthstone), cursive;
+    /* color: var(--lightblack); */
+    color: var(--brandgreen);
+    font-size: 45px;
+    font-weight: 300;
+    margin-top: 25px;
+    
+}
+/* ── Clip the overflowing marquee track ── */
+.circular-nodes-wrapper {
+    width: 100%;
+    /* border: 1px solid brown; */
+    position: relative;
+    overflow: hidden;
+    padding-block: 20px;
+    position: relative;
+     overflow: visible; 
+     user-select: none;
+}
+/* ── Marquee track — translated by JS, never scrolled ── */
+.items-container {
+    display: flex;
+    will-change: transform;
+}
+
+/* ── Navigation buttons overlay ── */
+.circular-nodes-button {
+    position: absolute;
+    inset: 0;            
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+    padding: 0 -25px;
+}
+
+.circular-node-left-button,
+.circular-node-right-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background-color: var(--brandlightgreen);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+}
+.circular-node-left-button svg,.circular-node-right-button svg{
+    width: 20px;
+    color: var(--brandcream);
+    /* fill: black;
+    outline: black;
+    background-color: black; */
+
+}
+
+.circular-node-left-button {
+    margin-left: -35px;
+}
+
+.circular-node-right-button {
+    margin-right: -35px;
+}
+
+/* ── Single node ── */
+.nodes-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* gap: 18px; */
+    color: black;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* ── Circle image ── */
+.image-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    /* border: 1px solid black; */
+    overflow: hidden;
+}
+
+
+.image-circle img {
+    width: 100%;
+    height: 100%;
+    scale: 0.8;
+    object-fit: cover;
+    transition: all 0.35s ease;
+    display: block;
+}
+.image-circle:hover img{
+    scale: 0.85;
+}
+
+/* ── Label ── */
+.nodes-item h3 {
+    color: var(--brandblack);
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: -5px;
+    letter-spacing: 0.5px;
+    text-align: center;
+}

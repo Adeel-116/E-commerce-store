@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════
+   INFO TABS  — base (mobile)
+═══════════════════════════════════════════ */
+.info-tabs-section {
+  width: 100%;
+  background-color: var(--brandcream);
+  padding: 20px 15px;
+}
+
+.info-tabs-container {
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.info-tab {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 14px;
+}
+
+.info-tab-icon {
+  flex-shrink: 0;
+  color: var(--brandgreen);
+  margin-top: 4px;
+}
+
+.info-tab-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.8;
+}
+
+.info-tab-content h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brandblack);
+  line-height: 1.25;
+}
+
+.info-tab-content p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS
+───────────────────────────────────────────── */
+
+/* 540px — large mobile */
+@media (min-width: 540px) {
+  .info-tabs-section {
+    padding: 28px 20px;
+  }
+}
+
+/* 768px — tablet, 2 columns */
+@media (min-width: 768px) {
+  .info-tabs-section {
+    padding: 30px 28px;
+  }
+
+  .info-tabs-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 40px;
+  }
+
+  .info-tab {
+    gap: 16px;
+  }
+
+  .info-tab-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .info-tab-content h4 {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+}
+
+/* 992px — desktop, 4 columns */
+@media (min-width: 992px) {
+  .info-tabs-section {
+    padding: 30px var(--paddinginline);
+  }
+
+  .info-tabs-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+  }
+
+  .info-tab {
+    gap: 18px;
+  }
+
+  .info-tab-icon svg {
+    width: 31px;
+    height: 31px;
+  }
+}
+
+
+@media (min-width: 1370px) {
+  .info-tab-content h4{
+    font-size: 13px;
+  }
+  
+  .info-tab-content p{
+    font-size: 12px;
+  }
+}

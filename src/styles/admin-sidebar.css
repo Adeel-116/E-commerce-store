@@ -31,18 +31,16 @@
 
 .admin-sidebar-logo-icon { color: var(--admin-brandgreen); flex-shrink: 0; }
 
-.admin-sidebar-logo-text {
-  color: var(--admin-brandcream);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  opacity: 1;
-  transition: opacity 0.2s ease;
+.admin-sidebar-logo-img {
+  height: 40px;
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: height 0.2s ease;
 }
 
-.admin-sidebar-collapsed .admin-sidebar-logo-text { opacity: 0; width: 0; }
+.admin-sidebar-collapsed .admin-sidebar-logo-img { height: 32px; }
 
 .admin-sidebar-nav {
   flex: 1;

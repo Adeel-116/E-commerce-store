@@ -10,6 +10,7 @@ type InvoiceOrderItem = {
   title: string;
   image: string;
   size: string;
+  color?: string | null;
   price: number;
   originalPrice: number;
   quantity: number;
@@ -116,7 +117,7 @@ export default function InvoicePreviewModal({
         <div className="invoice-modal-scroll">
           <div className="invoice-page" ref={printRef}>
             <div className="invoice-header">
-              <div className="invoice-logo-text">AZAN<br />COLLECTION</div>
+              <img src="/zainab-logo.png" alt="Zainab Store" className="invoice-logo" />
               <div className="invoice-header-meta">
                 <h1 className="invoice-title">INVOICE</h1>
                 <div className="invoice-meta-row"><span>Invoice No.</span><strong>{invoiceNumber}</strong></div>
@@ -158,6 +159,7 @@ export default function InvoicePreviewModal({
                 <tr>
                   <th>Item</th>
                   <th>Size</th>
+                  <th>Color</th>
                   <th className="invoice-align-right">Price</th>
                   <th className="invoice-align-right">Qty</th>
                   <th className="invoice-align-right">Amount</th>
@@ -165,9 +167,10 @@ export default function InvoicePreviewModal({
               </thead>
               <tbody>
                 {order.items.map((item) => (
-                  <tr key={`${item.productId}-${item.size}`}>
+                  <tr key={`${item.productId}-${item.size}-${item.color ?? ''}`}>
                     <td>{item.title}</td>
                     <td>{item.size}</td>
+                    <td>{item.color ?? '—'}</td>
                     <td className="invoice-align-right">{fmt(item.originalPrice)}</td>
                     <td className="invoice-align-right">{item.quantity}</td>
                     <td className="invoice-align-right">{fmt(item.originalPrice * item.quantity)}</td>
@@ -188,7 +191,7 @@ export default function InvoicePreviewModal({
               <div className="invoice-totals-row invoice-grand-total"><span>Grand Total</span><span>{fmt(order.pricing.total)}</span></div>
             </div>
 
-            <div className="invoice-footer">Thank you for shopping with Azan Collection</div>
+            <div className="invoice-footer">Thank you for shopping with Zainab Store</div>
           </div>
         </div>
       </div>

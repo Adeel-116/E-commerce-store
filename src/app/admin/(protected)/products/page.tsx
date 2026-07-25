@@ -23,6 +23,13 @@ type ApiProduct = {
   status: 'active' | 'inactive';
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+  western: 'Western Fashion',
+  'top-jeans': 'Top & Jeans',
+  fashion: 'Pakistani Fashion',
+  maxi: 'Maxi',
+};
+
 const mapProduct = (p: ApiProduct): TableProduct => ({
   _id: p._id,
   id: String(p.productId),
@@ -30,7 +37,9 @@ const mapProduct = (p: ApiProduct): TableProduct => ({
   title: p.title,
   price: p.price != null ? `${p.price} PKR` : '—',
   comparePrice: p.comparePrice ? `${p.comparePrice} PKR` : '—',
-  category: Array.isArray(p.category) && p.category.length > 0 ? p.category.join(', ') : '—',
+  category: Array.isArray(p.category) && p.category.length > 0
+    ? p.category.map((c) => CATEGORY_LABELS[c] ?? c).join(', ')
+    : '—',
   stock: p.stock ? 'In Stock' : 'Out of Stock',
   status: p.status === 'active' ? 'Active' : 'Inactive',
 });

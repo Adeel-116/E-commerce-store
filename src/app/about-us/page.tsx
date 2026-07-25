@@ -18,7 +18,7 @@ function page() {
                     <h1 className="shop-page__hero-title">About Us</h1>
                     <span className="shop-page__hero-divider" />
                     <p className="shop-page__hero-subtitle">
-                        Discover Azan Collection — thoughtfully designed clothing that brings
+                        Discover Zainab Store — thoughtfully designed clothing that brings
                         together comfort, quality, and everyday style.
                     </p>
                 </div>
@@ -30,7 +30,7 @@ function page() {
                     <p className="about-tag">Our Story</p>
                     <h2 className="about-story__heading">Crafted For Everyday Style</h2>
                     <p className="about-story__para">
-                        At Azan Collection, our journey began with a simple belief: quality clothing shouldn&apos;t come with
+                        At Zainab Store, our journey began with a simple belief: quality clothing shouldn&apos;t come with
                         an inflated price tag. We built this platform to bring you thoughtfully designed, comfortable pieces
                         without the markup you&apos;d expect from boutique fashion houses.
                     </p>
@@ -44,13 +44,13 @@ function page() {
 
                 <div className="about-story__images">
                     <div className="about-story__img-wrap about-story__img--left">
-                        <img src="/category-maxi.jpg" alt="Azan Collection maxi dresses" className="about-story__img" />
+                        <img src="/category-maxi.jpg" alt="Zainab Store maxi dresses" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-top">
-                        <img src="/category-fashion.png" alt="Azan Collection fashion wear" className="about-story__img" />
+                        <img src="/category-fashion.png" alt="Zainab Store fashion wear" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-bot">
-                        <img src="/category-western.png" alt="Azan Collection western wear" className="about-story__img" />
+                        <img src="/category-western.png" alt="Zainab Store western wear" className="about-story__img" />
                     </div>
                 </div>
             </section>
@@ -69,7 +69,7 @@ function page() {
                     <div className="about-mission__card">
                         <h3 className="about-mission__card-title">Quality &amp; Craftsmanship</h3>
                         <p className="about-mission__card-text">
-                            Every piece at Azan Collection is cut from carefully selected fabric and finished with attention
+                            Every piece at Zainab Store is cut from carefully selected fabric and finished with attention
                             to detail, so you can count on comfort and durability with every wear.
                         </p>
                     </div>

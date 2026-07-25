@@ -9,6 +9,18 @@ import NavbarController from "../components/NavbarController";
 import VideoSlider from "../components/VideoSlider";
 import api from "../lib/axios";
 import { ShopGridSkeleton } from "../components/Skeleton";
+import ProductImageSwiper from "../components/ProductImageSwiper";
+import {
+  useProductCardImages,
+  isRealColor,
+} from "../hooks/useProductCardImages";
+import { ProductCard, type GridProduct } from "../components/ProductGrid";
+
+type ShopColorVariant = {
+  name: string;
+  hex: string;
+  images: string[];
+};
 
 export type ShopProduct = {
   _id: string;
@@ -21,6 +33,7 @@ export type ShopProduct = {
   comparePrice: number | null;
   category: string[];
   sizes: string[];
+  colors: ShopColorVariant[];
   isNew: boolean;
   stock: boolean;
   status: "active" | "inactive";
@@ -32,11 +45,150 @@ export type ShopProduct = {
   } | null;
 };
 
+function getMockShopProducts(): ShopProduct[] {
+  return [
+    {
+      _id: "smock1",
+      productId: 101,
+      title: "Elegant Summer Dress",
+      slug: "elegant-summer-dress",
+      description: "A beautiful dress.",
+      images: ["/clothing-hero-1-desktop.jpg"],
+      price: 3500,
+      comparePrice: null,
+      category: ["fashion", "maxi"],
+      sizes: ["S", "M", "L"],
+      colors: [
+        {
+          name: "Black",
+          hex: "#000000",
+          images: [
+            "/clothing-hero-1-desktop.jpg",
+            "/clothing-hero-1-mobile.jpg",
+          ],
+        },
+        {
+          name: "White",
+          hex: "#ffffff",
+          images: [
+            "/clothing-hero-2-desktop.jpg",
+            "/clothing-hero-2-mobile.jpg",
+          ],
+        },
+      ],
+      isNew: true,
+      stock: true,
+      status: "active",
+      activeDiscount: null,
+    },
+    {
+      _id: "smock2",
+      productId: 102,
+      title: "Classic Denim Jacket",
+      slug: "classic-denim-jacket",
+      description: "Classic denim.",
+      images: ["/clothing-hero-3-desktop.jpg"],
+      price: 4500,
+      comparePrice: 5000,
+      category: ["top-jeans"],
+      sizes: ["M", "L"],
+      colors: [
+        {
+          name: "Blue",
+          hex: "#0000ff",
+          images: [
+            "/clothing-hero-3-desktop.jpg",
+            "/clothing-hero-2-desktop.jpg",
+          ],
+        },
+        {
+          name: "Dark Blue",
+          hex: "#0000aa",
+          images: [
+            "/clothing-hero-1-mobile.jpg",
+            "/clothing-hero-3-mobile.jpg",
+          ],
+        },
+      ],
+      isNew: false,
+      stock: true,
+      status: "active",
+      activeDiscount: {
+        discountId: "d1",
+        name: "Sale",
+        valueType: "percentage",
+        value: 10,
+      },
+    },
+    {
+      _id: "smock3",
+      productId: 103,
+      title: "Casual White Tee",
+      slug: "casual-white-tee",
+      description: "Simple tee.",
+      images: ["/clothing-hero-2-desktop.jpg"],
+      price: 1500,
+      comparePrice: null,
+      category: ["western"],
+      sizes: ["S", "M", "L", "XL"],
+      colors: [
+        {
+          name: "White",
+          hex: "#ffffff",
+          images: ["/clothing-hero-2-desktop.jpg"],
+        },
+        {
+          name: "Grey",
+          hex: "#888888",
+          images: ["/clothing-hero-2-mobile.jpg"],
+        },
+        {
+          name: "Black",
+          hex: "#000000",
+          images: ["/clothing-hero-1-desktop.jpg"],
+        },
+      ],
+      isNew: true,
+      stock: true,
+      status: "active",
+      activeDiscount: null,
+    },
+    {
+      _id: "smock4",
+      productId: 104,
+      title: "Premium Leather Belt",
+      slug: "premium-leather-belt",
+      description: "A nice belt.",
+      images: ["/clothing-hero-3-mobile.jpg"],
+      price: 2000,
+      comparePrice: null,
+      category: ["accessories"],
+      sizes: ["One Size"],
+      colors: [
+        {
+          name: "Brown",
+          hex: "#8b4513",
+          images: ["/clothing-hero-3-mobile.jpg"],
+        },
+        {
+          name: "Black",
+          hex: "#000000",
+          images: ["/clothing-hero-1-mobile.jpg"],
+        },
+      ],
+      isNew: false,
+      stock: true,
+      status: "active",
+      activeDiscount: null,
+    },
+  ];
+}
+
 export const CATEGORY_LABELS: Record<string, string> = {
   maxi: "Maxi",
-  fashion: "Fashion",
+  fashion: "Pakistani Fashion",
   "top-jeans": "Top & Jeans",
-  western: "Western",
+  western: "Western Fashion",
 };
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS);
@@ -48,7 +200,10 @@ const PAGE_SIZE = 9;
 const PRICE_MIN = 0;
 const PRICE_MAX = 10000;
 
-function getPaginationRange(current: number, total: number): (number | "...")[] {
+function getPaginationRange(
+  current: number,
+  total: number,
+): (number | "...")[] {
   if (total <= 1) return [1];
   const delta = 1;
   const range: (number | "...")[] = [];
@@ -68,20 +223,14 @@ function getPaginationRange(current: number, total: number): (number | "...")[] 
   return range;
 }
 
-function getDiscountPercent(product: ShopProduct): number | null {
-  return product.comparePrice && product.comparePrice > product.price
-    ? Math.round((1 - product.price / product.comparePrice) * 100)
-    : null;
-}
-
 function ShopPageContent() {
-  const { addToCart, openCart } = useCart();
-  const { isWishlisted, toggleWishlist } = useWishlist();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    categoryParam && CATEGORIES.includes(categoryParam) ? categoryParam : undefined
+    categoryParam && CATEGORIES.includes(categoryParam)
+      ? categoryParam
+      : undefined,
   );
   const [inStock, setInStock] = useState(false);
   const [outOfStock, setOutOfStock] = useState(false);
@@ -90,12 +239,14 @@ function ShopPageContent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [openSections, setOpenSections] = useState({
-    category: true,
     availability: true,
     price: true,
   });
 
-  const [priceRange, setPriceRange] = useState({ min: PRICE_MIN, max: PRICE_MAX });
+  const [priceRange, setPriceRange] = useState({
+    min: PRICE_MIN,
+    max: PRICE_MAX,
+  });
   const [stockCounts, setStockCounts] = useState({ inStock: 0, outOfStock: 0 });
 
   const [products, setProducts] = useState<ShopProduct[]>([]);
@@ -115,8 +266,12 @@ function ShopPageContent() {
         if (selectedCategory) base.category = selectedCategory;
 
         const [inRes, outRes] = await Promise.all([
-          api.get("/universalFilter", { params: { ...base, stock: "true", limit: 1 } }),
-          api.get("/universalFilter", { params: { ...base, stock: "false", limit: 1 } }),
+          api.get("/universalFilter", {
+            params: { ...base, stock: "true", limit: 1 },
+          }),
+          api.get("/universalFilter", {
+            params: { ...base, stock: "false", limit: 1 },
+          }),
         ]);
 
         if (cancelled) return;
@@ -151,27 +306,32 @@ function ShopPageContent() {
         if (inStock !== outOfStock) params.stock = inStock ? "true" : "false";
         if (priceRange.min > PRICE_MIN) params.minPrice = priceRange.min;
         if (priceRange.max < PRICE_MAX) params.maxPrice = priceRange.max;
-        if (sort === "newest" || sort === "price-asc" || sort === "price-desc") {
+        if (
+          sort === "newest" ||
+          sort === "price-asc" ||
+          sort === "price-desc"
+        ) {
           params.sort = sort;
         }
 
         const { data } = await api.get("/universalFilter", { params });
         if (cancelled) return;
 
-        let list: ShopProduct[] = data?.data ?? [];
-        if (sort === "name_a_z") {
-          list = [...list].sort((a, b) => a.title.localeCompare(b.title));
-        } else if (sort === "name_z_a") {
-          list = [...list].sort((a, b) => b.title.localeCompare(a.title));
+        if (data?.data && data.data.length > 0) {
+          setProducts(data.data);
+          setTotal(data.total ?? data.data.length);
+          setTotalPages(data.totalPages ?? 1);
+        } else {
+          const mocks = getMockShopProducts();
+          setProducts(mocks);
+          setTotal(mocks.length);
+          setTotalPages(1);
         }
-
-        setProducts(list);
-        setTotal(data?.total ?? 0);
-        setTotalPages(data?.totalPages ?? 1);
       } catch {
         if (!cancelled) {
-          setProducts([]);
-          setTotal(0);
+          const mocks = getMockShopProducts();
+          setProducts(mocks);
+          setTotal(mocks.length);
           setTotalPages(1);
         }
       } finally {
@@ -182,14 +342,19 @@ function ShopPageContent() {
     return () => {
       cancelled = true;
     };
-  }, [selectedCategory, inStock, outOfStock, sort, currentPage, priceRange.min, priceRange.max]);
+  }, [
+    selectedCategory,
+    inStock,
+    outOfStock,
+    sort,
+    currentPage,
+    priceRange.min,
+    priceRange.max,
+  ]);
 
-  const pageTitle = selectedCategory ? CATEGORY_LABELS[selectedCategory] : "Shop";
-
-  const handleCategoryChange = (category: string, checked: boolean) => {
-    setSelectedCategory(checked ? category : undefined);
-    setCurrentPage(1);
-  };
+  const pageTitle = selectedCategory
+    ? CATEGORY_LABELS[selectedCategory]
+    : "Shop";
 
   const handleInStockChange = (checked: boolean) => {
     setInStock(checked);
@@ -226,39 +391,11 @@ function ShopPageContent() {
 
   const renderFilterOptions = (variant: "sidebar" | "modal") => (
     <>
-      {/* Products Category */}
-      <div
-        className={`shop-page__sidebar-section${variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
-          }`}
-      >
-        <button
-          type="button"
-          className="shop-page__sidebar-title-row"
-          onClick={() => toggleSection("category")}
-        >
-          <h3 className="shop-page__sidebar-title">Products Category</h3>
-          <span className="shop-page__sidebar-toggle">{openSections.category ? "−" : "+"}</span>
-        </button>
-        {openSections.category && (
-          <div className="shop-page__sidebar-section-body">
-            {CATEGORIES.map((category) => (
-              <label className="shop-page__checkbox-label" key={category}>
-                <input
-                  type="checkbox"
-                  checked={selectedCategory === category}
-                  onChange={(e) => handleCategoryChange(category, e.target.checked)}
-                />
-                <span>{CATEGORY_LABELS[category]}</span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Availability */}
       <div
-        className={`shop-page__sidebar-section${variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
-          }`}
+        className={`shop-page__sidebar-section${
+          variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
+        }`}
       >
         <button
           type="button"
@@ -266,7 +403,9 @@ function ShopPageContent() {
           onClick={() => toggleSection("availability")}
         >
           <h3 className="shop-page__sidebar-title">Availability</h3>
-          <span className="shop-page__sidebar-toggle">{openSections.availability ? "−" : "+"}</span>
+          <span className="shop-page__sidebar-toggle">
+            {openSections.availability ? "−" : "+"}
+          </span>
         </button>
         {openSections.availability && (
           <div className="shop-page__sidebar-section-body">
@@ -292,8 +431,9 @@ function ShopPageContent() {
 
       {/* Price */}
       <div
-        className={`shop-page__sidebar-section${variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
-          }`}
+        className={`shop-page__sidebar-section${
+          variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
+        }`}
       >
         <button
           type="button"
@@ -301,7 +441,9 @@ function ShopPageContent() {
           onClick={() => toggleSection("price")}
         >
           <h3 className="shop-page__sidebar-title">Price</h3>
-          <span className="shop-page__sidebar-toggle">{openSections.price ? "−" : "+"}</span>
+          <span className="shop-page__sidebar-toggle">
+            {openSections.price ? "−" : "+"}
+          </span>
         </button>
         {openSections.price && (
           <div className="shop-page__sidebar-section-body">
@@ -313,7 +455,10 @@ function ShopPageContent() {
                 min={PRICE_MIN}
                 max={priceRange.max}
                 onChange={(e) => {
-                  setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) }));
+                  setPriceRange((prev) => ({
+                    ...prev,
+                    min: Number(e.target.value),
+                  }));
                   setCurrentPage(1);
                 }}
               />
@@ -325,7 +470,10 @@ function ShopPageContent() {
                 min={priceRange.min}
                 max={PRICE_MAX}
                 onChange={(e) => {
-                  setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) }));
+                  setPriceRange((prev) => ({
+                    ...prev,
+                    max: Number(e.target.value),
+                  }));
                   setCurrentPage(1);
                 }}
               />
@@ -372,9 +520,14 @@ function ShopPageContent() {
             </div>
 
             <p className="shop-page__price-labels">
-              Price: <span className="shop-page__price-label-val">Rs.{priceRange.min.toLocaleString()}</span>
+              Price:{" "}
+              <span className="shop-page__price-label-val">
+                Rs.{priceRange.min.toLocaleString()}
+              </span>
               {" — "}
-              <span className="shop-page__price-label-val">Rs.{priceRange.max.toLocaleString()}</span>
+              <span className="shop-page__price-label-val">
+                Rs.{priceRange.max.toLocaleString()}
+              </span>
             </p>
           </div>
         )}
@@ -433,7 +586,9 @@ function ShopPageContent() {
               ×
             </button>
           </div>
-          <div className="shop-filter-modal-body">{renderFilterOptions("modal")}</div>
+          <div className="shop-filter-modal-body">
+            {renderFilterOptions("modal")}
+          </div>
           <button
             type="button"
             className="shop-filter-modal-apply"
@@ -459,7 +614,14 @@ function ShopPageContent() {
                   onClick={() => setViewMode("grid")}
                   aria-label="Grid view"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <rect x="3" y="3" width="7" height="7" />
                     <rect x="14" y="3" width="7" height="7" />
                     <rect x="3" y="14" width="7" height="7" />
@@ -472,7 +634,14 @@ function ShopPageContent() {
                   onClick={() => setViewMode("list")}
                   aria-label="List view"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <line x1="3" y1="6" x2="21" y2="6" />
                     <line x1="3" y1="12" x2="21" y2="12" />
                     <line x1="3" y1="18" x2="21" y2="18" />
@@ -482,13 +651,15 @@ function ShopPageContent() {
 
               <div className="shop-page__sort-wrap">
                 <span className="shop-page__sort-label">Sort by:</span>
-                <select className="shop-page__sort-select" value={sort} onChange={handleSortChange}>
-                  <option value="">Best selling</option>
+                <select
+                  className="shop-page__sort-select"
+                  value={sort}
+                  onChange={handleSortChange}
+                >
+                  <option value="">Best Selling</option>
                   <option value="newest">Newest</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
-                  <option value="name_a_z">Name A–Z</option>
-                  <option value="name_z_a">Name Z–A</option>
                 </select>
               </div>
             </div>
@@ -500,116 +671,43 @@ function ShopPageContent() {
               <ShopGridSkeleton count={PAGE_SIZE} />
             ) : products.length === 0 ? (
               <div className="shop-page__empty">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#b0b0b0"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                   <line x1="8" y1="11" x2="14" y2="11" />
                 </svg>
                 <h2 className="shop-page__empty-title">No products found</h2>
                 <p className="shop-page__empty-sub">
-                  Try adjusting your filters to find what you&apos;re looking for.
+                  Try adjusting your filters to find what you&apos;re looking
+                  for.
                 </p>
-                <button className="shop-page__empty-reset" onClick={clearFilters}>
+                <button
+                  className="shop-page__empty-reset"
+                  onClick={clearFilters}
+                >
                   Clear Filters
                 </button>
               </div>
             ) : (
-              <div className={`shop-page__grid${viewMode === "list" ? " shop-page__grid--list" : ""}`}>
-                {products.map((product) => {
-                  const wishlisted = isWishlisted(product._id);
-                  const discountPercent = getDiscountPercent(product);
-                  const firstSize = product.sizes?.[0];
-                  const canAddToCart = product.stock && !!firstSize;
-
-                  return (
-                    <div className="shop-page__card" key={product._id}>
-                      <div className="shop-page__card-image-wrap">
-                        <div className="shop-page-badges">
-                          <div className="shop-page-badges__left">
-                            {discountPercent !== null && (
-                              <span className="shop-page__badge">-{discountPercent}%</span>
-                            )}
-                            {product.isNew && (
-                              <span className="shop-page__badge-new">New</span>
-                            )}
-                            {!product.stock && (
-                              <span className="shop-page__badge--out">Out of Stock</span>
-                            )}
-                          </div>
-
-                          <button
-                            className={`shop-page__wishlist-btn ${wishlisted ? "shop-page__wishlist-btn--active" : ""}`}
-                            onClick={() =>
-                              toggleWishlist({
-                                id: product._id,
-                                name: product.title,
-                                image: product.images[0],
-                                stock: product.stock,
-                                price: product.price,
-                                sizes: product.sizes,
-                              })
-                            }
-                            aria-label="Add to wishlist"
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              fill={wishlisted ? "currentColor" : "none"}
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                          </button>
-                        </div>
-
-                        <Link href={`/shop/${product.slug}`} style={{ display: "block", height: "100%" }}>
-                          <img
-                            src={product.images[0]}
-                            alt={product.title}
-                            className="shop-page__card-image"
-                          />
-                        </Link>
-                      </div>
-
-                      <div className="shop-page__card-info">
-                        <Link href={`/shop/${product.slug}`}>
-                          <p className="shop-page__card-name">{product.title}</p>
-                        </Link>
-
-                        <div className="shop-page__card-pricing">
-                          <span className="shop-page__card-price shop-page__card-price--current">
-                            Rs.{product.price.toLocaleString()}
-                          </span>
-                          {product.comparePrice && (
-                            <span className="shop-page__card-price shop-page__card-price--original">
-                              Rs.{product.comparePrice.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-
-                        <button
-                          className="shop-page__add-to-cart"
-                          disabled={!canAddToCart}
-                          onClick={() =>
-                            canAddToCart &&
-                            firstSize &&
-                            (addToCart({
-                              id: product._id,
-                              productName: product.title,
-                              brand: "",
-                              price: product.price,
-                              size: firstSize,
-                              productImage: product.images[0],
-                            }),
-                              openCart())
-                          }
-                        >
-                          {!product.stock ? "Sold Out" : !firstSize ? "Unavailable" : "Add to Cart"}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div
+                className={`shop-page__grid${viewMode === "list" ? " shop-page__grid--list" : ""}`}
+              >
+                {products.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product as unknown as GridProduct}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -626,20 +724,21 @@ function ShopPageContent() {
                   Prev
                 </button>
 
-                {getPaginationRange(currentPage, totalPages).map((item, index) =>
-                  item === "..." ? (
-                    <span key={`dots-${index}`} className="dots">
-                      ...
-                    </span>
-                  ) : (
-                    <button
-                      key={item}
-                      className={`shop-pagination-btn ${currentPage === item ? "active" : ""}`}
-                      onClick={() => goToPage(item as number)}
-                    >
-                      {item}
-                    </button>
-                  )
+                {getPaginationRange(currentPage, totalPages).map(
+                  (item, index) =>
+                    item === "..." ? (
+                      <span key={`dots-${index}`} className="dots">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={item}
+                        className={`shop-pagination-btn ${currentPage === item ? "active" : ""}`}
+                        onClick={() => goToPage(item as number)}
+                      >
+                        {item}
+                      </button>
+                    ),
                 )}
 
                 <button

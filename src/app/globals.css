@@ -6,36 +6,37 @@
 }
 
 :root {
-  /* Store brand palette — Charcoal / Sand beige / Gold accent / Off-white */
-  --charcoal: #1c1c1c;
-  --sand-beige: #e8dcc8;
-  --gold-accent: #c9a961;
-  --off-white: #f7f5f2;
+  /* Store brand palette — Soft Black / Sage Green / Terracotta / Off-white ("quiet luxury") */
+  --charcoal: #1a1a1a;
+  --sand-beige: #e8ece4;
+  --gold-accent: #748f5f;
+  --off-white: #f5f5f3;
+  --terracotta: #c1694f;
 
-  --lightblack: rgba(28, 28, 28, 0.801);
+  --lightblack: rgba(26, 26, 26, 0.801);
   --paddinginline: 56px;
-  --brandblack: #1c1c1ce8;
-  --brandgreen: #1c1c1c;
-  --brandlightgreen: #e8dcc8e5;
-  --brandcream: #f7f5f2;
+  --brandblack: #1a1a1ae8;
+  --brandgreen: #1a1a1a;
+  --brandlightgreen: #e8ece4e5;
+  --brandcream: #f5f5f3;
 
   /* root vars */
-  --bg: #f7f5f2;
-  --bg-soft: #e8dcc8;
-  --bg-soft-2: #ddd0b8;
-  --bg-deep: #1c1c1c;
-  --ink: #1c1c1c;
+  --bg: #f5f5f3;
+  --bg-soft: #e8ece4;
+  --bg-soft-2: #d7ded0;
+  --bg-deep: #1a1a1a;
+  --ink: #1a1a1a;
   --muted: #6b6b6b;
-  --maroon: #1c1c1c;
-  --maroon-deep: #1c1c1c;
-  --gold: #c9a961;
-  --gold-soft: #c9a961;
-  --line: rgba(28, 28, 28, 0.1);
-  --line-strong: rgba(28, 28, 28, 0.18);
-  --men: #1c1c1c;
-  --women: #c9a961;
+  --maroon: #1a1a1a;
+  --maroon-deep: #1a1a1a;
+  --gold: #8a9a7e;
+  --gold-soft: #8a9a7e;
+  --line: rgba(26, 26, 26, 0.1);
+  --line-strong: rgba(26, 26, 26, 0.18);
+  --men: #1a1a1a;
+  --women: #8a9a7e;
   --niche: #6b6b6b;
-  --designer: #1c1c1c;
+  --designer: #1a1a1a;
 }
 @font-face {
   font-family: "light";

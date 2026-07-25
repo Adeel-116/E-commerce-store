@@ -305,7 +305,7 @@ const sections = [
         <p>
           If you have any questions or suggestions about our Privacy Policy,
           please contact us at{" "}
-          <a href="mailto:support@azancollection.com">support@azancollection.com</a>.
+          <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>.
         </p>
       </>
     ),
@@ -320,8 +320,8 @@ const PrivacyPolicy = () => {
       <div className="pp-hero">
         <h1>Privacy Policy</h1>
         <p>
-          Thank you for visiting www.azancollection.com. Azan Collection
-          (referred to herein as "Azan Collection", "we", "our" or "us")
+          Thank you for visiting www.zainabstore.com. Zainab Store
+          (referred to herein as "Zainab Store", "we", "our" or "us")
           appreciates the importance of your trust. This Privacy Policy
           describes the types of personal and non-personal information we
           collect on the Site, how we use such information, and under what
@@ -330,10 +330,10 @@ const PrivacyPolicy = () => {
           agree, please do not use the site.
         </p>{" "}
         <p>
-          Azan Collection operates the e-commerce website
-          www.azancollection.com and related domains, sites, services and
+          Zainab Store operates the e-commerce website
+          www.zainabstore.com and related domains, sites, services and
           tools ("Website"). The Website allows you to browse and order
-          premium everyday and occasion wear ("Products"). Azan Collection may
+          premium everyday and occasion wear ("Products"). Zainab Store may
           update, modify, or remove Website content at any time without prior
           notice and will use reasonable efforts to keep information current.
         </p>{" "}

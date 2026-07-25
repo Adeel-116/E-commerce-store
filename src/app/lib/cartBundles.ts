@@ -45,7 +45,7 @@ export type CartLineInput = {
 
 import api from "../lib/axios";
 
-export const BUNDLE_STORAGE_KEY = "azan-product-bundles";
+export const BUNDLE_STORAGE_KEY = "zainab-product-bundles";
 
 const normalizeBundle = (bundle: any): ProductBundle | null => {
   if (!bundle || typeof bundle !== "object") return null;

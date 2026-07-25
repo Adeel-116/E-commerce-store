@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, Shirt } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AdminAuthContext';
 import '@/styles/admin-theme.css';
 import './login.css';
@@ -48,13 +48,8 @@ export default function LoginPage() {
     <main className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <div className="login-logo-icon">
-            <Shirt size={20} />
-          </div>
-          <div>
-            <div className="login-logo-text">Azan Collection</div>
-            <div className="login-logo-sub">Admin Dashboard</div>
-          </div>
+          <img src="/zainab-logo.png" alt="Zainab Store" className="login-logo-img" />
+          <div className="login-logo-sub">Admin Dashboard</div>
         </div>
 
         <h1 className="login-heading">Welcome back</h1>
@@ -123,7 +118,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="login-footer-text">Azan Collection &copy; {new Date().getFullYear()} — Admin access only</p>
+        <p className="login-footer-text">Zainab Store &copy; {new Date().getFullYear()} — Admin access only</p>
       </div>
     </main>
   );

@@ -6,7 +6,7 @@ import { AdminToastProvider } from "@/components/AdminToast";
 import AdminGuard from "@/components/AdminGuard";
 
 export const metadata = {
-  title: "Azan Collection — Dashboard",
+  title: "Zainab Store — Dashboard",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

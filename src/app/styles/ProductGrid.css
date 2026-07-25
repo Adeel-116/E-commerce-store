@@ -3,38 +3,55 @@
 ═══════════════════════════════════════════ */
 .cg-section {
   width: 100%;
-  padding: 50px var(--paddinginline) 50px;
+  padding: 64px var(--paddinginline) 60px;
+  background: linear-gradient(180deg, var(--off-white) 0%, var(--bg-soft) 130%);
 }
 
 .cg-section-header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 44px;
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+.cg-section-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.cg-section-eyebrow-line {
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: var(--gold-accent);
 }
 
 .cg-section-tag {
-  display: inline-block;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--gold-accent);
-  margin: 0 0 10px;
+  margin: 0;
 }
 
 .cg-section-title {
   font-family: var(--font-playfair), serif;
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 600;
   color: var(--charcoal);
-  margin: 0 0 14px;
+  margin: 0 0 12px;
+  letter-spacing: 0.01em;
 }
 
-.cg-section-divider {
-  display: block;
-  width: 56px;
-  height: 2px;
-  background: var(--gold-accent);
-  margin: 0 auto;
+.cg-section-subtitle {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
 }
 
 /* ═══════════════════════════════════════════
@@ -43,7 +60,7 @@
 .cg-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 26px;
+  gap: 28px;
   padding: 0;
 }
 
@@ -56,18 +73,22 @@
   display: flex;
   flex-direction: column;
   background: var(--off-white);
-  border: 1px solid rgba(28, 28, 28, 0.08);
-  border-radius: 14px;
+  border: 1px solid rgba(28, 28, 28, 0.07);
+  border-radius: 4px 4px 16px 16px;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
   box-shadow: 0 2px 10px rgba(28, 28, 28, 0.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease,
+    border-color 0.35s ease;
 }
 
 .cg-card:hover {
-  box-shadow: 0 16px 32px rgba(28, 28, 28, 0.14);
-  transform: translateY(-5px);
+  box-shadow: 0 20px 36px rgba(28, 28, 28, 0.16);
+  transform: translateY(-6px);
+  border-color: var(--gold-accent);
 }
 
 /* ── Badges (top-left) ── */
@@ -83,22 +104,19 @@
 }
 
 .cg-badge {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-  padding: 4px 10px;
-  border-radius: 3px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 999px;
   white-space: nowrap;
 }
 
-.cg-badge-sale {
-  background: var(--charcoal);
-  color: var(--off-white);
-}
-
 .cg-badge-new {
-  background: var(--gold-accent);
-  color: var(--charcoal);
+  background: var(--charcoal);
+  color: var(--sand-beige);
+  box-shadow: 0 3px 8px rgba(28, 28, 28, 0.25);
 }
 
 /* ── Image container ── */
@@ -129,12 +147,88 @@
   object-position: top center;
   user-select: none;
   pointer-events: none;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s ease;
   animation: cgImgFade 0.3s ease-in-out;
 }
 
-.cg-card:hover .cg-card-image {
-  transform: scale(1.05);
+.cg-card-image--empty {
+  background: var(--sand-beige);
+}
+
+/* Removed hover scale */
+.cg-card-image-swiper-wrap,
+.cg-card-image-swiper,
+.cg-card-image-swiper .swiper-wrapper,
+.cg-card-image-swiper .swiper-slide {
+  width: 100%;
+  height: 100%;
+}
+
+.cg-card-image-swiper-wrap {
+  position: relative;
+}
+
+/* Soft gradient at the base of the image so the quick-add button
+   and pagination dots stay legible over any photo */
+.cg-card-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  background: linear-gradient(
+    180deg,
+    rgba(28, 28, 28, 0) 0%,
+    rgba(28, 28, 28, 0.55) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cg-card:hover .cg-card-scrim {
+  opacity: 1;
+}
+
+/* ── Wishlist (floats on image, top-right) ── */
+.cg-card-wishlist-float {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(247, 245, 242, 0.92);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-4px);
+  box-shadow: 0 3px 10px rgba(28, 28, 28, 0.18);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    background 0.2s ease;
+}
+
+.cg-card:hover .cg-card-wishlist-float {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cg-card-wishlist-float.active {
+  opacity: 1;
+  transform: translateY(0);
+  background: var(--sand-beige);
+}
+
+.cg-card-wishlist-float:hover {
+  transform: scale(1.08);
 }
 
 /* ── Carousel arrows ── */
@@ -155,13 +249,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0;
+  opacity: 1;
   box-shadow: 0 1px 4px rgba(28, 28, 28, 0.15);
   transition: opacity 0.25s ease;
-}
-
-.cg-card:hover .cg-card-arrow {
-  opacity: 1;
 }
 
 .cg-card-arrow-left {
@@ -172,16 +262,98 @@
   right: 12px;
 }
 
-/* ── Bottom section (heading + price + actions) ── */
+/* ── Image dots (shows which frame is active) ── */
+.cg-card-image-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  pointer-events: none;
+}
+
+.cg-card-image-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(247, 245, 242, 0.55);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cg-card-image-dot.active {
+  background: var(--gold-accent);
+  transform: scale(1.3);
+}
+
+/* ── Quick add (floats over image, bottom) ── */
+.cg-card-quick-add {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--off-white);
+  color: var(--charcoal);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.cg-card:hover .cg-card-quick-add {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cg-card-quick-add:hover {
+  background: var(--charcoal);
+  color: var(--off-white);
+}
+
+.cg-card-quick-add:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: translateY(0);
+}
+
+/* ── Bottom section (heading + price + swatches) ── */
 .cg-card-bottom-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   padding: 16px 16px 18px;
-  flex: 1;
+}
+
+.cg-card-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .cg-card-heading {
+  font-family: var(--font-playfair), serif;
   color: var(--charcoal);
   font-weight: 600;
   font-size: 15.5px;
@@ -193,9 +365,51 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 2.8em;
 }
 
+.cg-card-color-swatches {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 0;
+}
+
+.cg-card-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(28, 28, 28, 0.15);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.cg-card-color-dot.active {
+  box-shadow:
+    0 0 0 2px var(--off-white),
+    0 0 0 3.5px var(--gold-accent);
+  transform: scale(1.05);
+}
+
+.cg-card-color-more {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.cg-card-price {
+  color: var(--charcoal);
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  user-select: none;
+  margin: 3px 0 0;
+  flex-shrink: 0;
+}
+
+/* Kept for other cg-card consumers (e.g. the "You May Also Like" grid on
+   the product detail page) that don't use the .cg-card-heading-row layout. */
 .cg-card-price-row {
   display: flex;
   align-items: center;
@@ -203,92 +417,14 @@
   flex-wrap: wrap;
 }
 
-.cg-card-price {
-  color: var(--charcoal);
-  font-size: 16px;
-  font-weight: 700;
-  white-space: nowrap;
-  user-select: none;
-  margin: 0;
-}
-
-.cg-card-price--discounted {
-  color: var(--charcoal);
-  font-weight: 700;
-}
-
-.cg-card-price--original {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: line-through;
-}
-
-/* ── Actions row (Add to Cart + Wishlist) ── */
-.cg-card-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-}
-
-.cg-card-add-cart {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  background: var(--charcoal);
-  color: var(--off-white);
-  border: none;
-  border-radius: 8px;
-  padding: 11px 12px;
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-}
-
-.cg-card-add-cart:hover {
-  background: var(--gold-accent);
-  color: var(--charcoal);
-}
-
-.cg-card-add-wishlist {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--off-white);
-  border: 1px solid rgba(28, 28, 28, 0.15);
-  border-radius: 8px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
-}
-
-.cg-card-add-wishlist:hover {
-  transform: scale(1.05);
-  border-color: var(--charcoal);
-}
-
-.cg-card-add-wishlist.active {
-  background: var(--sand-beige);
-  border-color: var(--charcoal);
-}
-
 /* ── Accessibility ── */
-.cg-card-add-cart:focus,
-.cg-card-add-wishlist:focus {
+.cg-card-quick-add:focus,
+.cg-card-wishlist-float:focus {
   outline-offset: 2px;
 }
 
-.cg-card-add-cart:focus:not(:focus-visible),
-.cg-card-add-wishlist:focus:not(:focus-visible) {
+.cg-card-quick-add:focus:not(:focus-visible),
+.cg-card-wishlist-float:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -299,15 +435,15 @@
 /* 991px — tablet, 3 columns, always-visible controls */
 @media (max-width: 991px) {
   .cg-section {
-    padding: 40px 28px 48px;
+    padding: 48px 28px 52px;
   }
 
   .cg-section-header {
-    margin-bottom: 26px;
+    margin-bottom: 30px;
   }
 
   .cg-section-title {
-    font-size: 30px;
+    font-size: 32px;
   }
 
   .cg-grid {
@@ -316,77 +452,92 @@
   }
 
   .cg-card-price {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .cg-card:hover .cg-card-image {
     transform: none;
   }
 
-  .cg-card-arrow {
+  .cg-card-arrow,
+  .cg-card-wishlist-float,
+  .cg-card-quick-add,
+  .cg-card-scrim {
     opacity: 1;
+    transform: none;
   }
 }
 
 /* 767px — tablet, switch to 2 columns */
 @media (max-width: 767px) {
   .cg-section {
-    padding: 32px 20px 40px;
+    padding: 36px 20px 42px;
   }
 
   .cg-badge {
     font-size: 9px;
-    padding: 3px 8px;
+    padding: 4px 9px;
   }
 
   .cg-section-header {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
   }
 
   .cg-section-title {
     font-size: 28px;
   }
 
+  .cg-section-subtitle {
+    font-size: 13px;
+  }
+
   .cg-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 14px;
-    max-width: 380px;
-    margin-inline: auto;
   }
 
   .cg-card-bottom-section {
     padding: 12px 12px 14px;
-    gap: 8px;
+    gap: 6px;
   }
 
   .cg-card-heading {
     font-size: 13px;
-    min-height: 2.6em;
   }
 
-  .cg-card-add-cart {
-    font-size: 10.5px;
+  .cg-card-quick-add {
+    font-size: 10px;
     padding: 9px 8px;
   }
 
-  .cg-card-add-wishlist {
-    width: 34px;
-    height: 34px;
+  .cg-card-wishlist-float {
+    width: 30px;
+    height: 30px;
+  }
+
+  .cg-card-heading-row {
+    flex-direction: column;
+    gap: 2px;
   }
 }
 
 /* 539px — large mobile */
 @media (max-width: 539px) {
   .cg-section {
-    padding: 28px 16px 36px;
+    padding: 30px 16px 36px;
   }
 
   .cg-section-title {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .cg-card-price {
     font-size: 13px;
     font-weight: 700;
+  }
+
+  .cg-card-heading-row {
+    flex-direction: column;
+    gap: 2px;
   }
 }

@@ -16,14 +16,9 @@ interface Category {
 
 const categories: Category[] = [
   {
-    title: "Maxi",
-    image: "/category-maxi.jpg",
-    href: "/shop?category=maxi",
-  },
-  {
-    title: "Fashion",
-    image: "/category-fashion.png",
-    href: "/shop?category=fashion",
+    title: "Western Fashion",
+    image: "/category-western.png",
+    href: "/shop?category=western",
   },
   {
     title: "Top & Jeans",
@@ -31,9 +26,14 @@ const categories: Category[] = [
     href: "/shop?category=top-jeans",
   },
   {
-    title: "Western",
-    image: "/category-western.png",
-    href: "/shop?category=western",
+    title: "Pakistani Fashion",
+    image: "/category-fashion.png",
+    href: "/shop?category=fashion",
+  },
+  {
+    title: "Maxi",
+    image: "/category-maxi.jpg",
+    href: "/shop?category=maxi",
   },
 ];
 

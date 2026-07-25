@@ -14,7 +14,7 @@ const Wishlist = () => {
     <section className="wl-page">
       <div className="wl-hero">
         <p className="wl-breadcrumb">
-          <Link href="/">HOME</Link> / WISHLIST
+          <Link href="/">Home</Link> / Wishlist
         </p>
         <h1 className="wl-title">My Wishlist</h1>
         <p className="wl-subtitle">

@@ -6,7 +6,6 @@ import FooterTab from "./FooterTab";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import api from "../lib/axios";
-import ShippingInfo from "./ShippingInfo";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -72,39 +71,51 @@ const Footer = () => {
 
       {/* Main Footer Content */}
 
-
-        <ShippingInfo/>
-
       <section className="footer-content">
         <div className="footer-container">
           {/* Company Info */}
           <div className="footer-column">
             <Link href={"/"} className="footer-logo">
-              <img src="/azan-ac-icon-v2-light.png" alt="" className="footer-logo-icon" />
-              <span className="footer-logo-words">
-                <span className="footer-logo-main">AZAN</span>
-                <span className="footer-logo-sub">Collection</span>
-              </span>
+              <img src="/zainab-logo-white.png" alt="Zainab Store" className="footer-brand-logo" />
             </Link>
 
             <p className="footer-description">
-              Azan Collection is your destination for premium everyday and
+              Zainab Store is your destination for premium everyday and
               occasion wear, bringing you a curated clothing shopping
               experience from start to finish.
             </p>
             <div className="footer-contact">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-              </svg>
-              <a href="mailto:support@azancollection.com">support@azancollection.com</a>
+              <span className="footer-contact-icon">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+              </span>
+              <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>
+            </div>
+            <div className="footer-contact">
+              <span className="footer-contact-icon">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </span>
+              <a href="https://wa.me/923160653268" target="_blank" rel="noopener noreferrer">
+                +92 316 0653268
+              </a>
             </div>
           </div>
 
@@ -149,34 +160,34 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Rewards */}
+          {/* Our Promise */}
           <div className="footer-column">
-            {/* <h4 className="footer-heading">Rewards</h4> */}
-            {/* <ul className="footer-links">
-              <li>
-                <a href="#">Affiliate Program</a>
-              </li>
-              <li>
-                <a href="#">Giveaways</a>
-              </li>
-              <li>
-                <a href="#">Wholesale</a>
-              </li>
-            </ul> */}
-            <div className="footer-column-last-container">
-            <div className="footer-bottom-text">
+            <h4 className="footer-heading">Our Promise</h4>
+            <div className="footer-promise-box">
+              <svg
+                className="footer-promise-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
               <p>Quality clothing, delivered with care.</p>
-            </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Copyright & Payments */}
+      {/* Copyright */}
       <section className="footer-bottom">
         <div className="footer-bottom-container">
           <p className="footer-copyright">
-            Copyright © 2026 <strong>Azan Collection</strong>. All Rights
+            Copyright © 2026 <strong>Zainab Store</strong>. All Rights
             Reserved
           </p>
         </div>

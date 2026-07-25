@@ -12,7 +12,7 @@ function page() {
       <div className="shop-page__hero" id='about-us-background-image'>
         <div className="shop-page__hero-overlay" />
         <div className="shop-page__hero-content">
-          <p className="shop-page__breadcrumb"><Link href="/">HOME</Link> / CONTACT US</p>
+          <p className="shop-page__breadcrumb"><Link href="/">Home</Link> / Contact Us</p>
           <h1 className="shop-page__hero-title">Contact Us</h1>
           <span className="shop-page__hero-divider" />
           <p className="shop-page__hero-subtitle">

@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef, Re
 import axios from "axios";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/universalFilter`;
-const SESSION_KEY = "admin:azan_filters";
+const SESSION_KEY = "admin:zainab_filters";
 
 export type FilterParams = {
   title?: string;

@@ -120,6 +120,7 @@
   flex: 1;
   min-width: 0;
   aspect-ratio: 3 / 4;
+  /* max-height: 560px; */
   background: var(--sand-beige);
   border-radius: 12px;
   overflow: hidden;
@@ -255,6 +256,33 @@
   font-size: 12px;
   color: var(--muted);
   margin: 0;
+}
+
+/* ── Color selector ── */
+.shop-inner-color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.shop-inner-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--off-white);
+  outline: 1px solid var(--bg-soft-2);
+  cursor: pointer;
+  transition: outline-color 0.18s, transform 0.15s;
+  padding: 0;
+}
+
+.shop-inner-color-swatch:hover {
+  transform: scale(1.08);
+}
+
+.shop-inner-color-swatch.active {
+  outline: 2px solid var(--charcoal);
+  outline-offset: 1px;
 }
 
 .shop-inner-wishlist-btn {

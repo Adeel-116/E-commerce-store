@@ -10,7 +10,6 @@ import {
   Tag,
   ChevronLeft,
   ChevronRight,
-  Shirt,
   LogOut,
   Boxes,
   MessageSquare,
@@ -66,8 +65,7 @@ export default function AdminSidebar() {
   return (
     <aside className={`admin-sidebar${collapsed ? ' admin-sidebar-collapsed' : ''}`}>
       <div className="admin-sidebar-logo">
-        <Shirt size={20} className="admin-sidebar-logo-icon" />
-        <span className="admin-sidebar-logo-text">Azan Collection</span>
+        <img src="/zainab-logo-white.png" alt="Zainab Store" className="admin-sidebar-logo-img" />
       </div>
 
       <nav className="admin-sidebar-nav">

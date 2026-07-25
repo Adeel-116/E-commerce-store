@@ -427,7 +427,7 @@ const sections = [
           purpose, durability, title, and non-infringement.
         </p>{" "}
         <p>
-          In no case shall Azan Collection, our directors, officers, employees,
+          In no case shall Zainab Store, our directors, officers, employees,
           affiliates, agents, contractors, interns, suppliers, service providers
           or licensors be liable for any injury, loss, claim, or any direct,
           indirect, incidental, punitive, special, or consequential damages of
@@ -570,7 +570,7 @@ const sections = [
       <>
         <p>
           Questions about the Terms of Service should be sent to us at{" "}
-          <a href="mailto:support@azancollection.com">support@azancollection.com</a>.
+          <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>.
         </p>
       </>
     ),
@@ -590,13 +590,13 @@ const TermsAndCondition = () => {
           Shipping Policy, and any additional terms not explicitly listed here.
         </p>{" "}
         <p>
-          Azan Collection, a company registered (referred to herein as "Azan
-          Collection", "we", "our" or "us") operates the Internet e-commerce
-          website www.azancollection.com, and its related sub-domains, sites,
+          Zainab Store, a company registered (referred to herein as "Zainab
+          Store", "we", "our" or "us") operates the Internet e-commerce
+          website www.zainabstore.com, and its related sub-domains, sites,
           Services and tools ("Website"). The Website is provided as a service
           to you and is intended to allow you and other users to browse and
           order premium everyday and occasion wear ("Products") offered for
-          sale on the Website ("Services"). Azan Collection reserves the right to
+          sale on the Website ("Services"). Zainab Store reserves the right to
           delete, modify, or supplement the content of the Website at any time
           for any reason without prior notification, and will use reasonable
           efforts to include up-to-date and accurate information on the Website.

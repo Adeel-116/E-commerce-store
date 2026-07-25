@@ -99,7 +99,7 @@ const CartSidebar = () => {
                   : item.lineSubtotal;
 
                 return (
-                <div className="cart-sidebar-item" key={`${item.id}-${item.size}`}>
+                <div className="cart-sidebar-item" key={`${item.id}-${item.size}-${item.color ?? ''}`}>
                   <div className="cart-sidebar-img-wrap">
                     <img
                       src={item.productImage}
@@ -111,20 +111,26 @@ const CartSidebar = () => {
                   <div className="cart-sidebar-info">
                     <h4 className="cart-sidebar-item-name">{item.productName}</h4>
 
-                    {item.size && <p className="csb-item-size">Size: {item.size}</p>}
+                    {(item.size || item.color) && (
+                      <p className="csb-item-size">
+                        {item.size && <>Size: {item.size}</>}
+                        {item.size && item.color ? " · " : ""}
+                        {item.color && <>Color: {item.color}</>}
+                      </p>
+                    )}
 
                     <div className="cart-sidebar-controls">
                       <div className="csb-quantity-box">
                         <button
                           type="button"
-                          onClick={() => decreaseQuantity(item.id, item.size)}
+                          onClick={() => decreaseQuantity(item.id, item.size, item.color)}
                         >
                           −
                         </button>
                         <span>{item.quantity}</span>
                         <button
                           type="button"
-                          onClick={() => increaseQuantity(item.id, item.size)}
+                          onClick={() => increaseQuantity(item.id, item.size, item.color)}
                         >
                           +
                         </button>
@@ -132,7 +138,7 @@ const CartSidebar = () => {
                       <button
                         type="button"
                         className="csb-remove-btn"
-                        onClick={() => removeItem(item.id, item.size)}
+                        onClick={() => removeItem(item.id, item.size, item.color)}
                       >
                         Remove
                       </button>

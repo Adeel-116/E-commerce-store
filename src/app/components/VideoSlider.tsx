@@ -80,7 +80,15 @@ const VideoSlider = ({ title = "WATCH AND BUY" }: { title?: string }) => {
   return (
     <div className="vs-section">
       <div className="vs-section-header">
+        <div className="vs-section-eyebrow">
+          <span className="vs-section-eyebrow-line" />
+          <p className="vs-section-eyebrow-text">Style In Motion</p>
+          <span className="vs-section-eyebrow-line" />
+        </div>
         <h2 className="vs-section-title">{title}</h2>
+        <p className="vs-section-subtitle">
+          See every drape and detail come to life, then shop the look in one tap.
+        </p>
       </div>
 
       <div className="vs-wrapper">
@@ -114,6 +122,14 @@ const VideoSlider = ({ title = "WATCH AND BUY" }: { title?: string }) => {
                   playsInline
                   preload="none"
                 />
+                <div className="vs-card-scrim" />
+                <div className="vs-card-caption">
+                  <span className="vs-card-caption-index">
+                    {String((s.instanceId % videos.length) + 1).padStart(2, "0")}
+                    <em>/{String(videos.length).padStart(2, "0")}</em>
+                  </span>
+                  <span className="vs-card-caption-text">Shop This Look</span>
+                </div>
                 <button
                   className="vs-mute-btn"
                   aria-label={mutedIds.has(s.instanceId) ? "Unmute video" : "Mute video"}

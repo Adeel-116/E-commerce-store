@@ -9,6 +9,13 @@ import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { Shirt, ShieldCheck, Lock, Truck } from "lucide-react";
+import { isRealColor } from "@/app/hooks/useProductCardImages";
+
+type ColorVariant = {
+  name: string;
+  hex: string;
+  images: string[];
+};
 
 type Product = {
   _id: string;
@@ -21,6 +28,7 @@ type Product = {
   comparePrice: number | null;
   category: string[];
   sizes: string[];
+  colors: ColorVariant[];
   isNew: boolean;
   stock: boolean;
   status: "active" | "inactive";
@@ -53,7 +61,7 @@ export default function ShopInner({
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [activeAccordion, setActiveAccordion] = useState<number | null>(0);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
 
@@ -67,6 +75,7 @@ export default function ShopInner({
       setActiveImage(0);
       setQuantity(1);
       setSelectedSize(null);
+      setSelectedColor(null);
 
       try {
         const { data } = await api.get("/getProductById", { params: { slug } });
@@ -113,10 +122,6 @@ export default function ShopInner({
     };
   }, [product]);
 
-  const toggleAccordion = (index: number) => {
-    setActiveAccordion((prev) => (prev === index ? null : index));
-  };
-
   if (loading) {
     return (
       <div className="shop-inner-page">
@@ -137,8 +142,30 @@ export default function ShopInner({
 
   const discountPercent = getDiscountPercent(product);
   const wishlisted = isWishlisted(product._id);
+  const allColors = product.colors ?? [];
+  // Only variations with a real name get a swatch and a "select a color"
+  // requirement — a lone unnamed group is just extra photos.
+  const productColors = allColors.filter(isRealColor);
   const hasSizes = product.sizes.length > 0;
-  const canAddToCart = product.stock && (!hasSizes || !!selectedSize);
+  const hasColors = productColors.length > 0;
+  const canAddToCart =
+    product.stock && (!hasSizes || !!selectedSize) && (!hasColors || !!selectedColor);
+
+  // Default view is the first variation's photos (falling back to the
+  // product's own images); picking a color switches to that color's photos.
+  const defaultImages = allColors[0]?.images?.length ? allColors[0].images : product.images;
+  const selectedVariant = selectedColor
+    ? productColors.find((c) => c.name === selectedColor)
+    : undefined;
+  const galleryImages =
+    selectedVariant && selectedVariant.images.length > 0
+      ? selectedVariant.images
+      : defaultImages;
+
+  const handleSelectColor = (colorName: string) => {
+    setSelectedColor((prev) => (prev === colorName ? null : colorName));
+    setActiveImage(0);
+  };
 
   const handleAddToCart = () => {
     if (!canAddToCart) return;
@@ -148,8 +175,9 @@ export default function ShopInner({
       brand: "",
       price: product.price,
       size: selectedSize ?? "",
+      color: selectedColor,
       quantity,
-      productImage: product.images[0],
+      productImage: galleryImages[0] ?? product.images[0],
     });
     openCart();
   };
@@ -182,9 +210,9 @@ export default function ShopInner({
             </div>
 
             <div className="shop-inner-gallery">
-              {product.images.length > 1 && (
+              {galleryImages.length > 1 && (
                 <div className="shop-inner-gallery-thumbs">
-                  {product.images.map((img, index) => (
+                  {galleryImages.map((img, index) => (
                     <button
                       key={img}
                       type="button"
@@ -212,7 +240,7 @@ export default function ShopInner({
                       id: product._id,
                       name: product.title,
                       description: product.description,
-                      image: product.images[0],
+                      image: defaultImages[0] ?? product.images[0],
                       stock: product.stock,
                       price: product.price,
                       sizes: product.sizes,
@@ -234,7 +262,7 @@ export default function ShopInner({
                 </button>
 
                 <img
-                  src={product.images[activeImage]}
+                  src={galleryImages[activeImage] ?? galleryImages[0]}
                   alt={product.title}
                   className="shop-inner-static-img"
                 />
@@ -268,6 +296,28 @@ export default function ShopInner({
                   <span className="discount-label">-{discountPercent}%</span>
                 )}
               </div>
+
+              {/* Color selector */}
+              {hasColors && (
+                <div className="shop-inner-size-selector">
+                  <span className="shop-inner-size-label">
+                    Select Color{selectedColor ? `: ${selectedColor}` : ""}
+                  </span>
+                  <div className="shop-inner-color-options">
+                    {productColors.map((color) => (
+                      <button
+                        key={color.name}
+                        type="button"
+                        className={`shop-inner-color-swatch${selectedColor === color.name ? " active" : ""}`}
+                        style={{ backgroundColor: color.hex }}
+                        onClick={() => handleSelectColor(color.name)}
+                        aria-label={color.name}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Size selector */}
               {hasSizes ? (
@@ -310,10 +360,12 @@ export default function ShopInner({
                 onClick={handleAddToCart}
               >
                 {!product.stock
-                  ? "SOLD OUT"
+                  ? "Sold Out"
                   : hasSizes && !selectedSize
-                  ? "SELECT A SIZE"
-                  : "ADD TO CART"}
+                  ? "Select a Size"
+                  : hasColors && !selectedColor
+                  ? "Select a Color"
+                  : "Add to Cart"}
                 <svg
                   viewBox="0 0 24 24"
                   width="16"
@@ -329,7 +381,7 @@ export default function ShopInner({
               </button>
 
               <Link href="/checkout" className="checkout-btn">
-                CHECKOUT
+                Checkout
               </Link>
             </div>
 
@@ -364,97 +416,6 @@ export default function ShopInner({
                 </div>
               </div>
             </div>
-
-            <div className="accordion-section">
-              {/* PRODUCT DETAILS */}
-              <div className={`accordion-item ${activeAccordion === 0 ? "active" : ""}`}>
-                <button className="accordion-header" onClick={() => toggleAccordion(0)}>
-                  <span>PRODUCT DETAILS</span>
-                  <svg className="accordion-icon" viewBox="0 0 24 24" width="18" height="18">
-                    <path
-                      d="M6 9l6 6 6-6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-
-                <div className="accordion-content">
-                  <div className="accordion-inner">
-                    <ul>
-                      <li>
-                        <strong>Fabric:</strong> High-quality, breathable and washable
-                        fabric designed for everyday comfort.
-                      </li>
-                      <li>
-                        <strong>Care:</strong> Machine washable, avoid harsh detergents to
-                        preserve embellishments.
-                      </li>
-                      <li>
-                        <strong>Fit:</strong> True to size, relaxed comfortable cut.
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* DELIVERY */}
-              <div className={`accordion-item ${activeAccordion === 1 ? "active" : ""}`}>
-                <button className="accordion-header" onClick={() => toggleAccordion(1)}>
-                  <span>DELIVERY</span>
-                  <svg className="accordion-icon" viewBox="0 0 24 24" width="18" height="18">
-                    <path
-                      d="M6 9l6 6 6-6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-
-                <div className="accordion-content">
-                  <div className="accordion-inner">
-                    <ul>
-                      <li>Free delivery on orders above Rs. 3,000</li>
-                      <li>Standard delivery charges: Rs. 200</li>
-                      <li>3-5 working days all over Pakistan</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* RETURNS */}
-              <div className={`accordion-item ${activeAccordion === 2 ? "active" : ""}`}>
-                <button className="accordion-header" onClick={() => toggleAccordion(2)}>
-                  <span>EXCHANGE POLICY</span>
-                  <svg className="accordion-icon" viewBox="0 0 24 24" width="18" height="18">
-                    <path
-                      d="M6 9l6 6 6-6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-
-                <div className="accordion-content">
-                  <div className="accordion-inner">
-                    <ul>
-                      <li>Exchanges accepted within 7 days of delivery.</li>
-                      <li>Item must be unworn, unwashed, and with tags attached.</li>
-                      <li>Processing time: 2-3 working days.</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -464,27 +425,40 @@ export default function ShopInner({
             <h2 id="similar-text">You May Also Like</h2>
             <div className="cg-grid similar-products-grid">
               {similarProducts.map((item) => {
-                const itemDiscount = getDiscountPercent(item);
+                const itemImage = item.colors?.[0]?.images?.length
+                  ? item.colors[0].images[0]
+                  : item.images[0];
+                const itemVisibleColors = (item.colors ?? []).filter(isRealColor);
                 return (
                   <Link href={`/shop/${item.slug}`} key={item._id} className="cg-card">
                     <div className="cg-card-image-container">
                       <img
-                        src={item.images[0]}
+                        src={itemImage}
                         alt={item.title}
                         className="cg-card-image"
                       />
                     </div>
                     <div className="cg-card-bottom-section">
                       <h3 className="cg-card-heading">{item.title}</h3>
+                      {itemVisibleColors.length > 0 && (
+                        <div className="cg-card-color-swatches">
+                          {itemVisibleColors.slice(0, 5).map((color) => (
+                            <span
+                              key={color.name}
+                              className="cg-card-color-dot"
+                              style={{ backgroundColor: color.hex }}
+                              title={color.name}
+                            />
+                          ))}
+                          {itemVisibleColors.length > 5 && (
+                            <span className="cg-card-color-more">+{itemVisibleColors.length - 5}</span>
+                          )}
+                        </div>
+                      )}
                       <div className="cg-card-price-row">
-                        <span className="cg-card-price cg-card-price--discounted">
+                        <span className="cg-card-price">
                           Rs.{item.price.toLocaleString()}
                         </span>
-                        {itemDiscount !== null && item.comparePrice && (
-                          <span className="cg-card-price cg-card-price--original">
-                            Rs.{item.comparePrice.toLocaleString()}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </Link>

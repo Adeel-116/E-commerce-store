@@ -144,10 +144,7 @@ const HomeHero = () => {
             >
               <picture>
                 {slide.mobileImg && (
-                  <source
-                    media="(max-width: 767px)"
-                    srcSet={slide.mobileImg}
-                  />
+                  <source media="(max-width: 767px)" srcSet={slide.mobileImg} />
                 )}
                 <img
                   src={slide.img}
@@ -177,13 +174,6 @@ const HomeHero = () => {
         >
           <SlArrowRight />
         </button>
-
-        {/* button */}
-        <div className="hero-button">
-          <Link href="/shop">
-            <button>shop now</button>
-          </Link>
-        </div>
       </main>
     </>
   );

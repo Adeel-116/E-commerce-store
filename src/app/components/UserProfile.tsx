@@ -322,7 +322,7 @@ const UserProfile = () => {
           {/* ── ORDERS ── */}
           {active === "orders" && (
             <div className="user-profile__section">
-              <h2 className="user-profile__section-title">MY ORDERS</h2>
+              <h2 className="user-profile__section-title">My Orders</h2>
               {ordersLoading ? (
                 <p className="user-profile__empty">Loading orders...</p>
               ) : ordersError ? (
@@ -372,7 +372,7 @@ const UserProfile = () => {
           {/* ── PROFILE ── */}
           {active === "profile" && (
             <div className="user-profile__section">
-              <h2 className="user-profile__section-title">PROFILE</h2>
+              <h2 className="user-profile__section-title">Profile</h2>
 
               {/* Personal info */}
               <div className="up-subsection">
@@ -466,7 +466,7 @@ const UserProfile = () => {
           {active === "address" && (
             <div className="user-profile__section">
               <div className="up-section-header">
-                <h2 className="user-profile__section-title">ADDRESS</h2>
+                <h2 className="user-profile__section-title">Address</h2>
                 {!showAddressForm && !address && (
                   <button className="up-add-btn" onClick={openAddForm}>+ Add New</button>
                 )}

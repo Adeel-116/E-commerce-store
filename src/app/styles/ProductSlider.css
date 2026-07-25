@@ -147,9 +147,7 @@
   transition: transform 0.4s ease;
 }
 
-.card:hover .card-image {
-  transform: scale(1.04);
-}
+/* Removed hover scale */
 
 /* ── Card Bottom (title + price + cart) ── */
 .card-bottom-section {

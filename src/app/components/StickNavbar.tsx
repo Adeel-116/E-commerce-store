@@ -3,10 +3,9 @@ import "../styles/stick-navbar.css";
 import "../styles/navbar2.css"
 import { IoIosHeartEmpty, IoIosSearch } from "react-icons/io";
 import { BsBag } from "react-icons/bs";
-import { FiUser, FiPlus } from "react-icons/fi";
+import { FiUser } from "react-icons/fi";
 import Link from "next/link";
 import { Suspense, useState, useRef, useEffect } from "react";
-import gsap from "gsap";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -45,8 +44,6 @@ const StickNavbarInner = () => {
   const [suggestions, setSuggestions] = useState<TitleSuggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
-  const shopSubmenuRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const isAuthenticated = !loading && !!user?.name;
@@ -57,30 +54,6 @@ const StickNavbarInner = () => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [drawerOpen]);
-
-  useEffect(() => {
-    const el = shopSubmenuRef.current;
-    if (!el) return;
-
-    if (shopOpen) {
-      gsap.set(el, { height: "auto" });
-      const fullHeight = el.offsetHeight;
-      gsap.fromTo(
-        el,
-        { height: 0, opacity: 0 },
-        { height: fullHeight, opacity: 1, duration: 0.35, ease: "power2.out" }
-      );
-
-      const links = el.querySelectorAll("a");
-      gsap.fromTo(
-        links,
-        { y: -8, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.3, stagger: 0.06, delay: 0.1, ease: "power2.out" }
-      );
-    } else {
-      gsap.to(el, { height: 0, opacity: 0, duration: 0.28, ease: "power2.inOut" });
-    }
-  }, [shopOpen]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -154,7 +127,6 @@ const StickNavbarInner = () => {
 
   const closeDrawer = () => {
     setDrawerOpen(false);
-    setShopOpen(false);
   };
 
   const categoryLinkProps = (category: string) => {
@@ -177,11 +149,7 @@ const StickNavbarInner = () => {
           <div className="snb-left">
             <Link href={"/"}>
               <div className="navbar2-text-logo">
-                <img src="/azan-ac-icon-v2-light.png" alt="" className="navbar2-text-logo-icon" />
-                <span className="navbar2-text-logo-words">
-                  <span className="navbar2-text-logo-main">AZAN</span>
-                  <span className="navbar2-text-logo-sub">Collection</span>
-                </span>
+                <img src="/zainab-logo-white.png" alt="Zainab Store" className="navbar2-brand-logo" />
               </div>
             </Link>
           </div>
@@ -190,9 +158,10 @@ const StickNavbarInner = () => {
           <div className="snb-center">
             <div className="stick-navbar-links">
               <Link href={"/"}>home</Link>
-              <Link href={"/shop"}>Shop</Link>
-              <Link href={"/about-us"}>About</Link>
-              <Link href={"/contact-us"}>Contact</Link>
+              <Link href={"/shop?category=western"} {...categoryLinkProps("western")}>Western Fashion</Link>
+              <Link href={"/shop?category=top-jeans"} {...categoryLinkProps("top-jeans")}>Top & Jeans</Link>
+              <Link href={"/shop?category=fashion"} {...categoryLinkProps("fashion")}>Pakistani Fashion</Link>
+              <Link href={"/shop?category=maxi"} {...categoryLinkProps("maxi")}>Maxi</Link>
             </div>
           </div>
 
@@ -323,30 +292,10 @@ const StickNavbarInner = () => {
         {/* Nav links */}
         <nav className="snb-drawer-links">
           <Link href={"/"} onClick={closeDrawer}>Home</Link>
-
-          <div className="navbar2-drawer-shop">
-            <div className="navbar2-drawer-shop-row">
-              <Link href={"/shop"} className="navbar2-drawer-shop-label" onClick={closeDrawer}>Shop</Link>
-              <button
-                type="button"
-                className={`navbar2-drawer-shop-toggle ${shopOpen ? "navbar2-drawer-shop-toggle--open" : ""}`}
-                onClick={() => setShopOpen((prev) => !prev)}
-                aria-label="Toggle shop categories"
-                aria-expanded={shopOpen}
-              >
-                <FiPlus />
-              </button>
-            </div>
-            <div className="navbar2-drawer-shop-submenu" ref={shopSubmenuRef}>
-              <Link href={"/shop?category=maxi"} {...categoryLinkProps("maxi")}>Maxi</Link>
-              <Link href={"/shop?category=fashion"} {...categoryLinkProps("fashion")}>Fashion</Link>
-              <Link href={"/shop?category=top-jeans"} {...categoryLinkProps("top-jeans")}>Top & Jeans</Link>
-              <Link href={"/shop?category=western"} {...categoryLinkProps("western")}>Western</Link>
-            </div>
-          </div>
-
-          <Link href={"/about-us"} onClick={closeDrawer}>About</Link>
-          <Link href={"/contact-us"} onClick={closeDrawer}>Contact</Link>
+          <Link href={"/shop?category=western"} {...categoryLinkProps("western")}>Western Fashion</Link>
+          <Link href={"/shop?category=top-jeans"} {...categoryLinkProps("top-jeans")}>Top & Jeans</Link>
+          <Link href={"/shop?category=fashion"} {...categoryLinkProps("fashion")}>Pakistani Fashion</Link>
+          <Link href={"/shop?category=maxi"} {...categoryLinkProps("maxi")}>Maxi</Link>
           {!isAuthenticated && (
             <>
               <Link href={"/login"} onClick={closeDrawer}>Login</Link>

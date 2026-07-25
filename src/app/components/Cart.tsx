@@ -79,7 +79,7 @@ const Cart = () => {
               </div>
 
               {cartItems.map((item) => (
-                <div className="cart-row" key={`${item.id}-${item.size}`}>
+                <div className="cart-row" key={`${item.id}-${item.size}-${item.color ?? ''}`}>
                   <div className="product-image-wrap">
                     <img
                       src={item.productImage}
@@ -91,7 +91,13 @@ const Cart = () => {
                   <div className="product-info">
                     <h3>{item.productName}</h3>
 
-                    {item.size && <p className="cart-item-size">Size: {item.size}</p>}
+                    {(item.size || item.color) && (
+                      <p className="cart-item-size">
+                        {item.size && <>Size: {item.size}</>}
+                        {item.size && item.color ? " · " : ""}
+                        {item.color && <>Color: {item.color}</>}
+                      </p>
+                    )}
 
                     {item.lineSubtotal < item.unitPrice * item.quantity ? (
                       <p className="product-price">
@@ -111,7 +117,7 @@ const Cart = () => {
                     <div className="quantity-box">
                       <button
                         type="button"
-                        onClick={() => decreaseQuantity(item.id, item.size)}
+                        onClick={() => decreaseQuantity(item.id, item.size, item.color)}
                       >
                         −
                       </button>
@@ -120,7 +126,7 @@ const Cart = () => {
 
                       <button
                         type="button"
-                        onClick={() => increaseQuantity(item.id, item.size)}
+                        onClick={() => increaseQuantity(item.id, item.size, item.color)}
                       >
                         +
                       </button>
@@ -129,7 +135,7 @@ const Cart = () => {
                     <button
                       type="button"
                       className="remove-btn"
-                      onClick={() => removeItem(item.id, item.size)}
+                      onClick={() => removeItem(item.id, item.size, item.color)}
                     >
                       Remove
                     </button>

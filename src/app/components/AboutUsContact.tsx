@@ -54,11 +54,11 @@ const AboutUsContact = () => {
                     <div className="au-contact__details">
                         <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">✉</span>
-                            <a href="mailto:support@azancollection.com">support@azancollection.com</a>
+                            <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>
                         </div>
                         <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">☎</span>
-                            <a href="tel:+923001234567">+92 300 1234567</a>
+                            <a href="tel:+923160653268">+92 316 0653268</a>
                         </div>
                     </div>
                 </div>

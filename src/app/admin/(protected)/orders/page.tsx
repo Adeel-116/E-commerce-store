@@ -13,6 +13,7 @@ type ApiOrderItem = {
   title: string;
   image: string;
   size: string;
+  color?: string | null;
   price: number;
   originalPrice: number;
   quantity: number;
@@ -126,6 +127,7 @@ type EditItemDraft = {
   productId: string;
   title: string;
   size: string;
+  color?: string | null;
   quantity: number;
   price: number;
   originalPrice: number;
@@ -404,6 +406,7 @@ export default function OrdersPage() {
         productId: i.productId,
         title: i.title,
         size: i.size,
+        color: i.color ?? null,
         quantity: i.quantity,
         price: i.price,
         originalPrice: i.originalPrice,
@@ -513,6 +516,7 @@ export default function OrdersPage() {
           productId: item.productId,
           title: item.title,
           size: item.size,
+          color: item.color ?? null,
           quantity: item.quantity,
         })),
       };
@@ -734,9 +738,8 @@ export default function OrdersPage() {
 
                         <div style={{ fontWeight: 600 }}>{item.title}</div>
                         <div style={{ color: "#888" }}>
-                          {item.size} · Qty: {item.quantity}
-                          {/* {item.size} · Qty: {item.quantity} ·{" "}
-                          {fmt(item.originalPrice)} */}
+                          {item.size}
+                          {item.color ? ` · ${item.color}` : ""} · Qty: {item.quantity}
                         </div>
 
 
@@ -1139,6 +1142,17 @@ export default function OrdersPage() {
                         value={item.size}
                         onChange={(e) =>
                           updateEditItem(index, "size", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Color</label>
+                      <input
+                        className="admin-form-input"
+                        value={item.color ?? ""}
+                        placeholder="—"
+                        onChange={(e) =>
+                          updateEditItem(index, "color", e.target.value || null)
                         }
                       />
                     </div>

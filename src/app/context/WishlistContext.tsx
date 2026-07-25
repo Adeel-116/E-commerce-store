@@ -8,10 +8,9 @@ export type WishlistItem = {
   description?: string;
   image: string;
   stock?: boolean;
-  price: {
-    "50ml": number;
-    "100ml": number;
-  };
+  price: number;
+  /** sizes available for this product, used to default the size when adding to cart from the wishlist */
+  sizes?: string[];
 };
 
 type WishlistContextType = {
@@ -52,7 +51,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
         content_id: item.id,
         content_type: "product",
         content_name: item.name,
-        value: item.price?.["50ml"] ?? 0,
+        value: item.price ?? 0,
       });
     }
     setWishlistItems((prev) =>

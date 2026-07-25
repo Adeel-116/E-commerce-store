@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-export const TIKTOK_CURRENCY = "AED";
+export const TIKTOK_CURRENCY = "PKR";
 
 type ContentType = "product" | "product_group";
 

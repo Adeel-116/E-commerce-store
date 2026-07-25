@@ -164,15 +164,6 @@ const Footer = () => {
               </li>
             </ul> */}
             <div className="footer-column-last-container">
-
-            
-            <div className="footer-badges">
-              <div className="stripe-badge" aria-label="Secured by Stripe">
-                stripe
-              </div>
-            </div>
-
-
             <div className="footer-bottom-text">
               <p>Quality clothing, delivered with care.</p>
             </div>

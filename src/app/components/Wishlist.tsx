@@ -60,29 +60,48 @@ const Wishlist = () => {
                 </div>
 
                 <div className="wl-card-body">
-                  <h3 className="wl-card-name">{item.name}</h3>
+                  <div className="wl-card-heading-row">
+                    <h3 className="wl-card-name">{item.name}</h3>
+                    {(item.stock === false || !item.sizes?.length) && (
+                      <span className="wl-unavailable-badge">
+                        {item.stock === false ? "Out of stock" : "Unavailable"}
+                      </span>
+                    )}
+                  </div>
                   {item.description && (
                     <p className="wl-card-desc">{item.description}</p>
                   )}
 
                   <span className="wl-card-sale">
-                    AED {item.price["50ml"]} - AED {item.price["100ml"]}
+                    PKR {item.price}
                   </span>
                   <button
                     className="wl-add-cart-btn"
                     onClick={() =>
+                      item.sizes?.[0] &&
                       addToCart({
                         id: item.id,
                         productName: item.name,
                         brand: "",
-                        prices: item.price,
-                        size: "50ml",
+                        price: item.price,
+                        size: item.sizes[0],
                         productImage: item.image,
                       })
                     }
-                    disabled={item.stock === false}
+                    disabled={item.stock === false || !item.sizes?.length}
+                    title={
+                      item.stock === false
+                        ? "This item is currently out of stock"
+                        : !item.sizes?.length
+                        ? "No sizes are currently available for this item"
+                        : undefined
+                    }
                   >
-                    {item.stock === false ? "Out of Stock" : "Add to Cart"}
+                    {item.stock === false
+                      ? "Out of Stock"
+                      : !item.sizes?.length
+                      ? "Unavailable"
+                      : "Add to Cart"}
                   </button>
                 </div>
               </div>

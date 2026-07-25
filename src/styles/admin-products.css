@@ -1,0 +1,320 @@
+/* ===========================
+   ADMIN PRODUCTS — TOGGLE SWITCH
+   =========================== */
+
+.admin-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: #fafaf6;
+  border: 1px solid #e8e8e0;
+  border-radius: 7px;
+  height: 35px;
+}
+
+.admin-toggle-switch { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
+.admin-toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.admin-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  border-radius: 21px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.admin-toggle-track::before {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.admin-toggle-switch input:checked + .admin-toggle-track { background: var(--admin-brandgreen); }
+.admin-toggle-switch input:checked + .admin-toggle-track::before { transform: translateX(17px); }
+.admin-toggle-label { font-size: 13px; color: var(--admin-brandblack); font-weight: 500; flex: 1; }
+
+/* ===========================
+   ADMIN PRODUCTS — FILE UPLOAD AREA
+   =========================== */
+
+.admin-upload-area {
+  border: 2px dashed #d0d4c8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  overflow: hidden;
+  position: relative;
+  background: #fafaf6;
+  user-select: none;
+}
+
+.admin-upload-area:hover { border-color: var(--admin-brandgreen); background: #f5f8f2; }
+
+.admin-upload-area-drag {
+  border-color: var(--admin-brandgreen) !important;
+  background: #eef3e8 !important;
+  box-shadow: 0 0 0 4px rgba(201, 169, 97, 0.12);
+}
+
+.admin-upload-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px;
+  gap: 5px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ===========================
+   ADMIN PRODUCTS — FILTER BAR
+   =========================== */
+
+.admin-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e8e8e0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-filter-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-brandblack);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.admin-filter-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.admin-filter-input,
+.admin-filter-select {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #e0e0d8;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--admin-brandblack);
+  background: #fafaf6;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  flex: 1;
+  min-width: 120px;
+}
+
+.admin-filter-input:focus,
+.admin-filter-select:focus {
+  border-color: var(--admin-brandgreen);
+  box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+}
+
+.admin-filter-input::placeholder { color: #bbb; }
+
+.admin-filter-select {
+  cursor: pointer;
+  min-width: 130px;
+  max-width: 150px;
+  flex: 0 0 auto;
+}
+
+.admin-filter-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #fce4ec;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-filter-clear-btn:hover { background: #c62828; color: white; border-color: #c62828; }
+
+@keyframes admin-filter-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes admin-spin { to { transform: rotate(360deg); } }
+.admin-spin { animation: admin-spin 0.75s linear infinite; }
+
+/* ===========================
+   ADMIN PRODUCTS — SIZE CHECKBOX PILLS
+   =========================== */
+
+.admin-multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.admin-checkbox-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 4px 18px;
+  border-radius: 20px;
+  border: 1.5px solid #e0e0d8;
+  background: #fafaf6;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  user-select: none;
+  text-transform: capitalize;
+}
+
+.admin-checkbox-pill:has(input:checked) {
+  background: var(--admin-brandgreen);
+  border-color: var(--admin-brandgreen);
+  color: #fff;
+}
+
+.admin-checkbox-pill:not(:has(input:checked)):hover {
+  border-color: var(--admin-brandgreen);
+  color: var(--admin-brandgreen);
+}
+
+.admin-checkbox-pill input {
+  display: none;
+}
+
+/* ===========================
+   ADMIN PRODUCTS — TAGS MULTI-SELECT DROPDOWN
+   =========================== */
+
+.admin-dropdown {
+  position: relative;
+}
+
+.admin-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 35px;
+  padding: 6px 12px;
+  border: 1px solid #e0e0d8;
+  border-radius: 7px;
+  background: #fafaf6;
+  cursor: pointer;
+  font-size: 13px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  gap: 8px;
+}
+
+.admin-dropdown-trigger:hover,
+.admin-dropdown-trigger--open {
+  border-color: var(--admin-brandgreen);
+  box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+}
+
+.admin-dropdown-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+}
+
+.admin-dropdown-placeholder {
+  color: #bbb;
+  font-size: 13px;
+}
+
+.admin-selected-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: var(--admin-brandgreen);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  line-height: 1.6;
+}
+
+.admin-dropdown-chevron {
+  flex-shrink: 0;
+  color: #aaa;
+  transition: transform 0.2s;
+}
+
+.admin-dropdown-chevron--open {
+  transform: rotate(180deg);
+}
+
+.admin-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0d8;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.admin-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--admin-brandblack);
+  text-transform: capitalize;
+  transition: background 0.1s;
+}
+
+.admin-dropdown-item:hover {
+  background: #f5f8f2;
+}
+
+.admin-dropdown-item--selected {
+  background: #f0f5ec;
+  font-weight: 600;
+}
+
+.admin-dropdown-item input[type='checkbox'] {
+  accent-color: var(--admin-brandgreen);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}

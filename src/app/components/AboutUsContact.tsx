@@ -60,10 +60,6 @@ const AboutUsContact = () => {
                             <span className="au-contact__detail-icon">☎</span>
                             <a href="tel:+923001234567">+92 300 1234567</a>
                         </div>
-                        <div className="au-contact__detail-item">
-                            <span className="au-contact__detail-icon">◎</span>
-                            <span>Lahore, Pakistan</span>
-                        </div>
                     </div>
                 </div>
 

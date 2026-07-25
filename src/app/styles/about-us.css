@@ -436,7 +436,7 @@
 .au-contact__textarea {
   width: 100%;
   padding: 13px 16px;
-  border: 1px solid var(--gold-soft);
+  border: 1px solid var(--charcoal);
   background: white;
   font-size: 14px;
   font-family: var(--font-poppins), sans-serif;
@@ -448,7 +448,7 @@
 
 .au-contact__input::placeholder,
 .au-contact__textarea::placeholder {
-  color: var(--gold-soft);
+  color: (--charcoal);
 }
 
 .au-contact__input:focus,
@@ -592,9 +592,34 @@
   .au-contact__row {
     grid-template-columns: 1fr;
   }
-  /* .au-review__role {
-    display: none;
-  } */
+
+  .au-reviews {
+    padding-block: 50px;
+  }
+
+  .au-reviews__slider-wrap {
+    padding: 0 40px;
+  }
+
+  .au-rev-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .au-review__card {
+    min-height: 260px;
+    padding: 24px 20px 20px;
+  }
+
+  .au-review__quote {
+    font-size: 64px;
+    right: 14px;
+  }
+
+  .au-review__text {
+    font-size: 13.5px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -615,12 +640,12 @@
   }
 
   .au-reviews__slider-wrap {
-    padding: 0 35px;
+    padding: 0 30px;
   }
 
   .au-rev-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     font-size: 11px;
   }
 
@@ -639,23 +664,37 @@
     padding-left: 15px;
   }
 
+  .au-reviews {
+    padding-block: 40px;
+  }
+
   .au-reviews__heading {
-    font-size: 28px;
+    font-size: 26px;
     letter-spacing: 2px;
     line-height: 1.1;
+  }
+
+  .au-review__card {
+    gap: 12px;
+    min-height: 230px;
+    padding: 20px 16px 16px;
+  }
+
+  .au-review__quote {
+    font-size: 48px;
+    top: -2px;
+    right: 10px;
+  }
+
+  .au-review__text {
+    font-size: 13px;
+    line-clamp: 4;
+    -webkit-line-clamp: 4;
   }
 
   .au-contact__heading {
     font-size: 28px;
     letter-spacing: 1px;
-  }
-
-  .au-review__card {
-    gap: 15px;
-  }
-
-  .au-review__text {
-    font-size: 13px;
   }
 
   .au-contact__subtext {
@@ -676,20 +715,6 @@
     padding: 10px 13px;
   }
 
-  .au-rev-btn {
-    width: 32px;
-    height: 32px;
-  }
-
-  .au-contact__heading {
-    font-size: 32px;
-    letter-spacing: 2px;
-  }
-
-  .au-review__card {
-    padding-inline: 12px;
-  }
-
   .about-mission__card-text {
     font-size: 13px;
   }
@@ -700,20 +725,20 @@
 
   .au-review__author {
     gap: 8px;
+    padding-top: 12px;
   }
 
   .au-review__avatar {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
   }
 
   .au-review__name {
     font-size: 13px;
   }
 
-  /* .au-review__role {
-        font-size: 13px;
-        position: relative;
-        top: -3px;
-    } */
+  .au-review__role {
+    font-size: 11px;
+  }
 }

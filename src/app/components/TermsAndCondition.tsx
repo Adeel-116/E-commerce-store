@@ -162,16 +162,6 @@ const sections = [
     ),
   },
   {
-    heading: "VAT INFORMATION",
-    content: (
-      <p>
-        In accordance with UAE law, all purchases made on our website are
-        subject to a 5% Value Added Tax (VAT). This tax will be applied at
-        checkout and included in the total amount payable for your order.
-      </p>
-    ),
-  },
-  {
     heading: "ACCURACY OF BILLING AND ACCOUNT INFORMATION",
     content: (
       <>
@@ -194,7 +184,7 @@ const sections = [
           email address and credit card numbers and expiration dates, so that we
           can complete your transactions and contact you as needed.
         </p>
-        <p>For more detail, please review our Returns Policy.</p>
+        <p>For more detail, please review our Exchange Policy.</p>
       </>
     ),
   },
@@ -437,7 +427,7 @@ const sections = [
           purpose, durability, title, and non-infringement.
         </p>{" "}
         <p>
-          In no case shall Monk Scents, our directors, officers, employees,
+          In no case shall Azan Collection, our directors, officers, employees,
           affiliates, agents, contractors, interns, suppliers, service providers
           or licensors be liable for any injury, loss, claim, or any direct,
           indirect, incidental, punitive, special, or consequential damages of
@@ -580,7 +570,7 @@ const sections = [
       <>
         <p>
           Questions about the Terms of Service should be sent to us at{" "}
-          <a href="mailto:info@monkscents.com">info@monkscents.com</a>.
+          <a href="mailto:support@azancollection.com">support@azancollection.com</a>.
         </p>
       </>
     ),
@@ -596,17 +586,17 @@ const TermsAndCondition = () => {
         <h1>Terms & Conditions</h1>
         <p>
           Note: These Terms & Conditions incorporate all other applicable
-          policies, including but not limited to our Return & Refund Policy,
+          policies, including but not limited to our Exchange Policy,
           Shipping Policy, and any additional terms not explicitly listed here.
         </p>{" "}
         <p>
-          Monk Scents, a company registered (referred to herein as “Monk Scents”,
-          “we”, “our” or “us”) operates the Internet e-commerce website
-          www.monkscents.com, and its related sub-domains, sites, Services and
-          tools (“Website”). The Website is provided as a service to you and is
-          intended to allow you and other users to browse and order premium
-          branded perfumes and fragrance products (“Products”) offered for sale
-          on the Website (“Services”). Monk Scents reserves the right to
+          Azan Collection, a company registered (referred to herein as "Azan
+          Collection", "we", "our" or "us") operates the Internet e-commerce
+          website www.azancollection.com, and its related sub-domains, sites,
+          Services and tools ("Website"). The Website is provided as a service
+          to you and is intended to allow you and other users to browse and
+          order premium everyday and occasion wear ("Products") offered for
+          sale on the Website ("Services"). Azan Collection reserves the right to
           delete, modify, or supplement the content of the Website at any time
           for any reason without prior notification, and will use reasonable
           efforts to include up-to-date and accurate information on the Website.

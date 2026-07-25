@@ -1,14 +1,42 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductGrid.css";
 import StickNavbar from "@/app/components/StickNavbar";
-import { demoProducts } from "@/app/lib/demoProducts";
+import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { Shirt, ShieldCheck, Lock, Truck } from "lucide-react";
+
+type Product = {
+  _id: string;
+  productId: number;
+  title: string;
+  slug: string;
+  description: string;
+  images: string[];
+  price: number;
+  comparePrice: number | null;
+  category: string[];
+  sizes: string[];
+  isNew: boolean;
+  stock: boolean;
+  status: "active" | "inactive";
+  activeDiscount: {
+    discountId: string;
+    name: string;
+    valueType: "percentage" | "fixed";
+    value: number;
+  } | null;
+};
+
+function getDiscountPercent(product: Product): number | null {
+  return product.comparePrice && product.comparePrice > product.price
+    ? Math.round((1 - product.price / product.comparePrice) * 100)
+    : null;
+}
 
 export default function ShopInner({
   params,
@@ -16,19 +44,89 @@ export default function ShopInner({
   params: Promise<{ id: string }>;
 }) {
   const { id: slug } = use(params);
-  const product = demoProducts.find((p) => p.slug === slug);
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeAccordion, setActiveAccordion] = useState<number | null>(0);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      setNotFound(false);
+      setProduct(null);
+      setActiveImage(0);
+      setQuantity(1);
+      setSelectedSize(null);
+
+      try {
+        const { data } = await api.get("/getProductById", { params: { slug } });
+        if (cancelled) return;
+
+        if (data?.success && data.data) {
+          setProduct(data.data);
+        } else {
+          setNotFound(true);
+        }
+      } catch {
+        if (!cancelled) setNotFound(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    if (!product) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data } = await api.get("/universalFilter", {
+          params: { status: "active", limit: 5 },
+        });
+        if (cancelled) return;
+        const list: Product[] = (data?.data ?? [])
+          .filter((p: Product) => p._id !== product._id)
+          .slice(0, 4);
+        setSimilarProducts(list);
+      } catch {
+        if (!cancelled) setSimilarProducts([]);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [product]);
 
   const toggleAccordion = (index: number) => {
     setActiveAccordion((prev) => (prev === index ? null : index));
   };
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="shop-inner-page">
+        <StickNavbar />
+        <div className="shop-inner-status">Loading…</div>
+      </div>
+    );
+  }
+
+  if (notFound || !product) {
     return (
       <div className="shop-inner-page">
         <StickNavbar />
@@ -37,9 +135,24 @@ export default function ShopInner({
     );
   }
 
-  const priceShape = { "50ml": product.price, "100ml": product.price } as const;
-  const wishlisted = isWishlisted(product.id);
-  const similarProducts = demoProducts.filter((p) => p.id !== product.id).slice(0, 4);
+  const discountPercent = getDiscountPercent(product);
+  const wishlisted = isWishlisted(product._id);
+  const hasSizes = product.sizes.length > 0;
+  const canAddToCart = product.stock && (!hasSizes || !!selectedSize);
+
+  const handleAddToCart = () => {
+    if (!canAddToCart) return;
+    addToCart({
+      id: product._id,
+      productName: product.title,
+      brand: "",
+      price: product.price,
+      size: selectedSize ?? "",
+      quantity,
+      productImage: product.images[0],
+    });
+    openCart();
+  };
 
   return (
     <div className="shop-inner-page">
@@ -85,10 +198,10 @@ export default function ShopInner({
               )}
 
               <div className="shop-inner-fixed-image-wrap">
-                {product.discountPercent && (
+                {discountPercent !== null && (
                   <div className="shop-inner-discount-ribbon">
                     <span className="shop-inner-discount-tag">
-                      -{product.discountPercent}%
+                      -{discountPercent}%
                     </span>
                   </div>
                 )}
@@ -96,12 +209,13 @@ export default function ShopInner({
                   className={`shop-inner-wishlist-btn ${wishlisted ? "active" : ""}`}
                   onClick={() =>
                     toggleWishlist({
-                      id: product.id,
+                      id: product._id,
                       name: product.title,
                       description: product.description,
                       image: product.images[0],
                       stock: product.stock,
-                      price: priceShape,
+                      price: product.price,
+                      sizes: product.sizes,
                     })
                   }
                   aria-label="Add to wishlist"
@@ -150,10 +264,31 @@ export default function ShopInner({
                     </span>
                   </span>
                 )}
-                {product.discountPercent && (
-                  <span className="discount-label">-{product.discountPercent}%</span>
+                {discountPercent !== null && (
+                  <span className="discount-label">-{discountPercent}%</span>
                 )}
               </div>
+
+              {/* Size selector */}
+              {hasSizes ? (
+                <div className="shop-inner-size-selector">
+                  <span className="shop-inner-size-label">Select Size</span>
+                  <div className="shop-inner-size-options">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        type="button"
+                        className={`shop-inner-size-pill${selectedSize === size ? " active" : ""}`}
+                        onClick={() => setSelectedSize(size)}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="shop-inner-size-hint">No sizes available for this product.</p>
+              )}
             </div>
 
             {/* Qty + Cart */}
@@ -171,22 +306,14 @@ export default function ShopInner({
 
               <button
                 className="add-to-cart-btn"
-                disabled={!product.stock}
-                onClick={() => {
-                  if (!product.stock) return;
-                  addToCart({
-                    id: product.id,
-                    productName: product.title,
-                    brand: "",
-                    prices: priceShape,
-                    size: "50ml",
-                    quantity,
-                    productImage: product.images[0],
-                  });
-                  openCart();
-                }}
+                disabled={!canAddToCart}
+                onClick={handleAddToCart}
               >
-                {product.stock ? "ADD TO CART" : "SOLD OUT"}
+                {!product.stock
+                  ? "SOLD OUT"
+                  : hasSizes && !selectedSize
+                  ? "SELECT A SIZE"
+                  : "ADD TO CART"}
                 <svg
                   viewBox="0 0 24 24"
                   width="16"
@@ -304,7 +431,7 @@ export default function ShopInner({
               {/* RETURNS */}
               <div className={`accordion-item ${activeAccordion === 2 ? "active" : ""}`}>
                 <button className="accordion-header" onClick={() => toggleAccordion(2)}>
-                  <span>RETURNS / EXCHANGE</span>
+                  <span>EXCHANGE POLICY</span>
                   <svg className="accordion-icon" viewBox="0 0 24 24" width="18" height="18">
                     <path
                       d="M6 9l6 6 6-6"
@@ -332,35 +459,40 @@ export default function ShopInner({
         </div>
 
         {/* You May Also Like */}
-        <div className="similar-perfumes-section">
-          <h2 id="similar-text">You May Also Like</h2>
-          <div className="cg-grid similar-products-grid">
-            {similarProducts.map((item) => (
-              <Link href={`/shop/${item.slug}`} key={item.id} className="cg-card">
-                <div className="cg-card-image-container">
-                  <img
-                    src={item.images[0]}
-                    alt={item.title}
-                    className="cg-card-image"
-                  />
-                </div>
-                <div className="cg-card-bottom-section">
-                  <h3 className="cg-card-heading">{item.title}</h3>
-                  <div className="cg-card-price-row">
-                    <span className="cg-card-price cg-card-price--discounted">
-                      Rs.{item.price.toLocaleString()}
-                    </span>
-                    {item.comparePrice && (
-                      <span className="cg-card-price cg-card-price--original">
-                        Rs.{item.comparePrice.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))}
+        {similarProducts.length > 0 && (
+          <div className="similar-products-section">
+            <h2 id="similar-text">You May Also Like</h2>
+            <div className="cg-grid similar-products-grid">
+              {similarProducts.map((item) => {
+                const itemDiscount = getDiscountPercent(item);
+                return (
+                  <Link href={`/shop/${item.slug}`} key={item._id} className="cg-card">
+                    <div className="cg-card-image-container">
+                      <img
+                        src={item.images[0]}
+                        alt={item.title}
+                        className="cg-card-image"
+                      />
+                    </div>
+                    <div className="cg-card-bottom-section">
+                      <h3 className="cg-card-heading">{item.title}</h3>
+                      <div className="cg-card-price-row">
+                        <span className="cg-card-price cg-card-price--discounted">
+                          Rs.{item.price.toLocaleString()}
+                        </span>
+                        {itemDiscount !== null && item.comparePrice && (
+                          <span className="cg-card-price cg-card-price--original">
+                            Rs.{item.comparePrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

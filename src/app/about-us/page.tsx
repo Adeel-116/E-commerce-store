@@ -16,6 +16,7 @@ function page() {
                 <div className="shop-page__hero-content">
                     <p className="shop-page__breadcrumb"><Link href="/">HOME</Link> / ABOUT US</p>
                     <h1 className="shop-page__hero-title">About Us</h1>
+                    <span className="shop-page__hero-divider" />
                     <p className="shop-page__hero-subtitle">
                         Discover Azan Collection — thoughtfully designed clothing that brings
                         together comfort, quality, and everyday style.

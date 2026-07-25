@@ -1,0 +1,201 @@
+/* ===========================
+   ADMIN TABLE STYLES
+   =========================== */
+
+.admin-table-wrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e8e8e0;
+  overflow: hidden;
+}
+
+.admin-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e8e8e0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-table-toolbar-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.admin-table-toolbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.admin-table-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f7f5f2;
+  border: 1px solid #e0e0d8;
+  border-radius: 7px;
+  padding: 7px 12px;
+  max-width: 280px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.admin-table-search:focus-within { border-color: var(--admin-brandgreen); background: #fff; }
+.admin-table-search-icon { color: #bbb; flex-shrink: 0; }
+
+.admin-table-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--admin-brandblack);
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-table-search input::placeholder { color: #bbb; }
+.admin-table-count { font-size: 12px; color: #aaa; white-space: nowrap; }
+
+.admin-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #e0e0d8 transparent;
+}
+
+.admin-table-scroll::-webkit-scrollbar { height: 5px; }
+.admin-table-scroll::-webkit-scrollbar-track { background: transparent; }
+.admin-table-scroll::-webkit-scrollbar-thumb { background: #e0e0d8; border-radius: 10px; }
+
+.admin-table { border-collapse: collapse; min-width: 100%; width: max-content; table-layout: auto; }
+.admin-table th, .admin-table td { white-space: nowrap; }
+.admin-table thead tr { background: #f9f9f5; border-bottom: 1px solid #e8e8e0; }
+
+.admin-table th {
+  padding: 11px 13px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #999;
+  user-select: none;
+}
+
+.admin-table td {
+  padding-inline: 10px;
+  padding-block: 4px;
+  font-size: 13px;
+  color: var(--admin-brandblack);
+  border-bottom: 1px solid #f0f0e8;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td { border-bottom: none; }
+.admin-table tbody tr:hover { background: #f7f5f2; }
+
+.admin-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  color: #bbb;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.admin-table-empty-icon { color: #ddd; margin-bottom: 4px; }
+
+.admin-table-checkbox-col { width: 44px; text-align: center !important; padding-inline: 8px !important; }
+.admin-table-check { width: 15px; height: 15px; accent-color: var(--admin-brandgreen); cursor: pointer; display: block; margin: 0 auto; }
+.admin-table-row-selected { background: #f4f8ee !important; }
+.admin-table-row-selected:hover { background: #edf4e3 !important; }
+
+.admin-table-actions { display: flex; gap: 6px; align-items: center; }
+
+.admin-table-action-btn {
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.4;
+}
+
+.admin-table-action-edit { background: #f0f4ec; color: var(--admin-brandgreen); border-color: rgba(201, 169, 97, 0.2); }
+.admin-table-action-edit:hover { background: var(--admin-brandgreen); color: white; border-color: var(--admin-brandgreen); }
+.admin-table-action-view { background: #e3f2fd; color: #1565c0; border-color: rgba(21, 101, 192, 0.2); }
+.admin-table-action-view:hover { background: #1565c0; color: white; border-color: #1565c0; }
+.admin-table-action-delete { background: #fce4ec; color: #c62828; border-color: rgba(198, 40, 40, 0.2); }
+.admin-table-action-delete:hover { background: #c62828; color: white; border-color: #c62828; }
+
+/* ===========================
+   PAGINATION
+   =========================== */
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #e8e8e0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-pagination-info { font-size: 12px; color: #aaa; }
+.admin-pagination-controls { display: flex; align-items: center; gap: 4px; }
+.admin-pagination-ellipsis { padding: 0 4px; color: #bbb; font-size: 13px; user-select: none; }
+
+.admin-pagination-btn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e0e0d8;
+  background: white;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  padding: 0 6px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-pagination-btn:hover:not(:disabled) { border-color: var(--admin-brandgreen); color: var(--admin-brandgreen); background: #f0f4ec; }
+.admin-pagination-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.admin-pagination-btn-active { background: var(--admin-brandgreen) !important; border-color: var(--admin-brandgreen) !important; color: white !important; font-weight: 600; }
+.admin-pagination-btn-active:hover { background: var(--admin-brandblack) !important; border-color: var(--admin-brandblack) !important; }
+
+/* ===========================
+   BULK UPLOAD PROGRESS
+   =========================== */
+
+.upload-progress-bar-track { height: 6px; background: #f0f0e8; border-radius: 99px; overflow: hidden; width: 100%; }
+
+.upload-progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--admin-brandgreen);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes upload-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.upload-progress-bar-shimmer {
+  background: linear-gradient(90deg, var(--admin-brandgreen) 0%, #e3d3a8 50%, var(--admin-brandgreen) 100%);
+  background-size: 400px 100%;
+  animation: upload-shimmer 1.4s infinite linear;
+}
+
+@keyframes upload-icon-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.75; }
+}
+
+.upload-icon-pulse { animation: upload-icon-pulse 2s ease-in-out infinite; }

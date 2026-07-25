@@ -1,27 +1,27 @@
 export type BundlePriceTier = {
-  perfumeCount: number;
+  itemCount: number;
   price: number;
 };
 
-export type PerfumeBundle = {
+export type ProductBundle = {
   title: string;
-  type: "50ml" | "100ml" | string;
-  numberOfPerfumes: number;
+  productId: string;
+  numberOfItems: number;
   prices: BundlePriceTier[];
   savedAmount: number;
 };
 
 export type BundleSuggestion = {
-  size: string;
+  productId: string;
   unitsNeeded: number;
-  numberOfPerfumes: number;
+  numberOfItems: number;
   savedAmount: number;
 };
 
 export type CartBundleDetail = {
   title: string;
-  type: string;
-  numberOfPerfumes: number;
+  productId: string;
+  numberOfItems: number;
   appliedCount: number;
   discountAmount: number;
   message: string;
@@ -37,7 +37,7 @@ export type CartBundlePricingResult = {
 
 export type CartLineInput = {
   id: string;
-  size: "50ml" | "100ml" | string;
+  size: string;
   quantity: number;
   unitPrice: number;
   lineSubtotal?: number;
@@ -45,53 +45,56 @@ export type CartLineInput = {
 
 import api from "../lib/axios";
 
-export const BUNDLE_STORAGE_KEY = "monk-perfume-bundles";
+export const BUNDLE_STORAGE_KEY = "azan-product-bundles";
 
-const normalizeBundle = (bundle: any): PerfumeBundle | null => {
+const normalizeBundle = (bundle: any): ProductBundle | null => {
   if (!bundle || typeof bundle !== "object") return null;
 
   const title =
-    typeof bundle.title === "string" ? bundle.title : "Perfume Bundle";
+    typeof bundle.title === "string" ? bundle.title : "Product Bundle";
 
-  const type = typeof bundle.type === "string" ? bundle.type : "";
+  const productId =
+    typeof bundle.productId === "string"
+      ? bundle.productId
+      : bundle.productId?._id ?? "";
 
-  const numberOfPerfumes = Number(bundle.numberOfPerfumes ?? 0);
+  const numberOfItems = Number(bundle.numberOfItems ?? 0);
 
   const prices = Array.isArray(bundle.prices)
     ? bundle.prices
         .map((entry: any) => ({
-          perfumeCount: Number(entry?.perfumeCount ?? 0),
+          itemCount: Number(entry?.itemCount ?? 0),
           price: Number(entry?.price ?? 0),
         }))
-        .filter((entry: BundlePriceTier) => entry.perfumeCount > 0)
+        .filter((entry: BundlePriceTier) => entry.itemCount > 0)
     : [];
 
-  if (!type || !numberOfPerfumes || prices.length === 0) return null;
+  if (!productId || !numberOfItems || prices.length === 0) return null;
 
   return {
     title,
-    type,
-    numberOfPerfumes,
+    productId,
+    numberOfItems,
     prices,
     savedAmount: Number(bundle.savedAmount ?? 0),
   };
 };
 
-export const normalizeBundles = (payload: any): PerfumeBundle[] => {
+export const normalizeBundles = (payload: any): ProductBundle[] => {
   if (Array.isArray(payload)) {
-    return payload.map(normalizeBundle).filter(Boolean) as PerfumeBundle[];
+    return payload.map(normalizeBundle).filter(Boolean) as ProductBundle[];
   }
 
   const bundles = payload?.bundles ?? payload?.data ?? payload?.items ?? [];
 
   if (Array.isArray(bundles)) {
-    return bundles.map(normalizeBundle).filter(Boolean) as PerfumeBundle[];
+    return bundles.map(normalizeBundle).filter(Boolean) as ProductBundle[];
   }
 
   return [];
 };
 
-export const getStoredBundles = (): PerfumeBundle[] => {
+export const getStoredBundles = (): ProductBundle[] => {
   if (typeof window === "undefined") return [];
 
   try {
@@ -107,7 +110,7 @@ export const getStoredBundles = (): PerfumeBundle[] => {
   }
 };
 
-export const saveBundlesToStorage = (bundles: PerfumeBundle[]) => {
+export const saveBundlesToStorage = (bundles: ProductBundle[]) => {
   if (typeof window === "undefined") return;
 
   try {
@@ -117,7 +120,7 @@ export const saveBundlesToStorage = (bundles: PerfumeBundle[]) => {
   }
 };
 
-export const fetchBundlesFromApi = async (): Promise<PerfumeBundle[]> => {
+export const fetchBundlesFromApi = async (): Promise<ProductBundle[]> => {
   try {
     const response = await api.get("/getAllBundles");
 
@@ -135,7 +138,7 @@ export const fetchBundlesFromApi = async (): Promise<PerfumeBundle[]> => {
   }
 };
 
-export const loadBundlesOnWebsiteStart = async (): Promise<PerfumeBundle[]> => {
+export const loadBundlesOnWebsiteStart = async (): Promise<ProductBundle[]> => {
   const storedBundles = getStoredBundles();
 
   if (storedBundles.length > 0) {
@@ -158,34 +161,34 @@ export const clearStoredBundles = () => {
 };
 
 /**
- * For each size present in the cart, finds the smallest bundle tier not yet
+ * For each product present in the cart, finds the smallest bundle tier not yet
  * reached and reports how many more units would unlock it. Approximates the
  * backend's actual best-combo bundle pricing with "nearest unreached tier" —
  * good enough for a cart nudge, not meant to be charged.
  */
 export const getNextBundleSuggestions = (
-  cartItems: { size: string; quantity: number }[],
-  bundles: PerfumeBundle[]
+  cartItems: { id: string; quantity: number }[],
+  bundles: ProductBundle[]
 ): BundleSuggestion[] => {
-  const unitsBySize = new Map<string, number>();
+  const unitsByProduct = new Map<string, number>();
   cartItems.forEach((item) => {
-    unitsBySize.set(item.size, (unitsBySize.get(item.size) ?? 0) + item.quantity);
+    unitsByProduct.set(item.id, (unitsByProduct.get(item.id) ?? 0) + item.quantity);
   });
 
   const suggestions: BundleSuggestion[] = [];
 
-  unitsBySize.forEach((totalUnits, size) => {
+  unitsByProduct.forEach((totalUnits, productId) => {
     const nextTier = bundles
-      .filter((bundle) => bundle.type === size)
-      .sort((a, b) => a.numberOfPerfumes - b.numberOfPerfumes)
-      .find((bundle) => bundle.numberOfPerfumes > totalUnits);
+      .filter((bundle) => bundle.productId === productId)
+      .sort((a, b) => a.numberOfItems - b.numberOfItems)
+      .find((bundle) => bundle.numberOfItems > totalUnits);
 
     if (!nextTier) return;
 
     suggestions.push({
-      size,
-      unitsNeeded: nextTier.numberOfPerfumes - totalUnits,
-      numberOfPerfumes: nextTier.numberOfPerfumes,
+      productId,
+      unitsNeeded: nextTier.numberOfItems - totalUnits,
+      numberOfItems: nextTier.numberOfItems,
       savedAmount: nextTier.savedAmount,
     });
   });
@@ -195,41 +198,41 @@ export const getNextBundleSuggestions = (
 
 export const calculateCartBundlePricing = (
   cartItems: CartLineInput[],
-  bundles: PerfumeBundle[]
+  bundles: ProductBundle[]
 ): CartBundlePricingResult => {
   const lineSubtotals: Record<string, number> = {};
   const appliedBundles: CartBundleDetail[] = [];
-  const sizeGroups = new Map<string, CartLineInput[]>();
+  const productGroups = new Map<string, CartLineInput[]>();
 
   cartItems.forEach((item) => {
-    const size = item.size ?? "";
-    if (!size) return;
+    const productId = item.id ?? "";
+    if (!productId) return;
 
-    const group = sizeGroups.get(size) ?? [];
+    const group = productGroups.get(productId) ?? [];
     group.push(item);
-    sizeGroups.set(size, group);
+    productGroups.set(productId, group);
   });
 
   let originalSubtotal = 0;
   let discountedSubtotal = 0;
 
-  sizeGroups.forEach((itemsForSize, size) => {
+  productGroups.forEach((itemsForProduct, productId) => {
     const matchingBundles = bundles
-      .filter((bundle) => bundle.type === size)
-      .sort((a, b) => b.numberOfPerfumes - a.numberOfPerfumes);
+      .filter((bundle) => bundle.productId === productId)
+      .sort((a, b) => b.numberOfItems - a.numberOfItems);
 
-    const totalUnits = itemsForSize.reduce(
+    const totalUnits = itemsForProduct.reduce(
       (sum, item) => sum + item.quantity,
       0
     );
 
     const activeBundle =
       matchingBundles.find(
-        (bundle) => bundle.numberOfPerfumes <= totalUnits
+        (bundle) => bundle.numberOfItems <= totalUnits
       ) ?? null;
 
     if (!activeBundle || totalUnits < 2) {
-      itemsForSize.forEach((item) => {
+      itemsForProduct.forEach((item) => {
         const lineKey = `${item.id}-${item.size}`;
         const subtotal = (item.unitPrice ?? 0) * item.quantity;
 
@@ -241,12 +244,12 @@ export const calculateCartBundlePricing = (
       return;
     }
 
-    const bundleSize = activeBundle.numberOfPerfumes;
+    const bundleSize = activeBundle.numberOfItems;
     let slotIndex = 0;
     let groupOriginalSubtotal = 0;
     let groupDiscountedSubtotal = 0;
 
-    itemsForSize.forEach((item) => {
+    itemsForProduct.forEach((item) => {
       const lineKey = `${item.id}-${item.size}`;
       const baseSubtotal = (item.unitPrice ?? 0) * item.quantity;
       let lineTotal = 0;
@@ -256,7 +259,7 @@ export const calculateCartBundlePricing = (
           slotIndex < bundleSize
             ? (() => {
                 const priceTier = activeBundle.prices.find(
-                  (entry) => entry.perfumeCount === slotIndex + 1
+                  (entry) => entry.itemCount === slotIndex + 1
                 );
 
                 return (
@@ -282,8 +285,8 @@ export const calculateCartBundlePricing = (
 
     appliedBundles.push({
       title: activeBundle.title,
-      type: size,
-      numberOfPerfumes: bundleSize,
+      productId,
+      numberOfItems: bundleSize,
       appliedCount: totalUnits,
       discountAmount: Math.max(
         0,

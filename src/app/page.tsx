@@ -1,4 +1,4 @@
-import ImageSection from "./components/ImageSection";
+// import ImageSection from "./components/ImageSection";
 // import ProductSlider from "./components/ProductSlider";
 import ProductGrid from "./components/ProductGrid";
 import CategorySection from "./components/CategorySection";

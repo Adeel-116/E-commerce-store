@@ -10,7 +10,6 @@ import Link from "next/link";
 
 interface Category {
   title: string;
-  description: string;
   image: string;
   href: string;
 }
@@ -18,25 +17,21 @@ interface Category {
 const categories: Category[] = [
   {
     title: "Maxi",
-    description: "Flowing silhouettes for effortless grace",
     image: "/category-maxi.jpg",
     href: "/shop?category=maxi",
   },
   {
     title: "Fashion",
-    description: "Everyday styles with a modern edge",
     image: "/category-fashion.png",
     href: "/shop?category=fashion",
   },
   {
     title: "Top & Jeans",
-    description: "Casual comfort, styled your way",
     image: "/category-top-jeans.png",
     href: "/shop?category=top-jeans",
   },
   {
     title: "Western",
-    description: "Sharp, minimal, and versatile fits",
     image: "/category-western.png",
     href: "/shop?category=western",
   },
@@ -50,29 +45,10 @@ function CategoryCard({ category }: { category: Category }) {
         alt={category.title}
         fill
         sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 25vw"
-        objectPosition="bottom"
+        objectPosition="top center"
         className="category-card-image"
       />
-      <div className="category-card-overlay" />
-      <div className="category-card-content">
-        <h3 className="category-card-title">{category.title}</h3>
-        <p className="category-card-description">{category.description}</p>
-        <span className="category-card-link">
-          Shop Now
-          <svg
-            className="category-card-arrow"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <line x1="7" y1="17" x2="17" y2="7" />
-            <polyline points="7 7 17 7 17 17" />
-          </svg>
-        </span>
-      </div>
+      <span className="category-card-badge">{category.title}</span>
     </Link>
   );
 }
@@ -92,7 +68,11 @@ function CategoryGrid() {
 function CategorySection() {
   return (
     <section className="category-section">
-      <h1 className="dc-section-title dc-section-category-text" id="category-title">Our Categories</h1>
+      <div className="category-section-header">
+        <p className="category-section-tag">Shop By Category</p>
+        <h2 className="category-section-title" id="category-title">Our Categories</h2>
+        <span className="category-section-divider" />
+      </div>
       <CategoryGrid />
       <Swiper
         modules={[A11y, Keyboard, Pagination]}

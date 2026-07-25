@@ -350,7 +350,7 @@ const UserProfile = () => {
                             <td><span className={`orders-table__badge orders-table__badge--${order.status}`}>{order.status}</span></td>
                             <td><span className={`orders-table__badge orders-table__badge--${order.payment.status}`}>{order.payment.status}</span></td>
                             <td className="orders-table__center">{order.items.length}</td>
-                            <td className="orders-table__total">AED {(order.pricing.total ?? 0).toLocaleString()}</td>
+                            <td className="orders-table__total">PKR {(order.pricing.total ?? 0).toLocaleString()}</td>
                             <td className="orders-table__date">{formatDate(order.createdAt)}</td>
                           </tr>
                         ))}

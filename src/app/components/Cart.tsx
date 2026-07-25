@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Gift, Lock } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import "../../app/styles/Cart.css";
 import { ChevronDown } from "lucide-react";
@@ -13,7 +13,7 @@ const Cart = () => {
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [instructions, setInstructions] = useState("");
 
-  const { cartItems, pricing, bundles, increaseQuantity, decreaseQuantity, removeItem, clearCart, changeSize } =
+  const { cartItems, pricing, bundles, increaseQuantity, decreaseQuantity, removeItem, clearCart } =
     useCart();
 
   const fallbackSubtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
@@ -33,7 +33,9 @@ const Cart = () => {
 
         {cartItems.length === 0 ? (
           <div className="empty-cart">
-            <FaShoppingCart className="empty-cart-icon" />
+            <div className="empty-cart-icon-wrap">
+              <FaShoppingCart className="empty-cart-icon" />
+            </div>
 
             <h2>Oops! Your cart is empty.</h2>
 
@@ -56,12 +58,19 @@ const Cart = () => {
             data-lenis-prevent-touch="true"
           >
             <div className="cart-box">
-              {bundleSuggestions.map((s) => (
-                <p className="cart-bundle-suggestion-banner" key={s.size}>
-                  Add {s.unitsNeeded} more {s.size} perfume{s.unitsNeeded > 1 ? "s" : ""} to create a bundle of{" "}
-                  {s.numberOfPerfumes} and save AED {s.savedAmount.toFixed(2)}
-                </p>
-              ))}
+              {bundleSuggestions.map((s) => {
+                const item = cartItems.find((i) => i.id === s.productId);
+                return (
+                  <div className="cart-bundle-suggestion-banner" key={s.productId}>
+                    <Gift size={18} className="cart-bundle-suggestion-icon" />
+                    <p>
+                      Add {s.unitsNeeded} more {item?.productName ?? "item"}
+                      {s.unitsNeeded > 1 ? "s" : ""} to create a bundle of{" "}
+                      {s.numberOfItems} and save PKR {s.savedAmount.toFixed(2)}
+                    </p>
+                  </div>
+                );
+              })}
               <div className="cart-header">
                 <span>Product</span>
                 <span>Title</span>
@@ -82,34 +91,19 @@ const Cart = () => {
                   <div className="product-info">
                     <h3>{item.productName}</h3>
 
-                    <div className="cart-size-selector">
-                      <button
-                        type="button"
-                        className={`cart-size-btn${item.size === "50ml" ? " active" : ""}`}
-                        onClick={() => changeSize(item.id, "50ml", item.size)}
-                      >
-                        50ml
-                      </button>
-                      <button
-                        type="button"
-                        className={`cart-size-btn${item.size === "100ml" ? " active" : ""}`}
-                        onClick={() => changeSize(item.id, "100ml", item.size)}
-                      >
-                        100ml
-                      </button>
-                    </div>
+                    {item.size && <p className="cart-item-size">Size: {item.size}</p>}
 
                     {item.lineSubtotal < item.unitPrice * item.quantity ? (
                       <p className="product-price">
                         <span className="product-price--original">
-                          AED {item.unitPrice.toFixed(2)}
+                          PKR {item.unitPrice.toFixed(2)}
                         </span>{" "}
                         <span className="product-price--discounted">
-                          AED {(item.lineSubtotal / item.quantity).toFixed(2)}
+                          PKR {(item.lineSubtotal / item.quantity).toFixed(2)}
                         </span>
                       </p>
                     ) : (
-                      <p className="product-price">AED {item.unitPrice.toFixed(2)}</p>
+                      <p className="product-price">PKR {item.unitPrice.toFixed(2)}</p>
                     )}
                   </div>
 
@@ -142,7 +136,7 @@ const Cart = () => {
                   </div>
 
                   <p className="item-total">
-                    AED {item.lineSubtotal.toFixed(2)}
+                    PKR {item.lineSubtotal.toFixed(2)}
                   </p>
                 </div>
               ))}
@@ -150,50 +144,54 @@ const Cart = () => {
 
             {/* make this sticky */}
             <aside className="checkout-side sticky">
-              {appliedBundles.map((bundle, i) => (
-                <div className="bundle-activation-banner" key={`${bundle.size}-${bundle.numberOfPerfumes}-${i}`}>
-                  <div className="bundle-banner-content">
-                    <CheckCircle size={24} className="bundle-banner-icon" />
-                    <div className="bundle-banner-text">
-                      <h3 className="bundle-banner-title">Bundle Activated</h3>
-                      <p className="bundle-banner-subtitle">
-                        {bundle.numberOfPerfumes} × {bundle.size}
-                        {bundle.timesApplied > 1 ? ` (×${bundle.timesApplied})` : ""}
-                      </p>
+              {appliedBundles.map((bundle, i) => {
+                const item = cartItems.find((it) => it.id === bundle.productId);
+                return (
+                  <div className="bundle-activation-banner" key={`${bundle.productId}-${bundle.numberOfItems}-${i}`}>
+                    <div className="bundle-banner-content">
+                      <CheckCircle size={24} className="bundle-banner-icon" />
+                      <div className="bundle-banner-text">
+                        <h3 className="bundle-banner-title">Bundle Activated</h3>
+                        <p className="bundle-banner-subtitle">
+                          {bundle.numberOfItems} × {item?.productName ?? "item"}
+                          {bundle.timesApplied > 1 ? ` (×${bundle.timesApplied})` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bundle-banner-savings">
+                      <p className="bundle-savings-label">You Saved</p>
+                      <p className="bundle-savings-amount">PKR {bundle.totalSavings.toFixed(2)}</p>
                     </div>
                   </div>
-                  <div className="bundle-banner-savings">
-                    <p className="bundle-savings-label">You Saved</p>
-                    <p className="bundle-savings-amount">AED {bundle.totalSavings.toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
 
               <div className="checkout-box">
                 <div className="checkout-total-row">
                   <h2>Total</h2>
-                  <strong>AED {subtotal.toFixed(2)}</strong>
+                  <strong>PKR {subtotal.toFixed(2)}</strong>
                 </div>
 
                 {totalSavings > 0 && (
-                  <>
+                  <div className="cart-savings-box">
                     <p className="tax-text">
-                      Original subtotal: AED {originalSubtotal.toFixed(2)}
+                      Original subtotal: PKR {originalSubtotal.toFixed(2)}
                     </p>
                     {discountSavings > 0 && (
                       <p className="tax-text">
-                        {appliedDiscounts.map((d) => d.name).join(", ") || "Discount"} savings: −AED {discountSavings.toFixed(2)}
+                        {appliedDiscounts.map((d) => d.name).join(", ") || "Discount"} savings: −PKR {discountSavings.toFixed(2)}
                       </p>
                     )}
                     {bundleSavings > 0 && (
                       <p className="tax-text">
-                        Bundle savings: −AED {bundleSavings.toFixed(2)}
+                        Bundle savings: −PKR {bundleSavings.toFixed(2)}
                       </p>
                     )}
-                    <p className="tax-text">
-                      You saved AED {totalSavings.toFixed(2)}
+                    <p className="tax-text cart-savings-highlight">
+                      <CheckCircle size={14} className="cart-savings-check" />
+                      You saved PKR {totalSavings.toFixed(2)}
                     </p>
-                  </>
+                  </div>
                 )}
 
                 <div className="order-instructions">
@@ -231,11 +229,10 @@ const Cart = () => {
               </div>
 
               <div className="secure-payment">
-                <p>🔒 100% Secure Payments</p>
-
-                <div className="cart-stripe-badge" aria-label="Secured by Stripe">
-                  stripe
-                </div>
+                <p>
+                  <Lock size={13} className="secure-payment-icon" />
+                  Cash on Delivery — pay when your order arrives
+                </p>
               </div>
 
               <button

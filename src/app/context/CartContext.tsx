@@ -2,15 +2,16 @@
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import api from "../lib/axios";
 import { clearGuestId } from "../lib/guestId";
-import { fetchBundlesFromApi, getStoredBundles, PerfumeBundle, saveBundlesToStorage } from "../lib/cartBundles";
+import { fetchBundlesFromApi, getStoredBundles, ProductBundle, saveBundlesToStorage } from "../lib/cartBundles";
 import { ttqAddToCart } from "../lib/tiktokEvents";
 
 export type CartItem = {
   id: string;
   productName: string;
   brand: string;
-  prices: { "50ml": number; "100ml": number };
-  size: "50ml" | "100ml";
+  /** flat catalog price for this product */
+  price: number;
+  size: string;
   quantity: number;
   productImage: string;
   /** undiscounted unit price the backend charged for this line */
@@ -29,8 +30,8 @@ export type CartItem = {
 };
 
 export type AppliedBundle = {
-  size: string;
-  numberOfPerfumes: number;
+  productId: string;
+  numberOfItems: number;
   bundlePrice: number;
   timesApplied: number;
   totalSavings: number;
@@ -63,14 +64,14 @@ export type CartPricing = {
 type CartContextType = {
   cartItems: CartItem[];
   pricing: CartPricing | null;
-  bundles: PerfumeBundle[];
+  bundles: ProductBundle[];
   isCartOpen: boolean;
   isLoading: boolean;
   addToCart: (item: Omit<CartItem, "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"> & { quantity?: number }) => void;
-  removeItem: (id: string, size?: "50ml" | "100ml") => void;
-  increaseQuantity: (id: string, size?: "50ml" | "100ml") => void;
-  decreaseQuantity: (id: string, size?: "50ml" | "100ml") => void;
-  changeSize: (id: string, size: "50ml" | "100ml", currentSize?: "50ml" | "100ml") => void;
+  removeItem: (id: string, size?: string) => void;
+  increaseQuantity: (id: string, size?: string) => void;
+  decreaseQuantity: (id: string, size?: string) => void;
+  changeSize: (id: string, size: string, currentSize?: string) => void;
   clearCart: () => void;
   mergeCart: () => Promise<void>;
   openCart: () => void;
@@ -83,18 +84,16 @@ function mapBackendItem(item: any): CartItem {
   const p = item.productId ?? {};
   const size = item.size ?? item.selectedSize ?? "";
   const quantity = item.quantity ?? 1;
-  const unitPrice = item.originalPrice ?? item.price ?? p.price?.[size] ?? 0;
+  const price = p.price ?? 0;
+  const unitPrice = item.originalPrice ?? item.price ?? price ?? 0;
   return {
     id: p._id ?? p.id,
     productName: p.title ?? p.name ?? "",
     brand: p.brand ?? "",
-    prices: {
-      "50ml": p.price?.["50ml"] ?? 0,
-      "100ml": p.price?.["100ml"] ?? 0,
-    },
+    price,
     size,
     quantity,
-    productImage: p.image || "/new-perfume-bottle.avif",
+    productImage: p.images?.[0] || "",
     unitPrice,
     lineSubtotal: unitPrice * quantity,
     bundleApplied: item.bundleApplied ?? false,
@@ -126,7 +125,7 @@ function mapCartResponse(cart: any): { items: CartItem[]; pricing: CartPricing |
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [pricing, setPricing] = useState<CartPricing | null>(null);
-  const [bundles, setBundles] = useState<PerfumeBundle[]>([]);
+  const [bundles, setBundles] = useState<ProductBundle[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -172,7 +171,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (item: Omit<CartItem, "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"> & { quantity?: number }) => {
     const quantity = item.quantity ?? 1;
-    const unitPrice = item.prices[item.size] ?? 0;
+    const unitPrice = item.price ?? 0;
 
     api.post("/cart/add", { productId: item.id, size: item.size, quantity })
       .then(() => {
@@ -192,7 +191,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const removeItem = (id: string, size?: "50ml" | "100ml") => {
+  const removeItem = (id: string, size?: string) => {
     setCartItems((prev) => prev.filter((i) => !(i.id === id && (!size || i.size === size))));
     api
       .delete("/cart/remove", { params: { productId: id, size } })
@@ -203,7 +202,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const increaseQuantity = (id: string, size?: "50ml" | "100ml") => {
+  const increaseQuantity = (id: string, size?: string) => {
     const item = cartItems.find((i) => i.id === id && (!size || i.size === size));
     if (!item) return;
     const newQty = item.quantity + 1;
@@ -230,7 +229,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const decreaseQuantity = (id: string, size?: "50ml" | "100ml") => {
+  const decreaseQuantity = (id: string, size?: string) => {
     const item = cartItems.find((i) => i.id === id && (!size || i.size === size));
     if (!item) return;
     if (item.quantity <= 1) {
@@ -261,7 +260,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const changeSize = (id: string, size: "50ml" | "100ml", currentSize?: "50ml" | "100ml") => {
+  const changeSize = (id: string, size: string, currentSize?: string) => {
     const item = cartItems.find((i) => i.id === id && (!currentSize || i.size === currentSize));
     if (!item || item.size === size) return;
     const oldSize = item.size;

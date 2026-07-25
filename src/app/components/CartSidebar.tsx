@@ -19,7 +19,6 @@ const CartSidebar = () => {
     decreaseQuantity,
     removeItem,
     clearCart,
-    changeSize,
   } = useCart();
 
   const fallbackSubtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
@@ -112,24 +111,7 @@ const CartSidebar = () => {
                   <div className="cart-sidebar-info">
                     <h4 className="cart-sidebar-item-name">{item.productName}</h4>
 
-                    <div className="csb-size-selector">
-                      <button
-                        type="button"
-                        className={`csb-size-btn${item.size === "50ml" ? " active" : ""}`}
-                        onClick={() => changeSize(item.id, "50ml", item.size)}
-                      >
-                        50ml
-                      </button>
-                      <button
-                        type="button"
-                        className={`csb-size-btn${item.size === "100ml" ? " active" : ""}`}
-                        onClick={() => changeSize(item.id, "100ml", item.size)}
-                      >
-                        100ml
-                      </button>
-                    </div>
-
-                    {/* <p className="csb-price">${item.prices[item.size].toFixed(2)}</p> */}
+                    {item.size && <p className="csb-item-size">Size: {item.size}</p>}
 
                     <div className="cart-sidebar-controls">
                       <div className="csb-quantity-box">
@@ -161,15 +143,15 @@ const CartSidebar = () => {
                     {hasDiscount ? (
                       <>
                         <p className="cart-sidebar-item-total cart-sidebar-item-total--original">
-                          AED {originalLineTotal.toFixed(2)}
+                          PKR {originalLineTotal.toFixed(2)}
                         </p>
                         <p className="cart-sidebar-item-total cart-sidebar-item-total--discounted">
-                          AED {discountedLineTotal.toFixed(2)}
+                          PKR {discountedLineTotal.toFixed(2)}
                         </p>
                       </>
                     ) : (
                       <p className="cart-sidebar-item-total">
-                        AED {discountedLineTotal.toFixed(2)}
+                        PKR {discountedLineTotal.toFixed(2)}
                       </p>
                     )}
                   </div>
@@ -182,55 +164,62 @@ const CartSidebar = () => {
               {(showBundleActivation || showBundleSuggestion) && (
                 <div className="csb-bundle-banner-zone" ref={bundleBannerRef} key={bundleBannerKey}>
                   {showBundleSuggestion &&
-                    bundleSuggestions.map((s) => (
-                      <p className="csb-bundle-suggestion-banner" key={s.size}>
-                        Add {s.unitsNeeded} more {s.size} perfume{s.unitsNeeded > 1 ? "s" : ""} to get a discount of AED {s.savedAmount.toFixed(2)}.
-                      </p>
-                    ))}
+                    bundleSuggestions.map((s) => {
+                      const item = cartItems.find((i) => i.id === s.productId);
+                      return (
+                        <p className="csb-bundle-suggestion-banner" key={s.productId}>
+                          Add {s.unitsNeeded} more {item?.productName ?? "item"}
+                          {s.unitsNeeded > 1 ? "s" : ""} to get a discount of PKR {s.savedAmount.toFixed(2)}.
+                        </p>
+                      );
+                    })}
 
                   {showBundleActivation &&
-                    appliedBundles.map((bundle, i) => (
-                      <div className="csb-bundle-activation-banner" key={`${bundle.size}-${bundle.numberOfPerfumes}-${i}`}>
-                        <div className="csb-bundle-banner-content">
-                          <CheckCircle size={20} className="csb-bundle-banner-icon" />
-                          <div className="csb-bundle-banner-text">
-                            <h3 className="csb-bundle-banner-title">Bundle Activated</h3>
-                            <p className="csb-bundle-banner-subtitle">
-                              {bundle.numberOfPerfumes} × {bundle.size}
-                              {bundle.timesApplied > 1 ? ` (×${bundle.timesApplied})` : ""}
-                            </p>
+                    appliedBundles.map((bundle, i) => {
+                      const item = cartItems.find((it) => it.id === bundle.productId);
+                      return (
+                        <div className="csb-bundle-activation-banner" key={`${bundle.productId}-${bundle.numberOfItems}-${i}`}>
+                          <div className="csb-bundle-banner-content">
+                            <CheckCircle size={20} className="csb-bundle-banner-icon" />
+                            <div className="csb-bundle-banner-text">
+                              <h3 className="csb-bundle-banner-title">Bundle Activated</h3>
+                              <p className="csb-bundle-banner-subtitle">
+                                {bundle.numberOfItems} × {item?.productName ?? "item"}
+                                {bundle.timesApplied > 1 ? ` (×${bundle.timesApplied})` : ""}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="csb-bundle-banner-savings">
+                            <p className="csb-bundle-savings-amount">Save PKR {bundle.totalSavings.toFixed(2)}</p>
                           </div>
                         </div>
-                        <div className="csb-bundle-banner-savings">
-                          <p className="csb-bundle-savings-amount">Save AED {bundle.totalSavings.toFixed(2)}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               )}
 
               <div className="csb-total-row">
                 <h2>Total</h2>
-                <strong>AED: {total.toFixed(2)}</strong>
+                <strong>PKR: {total.toFixed(2)}</strong>
               </div>
 
               {totalSavings > 0 && (
                 <>
                   {/* <p className="csb-savings-text">
-                    Original subtotal: AED {originalSubtotal.toFixed(2)}
+                    Original subtotal: PKR {originalSubtotal.toFixed(2)}
                   </p> */}
                   {/* {discountSavings > 0 && (
                     <p className="csb-savings-text">
-                      {appliedDiscounts.map((d) => d.name).join(", ") || "Discount"} savings: −AED {discountSavings.toFixed(2)}
+                      {appliedDiscounts.map((d) => d.name).join(", ") || "Discount"} savings: −PKR {discountSavings.toFixed(2)}
                     </p>
                   )} */}
                   {/* {bundleSavings > 0 && (
                     <p className="csb-savings-text">
-                      Bundle savings: −AED {bundleSavings.toFixed(2)}
+                      Bundle savings: −PKR {bundleSavings.toFixed(2)}
                     </p>
                   )} */}
                   {/* <p className="csb-savings-text">
-                    You saved AED {totalSavings.toFixed(2)}
+                    You saved PKR {totalSavings.toFixed(2)}
                   </p> */}
                 </>
               )}

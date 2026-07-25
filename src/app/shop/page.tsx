@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import "../styles/ShopPage.css";
@@ -7,10 +7,46 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import NavbarController from "../components/NavbarController";
 import VideoSlider from "../components/VideoSlider";
-import { demoProducts, CATEGORY_LABELS, type ProductCategory } from "../lib/demoProducts";
+import api from "../lib/axios";
+import { ShopGridSkeleton } from "../components/Skeleton";
+
+export type ShopProduct = {
+  _id: string;
+  productId: number;
+  title: string;
+  slug: string;
+  description: string;
+  images: string[];
+  price: number;
+  comparePrice: number | null;
+  category: string[];
+  sizes: string[];
+  isNew: boolean;
+  stock: boolean;
+  status: "active" | "inactive";
+  activeDiscount: {
+    discountId: string;
+    name: string;
+    valueType: "percentage" | "fixed";
+    value: number;
+  } | null;
+};
+
+export const CATEGORY_LABELS: Record<string, string> = {
+  maxi: "Maxi",
+  fashion: "Fashion",
+  "top-jeans": "Top & Jeans",
+  western: "Western",
+};
+
+const CATEGORIES = Object.keys(CATEGORY_LABELS);
 
 const PAGE_SIZE = 9;
-const CATEGORIES = Object.keys(CATEGORY_LABELS) as ProductCategory[];
+// Fixed, generous bounds for the price slider — avoids extra round-trips just
+// to compute exact min/max from the catalog; the slider stays a sensible UX
+// nudge rather than a precise histogram.
+const PRICE_MIN = 0;
+const PRICE_MAX = 10000;
 
 function getPaginationRange(current: number, total: number): (number | "...")[] {
   if (total <= 1) return [1];
@@ -32,13 +68,19 @@ function getPaginationRange(current: number, total: number): (number | "...")[] 
   return range;
 }
 
+function getDiscountPercent(product: ShopProduct): number | null {
+  return product.comparePrice && product.comparePrice > product.price
+    ? Math.round((1 - product.price / product.comparePrice) * 100)
+    : null;
+}
+
 function ShopPageContent() {
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category") as ProductCategory | null;
+  const categoryParam = searchParams.get("category");
 
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | undefined>(
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     categoryParam && CATEGORIES.includes(categoryParam) ? categoryParam : undefined
   );
   const [inStock, setInStock] = useState(false);
@@ -53,67 +95,98 @@ function ShopPageContent() {
     price: true,
   });
 
-  const categoryProducts = useMemo(
-    () =>
-      selectedCategory
-        ? demoProducts.filter((p) => p.category === selectedCategory)
-        : demoProducts,
-    [selectedCategory]
-  );
+  const [priceRange, setPriceRange] = useState({ min: PRICE_MIN, max: PRICE_MAX });
+  const [stockCounts, setStockCounts] = useState({ inStock: 0, outOfStock: 0 });
 
-  const stockCounts = useMemo(
-    () => ({
-      inStock: categoryProducts.filter((p) => p.stock).length,
-      outOfStock: categoryProducts.filter((p) => !p.stock).length,
-    }),
-    [categoryProducts]
-  );
+  const [products, setProducts] = useState<ShopProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const priceBounds = useMemo(() => {
-    if (categoryProducts.length === 0) return { min: 0, max: 0 };
-    const prices = categoryProducts.map((p) => p.price);
-    return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [categoryProducts]);
+  // Fetch in-stock / out-of-stock counts for the current category — cheap
+  // (limit=1, only the `total` field is used) and keeps the sidebar counts
+  // accurate without pulling the whole catalog client-side.
+  useEffect(() => {
+    let cancelled = false;
 
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
-  const [prevBoundsKey, setPrevBoundsKey] = useState("");
-  const boundsKey = `${priceBounds.min}-${priceBounds.max}`;
-  if (priceBounds.max > 0 && boundsKey !== prevBoundsKey) {
-    setPrevBoundsKey(boundsKey);
-    setPriceRange({ min: priceBounds.min, max: priceBounds.max });
-  }
+    (async () => {
+      try {
+        const base: Record<string, string> = { status: "active" };
+        if (selectedCategory) base.category = selectedCategory;
 
-  const filteredProducts = useMemo(() => {
-    let list = categoryProducts.filter((p) => p.price >= priceRange.min && p.price <= priceRange.max);
+        const [inRes, outRes] = await Promise.all([
+          api.get("/universalFilter", { params: { ...base, stock: "true", limit: 1 } }),
+          api.get("/universalFilter", { params: { ...base, stock: "false", limit: 1 } }),
+        ]);
 
-    if (inStock !== outOfStock) {
-      list = list.filter((p) => (inStock ? p.stock : !p.stock));
-    }
+        if (cancelled) return;
+        setStockCounts({
+          inStock: inRes.data?.total ?? 0,
+          outOfStock: outRes.data?.total ?? 0,
+        });
+      } catch {
+        if (!cancelled) setStockCounts({ inStock: 0, outOfStock: 0 });
+      }
+    })();
 
-    const sorted = [...list];
-    switch (sort) {
-      case "newest":
-        sorted.reverse();
-        break;
-      case "name_a_z":
-        sorted.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "name_z_a":
-        sorted.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  }, [categoryProducts, priceRange, inStock, outOfStock, sort]);
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory]);
 
-  const total = filteredProducts.length;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const pageProducts = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-  const paginationItems = getPaginationRange(currentPage, totalPages);
+  // Main product fetch — server-side filtering/pagination.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const params: Record<string, string | number> = {
+          status: "active",
+          page: currentPage,
+          limit: PAGE_SIZE,
+        };
+
+        if (selectedCategory) params.category = selectedCategory;
+        if (inStock !== outOfStock) params.stock = inStock ? "true" : "false";
+        if (priceRange.min > PRICE_MIN) params.minPrice = priceRange.min;
+        if (priceRange.max < PRICE_MAX) params.maxPrice = priceRange.max;
+        if (sort === "newest" || sort === "price-asc" || sort === "price-desc") {
+          params.sort = sort;
+        }
+
+        const { data } = await api.get("/universalFilter", { params });
+        if (cancelled) return;
+
+        let list: ShopProduct[] = data?.data ?? [];
+        if (sort === "name_a_z") {
+          list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+        } else if (sort === "name_z_a") {
+          list = [...list].sort((a, b) => b.title.localeCompare(a.title));
+        }
+
+        setProducts(list);
+        setTotal(data?.total ?? 0);
+        setTotalPages(data?.totalPages ?? 1);
+      } catch {
+        if (!cancelled) {
+          setProducts([]);
+          setTotal(0);
+          setTotalPages(1);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory, inStock, outOfStock, sort, currentPage, priceRange.min, priceRange.max]);
+
   const pageTitle = selectedCategory ? CATEGORY_LABELS[selectedCategory] : "Shop";
 
-  const handleCategoryChange = (category: ProductCategory, checked: boolean) => {
+  const handleCategoryChange = (category: string, checked: boolean) => {
     setSelectedCategory(checked ? category : undefined);
     setCurrentPage(1);
   };
@@ -148,9 +221,8 @@ function ShopPageContent() {
     setOutOfStock(false);
     setSort("");
     setCurrentPage(1);
+    setPriceRange({ min: PRICE_MIN, max: PRICE_MAX });
   };
-
-  const priceShape = (price: number) => ({ "50ml": price, "100ml": price } as const);
 
   const renderFilterOptions = (variant: "sidebar" | "modal") => (
     <>
@@ -231,18 +303,19 @@ function ShopPageContent() {
           <h3 className="shop-page__sidebar-title">Price</h3>
           <span className="shop-page__sidebar-toggle">{openSections.price ? "−" : "+"}</span>
         </button>
-        {openSections.price && priceBounds.max > 0 && (
+        {openSections.price && (
           <div className="shop-page__sidebar-section-body">
             <div className="shop-page__price-inputs">
               <input
                 type="number"
                 className="shop-page__price-input"
                 value={priceRange.min}
-                min={priceBounds.min}
+                min={PRICE_MIN}
                 max={priceRange.max}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) }))
-                }
+                onChange={(e) => {
+                  setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) }));
+                  setCurrentPage(1);
+                }}
               />
               <span className="shop-page__price-dash">—</span>
               <input
@@ -250,10 +323,11 @@ function ShopPageContent() {
                 className="shop-page__price-input"
                 value={priceRange.max}
                 min={priceRange.min}
-                max={priceBounds.max}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) }))
-                }
+                max={PRICE_MAX}
+                onChange={(e) => {
+                  setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) }));
+                  setCurrentPage(1);
+                }}
               />
             </div>
 
@@ -262,35 +336,37 @@ function ShopPageContent() {
                 <div
                   className="shop-page__price-fill"
                   style={{
-                    left: `${((priceRange.min - priceBounds.min) / (priceBounds.max - priceBounds.min || 1)) * 100}%`,
-                    right: `${100 - ((priceRange.max - priceBounds.min) / (priceBounds.max - priceBounds.min || 1)) * 100}%`,
+                    left: `${((priceRange.min - PRICE_MIN) / (PRICE_MAX - PRICE_MIN || 1)) * 100}%`,
+                    right: `${100 - ((priceRange.max - PRICE_MIN) / (PRICE_MAX - PRICE_MIN || 1)) * 100}%`,
                   }}
                 />
                 <input
                   type="range"
                   className="shop-page__range-input shop-page__range-input--min"
-                  min={priceBounds.min}
-                  max={priceBounds.max}
+                  min={PRICE_MIN}
+                  max={PRICE_MAX}
                   value={priceRange.min}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setPriceRange((prev) => ({
                       ...prev,
                       min: Math.min(Number(e.target.value), prev.max),
-                    }))
-                  }
+                    }));
+                    setCurrentPage(1);
+                  }}
                 />
                 <input
                   type="range"
                   className="shop-page__range-input shop-page__range-input--max"
-                  min={priceBounds.min}
-                  max={priceBounds.max}
+                  min={PRICE_MIN}
+                  max={PRICE_MAX}
                   value={priceRange.max}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setPriceRange((prev) => ({
                       ...prev,
                       max: Math.max(Number(e.target.value), prev.min),
-                    }))
-                  }
+                    }));
+                    setCurrentPage(1);
+                  }}
                 />
               </div>
             </div>
@@ -409,6 +485,8 @@ function ShopPageContent() {
                 <select className="shop-page__sort-select" value={sort} onChange={handleSortChange}>
                   <option value="">Best selling</option>
                   <option value="newest">Newest</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
                   <option value="name_a_z">Name A–Z</option>
                   <option value="name_z_a">Name Z–A</option>
                 </select>
@@ -418,7 +496,9 @@ function ShopPageContent() {
 
           {/* Grid */}
           <div className="shop-page-grid-container">
-            {pageProducts.length === 0 ? (
+            {loading ? (
+              <ShopGridSkeleton count={PAGE_SIZE} />
+            ) : products.length === 0 ? (
               <div className="shop-page__empty">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8" />
@@ -435,16 +515,19 @@ function ShopPageContent() {
               </div>
             ) : (
               <div className={`shop-page__grid${viewMode === "list" ? " shop-page__grid--list" : ""}`}>
-                {pageProducts.map((product) => {
-                  const wishlisted = isWishlisted(product.id);
+                {products.map((product) => {
+                  const wishlisted = isWishlisted(product._id);
+                  const discountPercent = getDiscountPercent(product);
+                  const firstSize = product.sizes?.[0];
+                  const canAddToCart = product.stock && !!firstSize;
 
                   return (
-                    <div className="shop-page__card" key={product.id}>
+                    <div className="shop-page__card" key={product._id}>
                       <div className="shop-page__card-image-wrap">
                         <div className="shop-page-badges">
                           <div className="shop-page-badges__left">
-                            {product.discountPercent && (
-                              <span className="shop-page__badge">-{product.discountPercent}%</span>
+                            {discountPercent !== null && (
+                              <span className="shop-page__badge">-{discountPercent}%</span>
                             )}
                             {product.isNew && (
                               <span className="shop-page__badge-new">New</span>
@@ -458,11 +541,12 @@ function ShopPageContent() {
                             className={`shop-page__wishlist-btn ${wishlisted ? "shop-page__wishlist-btn--active" : ""}`}
                             onClick={() =>
                               toggleWishlist({
-                                id: product.id,
+                                id: product._id,
                                 name: product.title,
                                 image: product.images[0],
                                 stock: product.stock,
-                                price: priceShape(product.price),
+                                price: product.price,
+                                sizes: product.sizes,
                               })
                             }
                             aria-label="Add to wishlist"
@@ -505,21 +589,22 @@ function ShopPageContent() {
 
                         <button
                           className="shop-page__add-to-cart"
-                          disabled={!product.stock}
+                          disabled={!canAddToCart}
                           onClick={() =>
-                            product.stock &&
+                            canAddToCart &&
+                            firstSize &&
                             (addToCart({
-                              id: product.id,
+                              id: product._id,
                               productName: product.title,
                               brand: "",
-                              prices: priceShape(product.price),
-                              size: "50ml",
+                              price: product.price,
+                              size: firstSize,
                               productImage: product.images[0],
                             }),
                               openCart())
                           }
                         >
-                          {product.stock ? "Add to Cart" : "Sold Out"}
+                          {!product.stock ? "Sold Out" : !firstSize ? "Unavailable" : "Add to Cart"}
                         </button>
                       </div>
                     </div>
@@ -530,7 +615,7 @@ function ShopPageContent() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <div className="shop-pagination-buttons">
               <div className="shop-page-pagination-container">
                 <button
@@ -541,7 +626,7 @@ function ShopPageContent() {
                   Prev
                 </button>
 
-                {paginationItems.map((item, index) =>
+                {getPaginationRange(currentPage, totalPages).map((item, index) =>
                   item === "..." ? (
                     <span key={`dots-${index}`} className="dots">
                       ...

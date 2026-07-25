@@ -10,7 +10,7 @@ import "../styles/ShippingInfo.css";
 const slides = [
   {
     title: "Free Delivery",
-    text: "On orders over AED 200",
+    text: "On orders over PKR 3,000",
     icon: (
       <>
         <rect x="1" y="6" width="14" height="11" rx="1" />
@@ -22,7 +22,7 @@ const slides = [
   },
   {
     title: "Standard Delivery",
-    text: "AED 20",
+    text: "PKR 200",
     icon: (
       <>
         <path d="M21 8 12 3 3 8l9 5 9-5Z" />
@@ -33,7 +33,7 @@ const slides = [
   },
   {
     title: "Delivery Time",
-    text: "1–3 Business Days Across UAE",
+    text: "3–5 Business Days Across Pakistan",
     icon: (
       <>
         <circle cx="12" cy="12" r="9" />

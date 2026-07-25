@@ -79,13 +79,13 @@
 }
 
 .csb-bundle-suggestion-banner {
-  background: #d32f2f;
-  border-radius: 8px;
+  background: var(--sand-beige);
+  border: 1px solid var(--gold-accent);
+  border-radius: 10px;
   padding: 12px;
   font-size: 12px;
-  color: var(--brandcream);
+  color: var(--brandblack);
   line-height: 1.4;
-  box-shadow: 0 4px 12px rgba(13, 13, 13, 0.15);
 }
 .csb-bundle-suggestion-banner:first-child {
   margin-bottom: 10px;
@@ -327,6 +327,13 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.csb-item-size {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .cart-sidebar-controls {

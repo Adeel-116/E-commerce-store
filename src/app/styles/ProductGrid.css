@@ -7,22 +7,34 @@
 }
 
 .cg-section-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 30px;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.cg-section-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-accent);
+  margin: 0 0 10px;
 }
 
 .cg-section-title {
-  font-size: 40px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-block: 6px;
-  padding-inline: 56px;
-  position: relative;
+  font-family: var(--font-playfair), serif;
+  font-size: 34px;
+  font-weight: 600;
   color: var(--charcoal);
-  margin: 0;
+  margin: 0 0 14px;
+}
+
+.cg-section-divider {
+  display: block;
+  width: 56px;
+  height: 2px;
+  background: var(--gold-accent);
+  margin: 0 auto;
 }
 
 /* ═══════════════════════════════════════════
@@ -284,21 +296,6 @@
    RESPONSIVE BREAKPOINTS (desktop-first)
 ───────────────────────────────────────────── */
 
-/* 1469px — desktop */
-@media (max-width: 1469px) {
-  .cg-section-title {
-    font-size: 40px;
-    padding-inline: 0px;
-  }
-}
-
-/* 1199px — laptop */
-@media (max-width: 1199px) {
-  .cg-section-title {
-    font-size: 40px;
-  }
-}
-
 /* 991px — tablet, 3 columns, always-visible controls */
 @media (max-width: 991px) {
   .cg-section {
@@ -310,7 +307,7 @@
   }
 
   .cg-section-title {
-    font-size: 40px;
+    font-size: 30px;
   }
 
   .cg-grid {
@@ -351,8 +348,10 @@
   }
 
   .cg-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 14px;
+    max-width: 380px;
+    margin-inline: auto;
   }
 
   .cg-card-bottom-section {

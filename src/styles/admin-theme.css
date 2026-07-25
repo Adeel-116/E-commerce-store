@@ -1,0 +1,12 @@
+:root {
+  --admin-brandblack: #1c1c1c;
+  --admin-brandgreen: #c9a961;
+  --admin-brandcream: #f7f5f2;
+  --admin-background: #f7f5f2;
+  --admin-foreground: #1c1c1c;
+}
+
+.admin-scope {
+  color: var(--admin-foreground);
+  background: var(--admin-background);
+}

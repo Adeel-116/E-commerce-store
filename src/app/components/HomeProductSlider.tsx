@@ -11,7 +11,8 @@ type Card = {
   images: string[];
   heading: string;
   stock?: boolean;
-  price: { "50ml": number; "100ml": number };
+  price: number;
+  sizes?: string[];
   category: string;
   tag?: string | null;
   _slot: number;
@@ -43,7 +44,7 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
   const { isWishlisted, toggleWishlist } = useWishlist();
 
   const disc = card.activeDiscount;
-  const discounted50 = applyDiscount(card.price["50ml"], disc);
+  const discountedPrice = applyDiscount(card.price, disc);
   const badgeLabel = disc
     ? disc.valueType === "percentage"
       ? `-${disc.value}%`
@@ -51,12 +52,14 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
     : null;
 
   const addToCartMethod = () => {
+    const size = card.sizes?.[0];
+    if (!size) return;
     addToCart({
       id: card._id,
       productName: card.heading,
       brand: "",
-      prices: card.price,
-      size: "50ml",
+      price: card.price,
+      size,
       productImage: currentImage,
     });
   };
@@ -69,6 +72,7 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
       image: currentImage,
       stock: card.stock,
       price: card.price,
+      sizes: card.sizes,
     });
   };
 
@@ -125,15 +129,15 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
             {disc ? (
               <span className="cg-card-price-row">
                 <span className="cg-card-price cg-card-price--original">
-                  AED <span className="cg-card-price-value">{card.price["50ml"]}</span>
+                  PKR <span className="cg-card-price-value">{card.price}</span>
                 </span>
                 <span className="cg-card-price cg-card-price--discounted">
-                  {discounted50}
+                  {discountedPrice}
                 </span>
               </span>
             ) : (
               <span className="cg-card-price">
-                AED {card.price["50ml"]}
+                PKR {card.price}
               </span>
             )}
           </div>

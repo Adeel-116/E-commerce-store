@@ -16,7 +16,7 @@ const STORAGE_KEY = "monk_filters";
 export type FilterParams = {
   title?: string;
   stock?: boolean;
-  category?: "male" | "female" | "designer" | "niche";
+  category?: string;
   status?: "active" | "inactive";
   sort?: string;
   page?: number;
@@ -26,18 +26,18 @@ export type FilterParams = {
 
 export type Product = {
   _id: string;
-  perfumeId?: number;
+  productId?: number;
   title: string;
   description?: string;
-  image?: string;
+  images?: string[];
   slug?: string;
   stock?: boolean;
   status?: "active" | "inactive";
-  category?: string;
-  price?: {
-    "50ml": number;
-    "100ml": number;
-  };
+  category?: string[];
+  sizes?: string[];
+  price?: number;
+  comparePrice?: number | null;
+  isNew?: boolean;
   activeDiscount?: {
     discountId: string;
     name: string;

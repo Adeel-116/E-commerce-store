@@ -21,7 +21,7 @@ const PromoSection = () => {
             <h3>Two bottles are always better together.</h3>
             <p>
               Pick one for you and one to give or two just for you. Either
-              way, it's 50 AED at checkout.
+              way, it's 50 PKR at checkout.
             </p>
             <Link href="/shop" className="btn">
               Build Your Bundle

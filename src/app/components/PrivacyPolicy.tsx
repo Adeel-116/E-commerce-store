@@ -305,7 +305,7 @@ const sections = [
         <p>
           If you have any questions or suggestions about our Privacy Policy,
           please contact us at{" "}
-          <a href="mailto:info@monkscents.com">info@monkscents.com</a>.
+          <a href="mailto:support@azancollection.com">support@azancollection.com</a>.
         </p>
       </>
     ),
@@ -320,22 +320,22 @@ const PrivacyPolicy = () => {
       <div className="pp-hero">
         <h1>Privacy Policy</h1>
         <p>
-          Thank you for visiting www.monkscents.com. Monk Scents (referred to
-          herein as “Monk Scents”, “we”, “our” or “us”) appreciates the
-          importance of your trust. This Privacy Policy describes the types of
-          personal and non-personal information we collect on the Site, how we
-          use such information, and under what circumstances we may disclose
-          it. By accessing the Site on any device, you agree to the terms of
-          this Privacy Policy. If you do not agree, please do not use the
-          site.
+          Thank you for visiting www.azancollection.com. Azan Collection
+          (referred to herein as "Azan Collection", "we", "our" or "us")
+          appreciates the importance of your trust. This Privacy Policy
+          describes the types of personal and non-personal information we
+          collect on the Site, how we use such information, and under what
+          circumstances we may disclose it. By accessing the Site on any
+          device, you agree to the terms of this Privacy Policy. If you do not
+          agree, please do not use the site.
         </p>{" "}
         <p>
-          Monk Scents operates the e-commerce website www.monkscents.com and
-          related domains, sites, services and tools ("Website"). The Website
-          allows you to browse and order premium branded perfumes and
-          fragrance products ("Products"). Monk Scents may update, modify, or
-          remove Website content at any time without prior notice and will use
-          reasonable efforts to keep information current.
+          Azan Collection operates the e-commerce website
+          www.azancollection.com and related domains, sites, services and
+          tools ("Website"). The Website allows you to browse and order
+          premium everyday and occasion wear ("Products"). Azan Collection may
+          update, modify, or remove Website content at any time without prior
+          notice and will use reasonable efforts to keep information current.
         </p>{" "}
         <p>
           We reserve the right to modify this Privacy Policy at any time. If we

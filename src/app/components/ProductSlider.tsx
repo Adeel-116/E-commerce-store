@@ -14,10 +14,7 @@ import { ProductSliderSkeleton } from "./Skeleton";
 const FEATURED_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/universalFilter?stock=true&limit=15&status=active`;
 
 function mapProduct(p: Product) {
-  const img =
-    p.image && !p.image.includes("your-domain.com")
-      ? p.image
-      : "/new-perfume-bottle.avif";
+  const img = p.images?.[0] && !p.images[0].includes("your-domain.com") ? p.images[0] : "";
   return {
     id: p._id,
     slug: p.slug ?? p._id,
@@ -25,11 +22,9 @@ function mapProduct(p: Product) {
     heading: p.title,
     description: p.description ?? "",
     stock: p.stock,
-    tag: (p as any).category ?? (p as any).gender ?? (p as any).tag ?? null,
-    price: {
-      "50ml": p.price?.["50ml"] ?? 0,
-      "100ml": p.price?.["100ml"] ?? 0,
-    },
+    tag: p.category?.[0] ?? null,
+    price: p.price ?? 0,
+    sizes: p.sizes ?? [],
     activeDiscount: p.activeDiscount ?? null,
   };
 }
@@ -81,6 +76,7 @@ const ProductSlider = ({ title = "Featured Products" }: { title?: string }) => {
         image: card.image,
         stock: card.stock,
         price: card.price,
+        sizes: card.sizes,
       });
     },
     [toggleWishlist]
@@ -88,12 +84,14 @@ const ProductSlider = ({ title = "Featured Products" }: { title?: string }) => {
 
   const handleAddToCart = useCallback(
     (card: ReturnType<typeof mapProduct>) => {
+      const size = card.sizes[0];
+      if (!size) return;
       addToCart({
         id: card.id,
         productName: card.heading,
         brand: "",
-        prices: card.price,
-        size: "50ml",
+        price: card.price,
+        size,
         productImage: card.image,
       });
       setCartAddedIds((prev) => new Set(prev).add(card.id));
@@ -143,7 +141,7 @@ const ProductSlider = ({ title = "Featured Products" }: { title?: string }) => {
           >
             {cards.map((card) => {
               const disc = card.activeDiscount;
-              const discounted50 = applyDiscount(card.price["50ml"], disc);
+              const discountedPrice = applyDiscount(card.price, disc);
               const badgeLabel = disc
                 ? disc.valueType === "percentage"
                   ? `-${disc.value}%`
@@ -205,15 +203,15 @@ const ProductSlider = ({ title = "Featured Products" }: { title?: string }) => {
                           {disc ? (
                             <span className="card-price-row">
                               <span className="card-price card-price--original">
-                                AED <span className="card-price-value">{card.price["50ml"]}</span>
+                                PKR <span className="card-price-value">{card.price}</span>
                               </span>
                               <span className="card-price card-price--discounted">
-                                {discounted50}
+                                {discountedPrice}
                               </span>
                             </span>
                           ) : (
                             <span className="card-price">
-                              AED {card.price["50ml"]}
+                              PKR {card.price}
                             </span>
                           )}
                         </div>

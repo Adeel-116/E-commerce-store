@@ -14,6 +14,7 @@ function page() {
         <div className="shop-page__hero-content">
           <p className="shop-page__breadcrumb"><Link href="/">HOME</Link> / CONTACT US</p>
           <h1 className="shop-page__hero-title">Contact Us</h1>
+          <span className="shop-page__hero-divider" />
           <p className="shop-page__hero-subtitle">
             Have a question about sizing, an order, or just want to say hello?
             We&apos;re here to help.

@@ -508,7 +508,7 @@
 /* below 540px — base mobile */
 @media (max-width: 539px) {
   .main-news-letter {
-    padding: 36px 16px 0px;
+    padding: 36px 16px 30px;
   }
 
 

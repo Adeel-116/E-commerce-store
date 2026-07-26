@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ProductGrid from "./components/ProductGrid";
 import CategorySection from "./components/CategorySection";
 import HomeHero from "./components/HomeHero";
+import HomePerksMarquee from "./components/HomePerksMarquee";
 import NavbarController from "./components/NavbarController";
 import Banner from "./components/Banner";
 import AboutUsReviews from "./components/AboutUsReviews";
@@ -24,6 +25,7 @@ export default function Home() {
     <>
       <NavbarController />
       <HomeHero />
+      <HomePerksMarquee />
       <CategorySection />
       <Banner />
       <ProductGrid />

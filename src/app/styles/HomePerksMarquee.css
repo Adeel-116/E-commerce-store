@@ -1,0 +1,78 @@
+.home-perks-marquee {
+  width: 100%;
+  background-color: var(--brandgreen);
+  padding-block: 18px;
+  overflow: hidden;
+  border-block: 1px solid rgba(201, 169, 97, 0.18);
+}
+
+.home-perks-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  animation: home-perks-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.home-perks-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--brandcream);
+  padding: 0 32px;
+  position: relative;
+}
+
+.home-perks-marquee__item::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-accent);
+}
+
+.home-perks-marquee__icon {
+  flex-shrink: 0;
+  color: var(--gold-accent);
+  stroke-width: 1.8;
+}
+
+@keyframes home-perks-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.3333%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-perks-marquee__track {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-perks-marquee {
+    padding-block: 11px;
+  }
+
+  .home-perks-marquee__item {
+    font-size: 12px;
+    padding: 0 20px;
+    gap: 8px;
+  }
+
+  .home-perks-marquee__icon {
+    width: 15px;
+    height: 15px;
+  }
+}

@@ -193,6 +193,34 @@
   line-height: 1.7;
   color: var(--muted);
   margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.shop-inner-description--expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.shop-inner-description-toggle {
+  display: block;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+  text-decoration: underline;
+  text-align: left;
+  cursor: pointer;
+  letter-spacing: 1px;
 }
 
 .shop-inner-size-price {

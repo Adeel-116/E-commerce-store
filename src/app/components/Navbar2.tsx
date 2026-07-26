@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense, useState } from "react";
+import { useActiveCategories } from "../hooks/useActiveCategories";
+import { CATEGORY_LABELS, CATEGORIES } from "../shop/constants";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -28,6 +30,10 @@ const Navbar2Inner = () => {
   const searchParams = useSearchParams();
   const activeCategory =
     pathname === "/shop" ? searchParams.get("category") : null;
+  const activeCategories = useActiveCategories();
+  const visibleCategories = activeCategories
+    ? CATEGORIES.filter((category) => activeCategories.includes(category))
+    : CATEGORIES;
   const isProfilePage = pathname === "/profile";
   const isCheckoutPage = pathname === "/checkout";
   // Only the home page has a full-bleed dark hero behind the nav — every
@@ -109,27 +115,15 @@ const Navbar2Inner = () => {
           {/* center — links (desktop only) */}
           <div className="navbar2-links">
             <Link href={"/"}>Home</Link>
-            <Link
-              href={"/shop?category=western"}
-              {...categoryLinkProps("western")}
-            >
-              Western Fashion
-            </Link>
-            <Link
-              href={"/shop?category=top-jeans"}
-              {...categoryLinkProps("top-jeans")}
-            >
-              Top & Jeans
-            </Link>
-            <Link
-              href={"/shop?category=fashion"}
-              {...categoryLinkProps("fashion")}
-            >
-              Pakistani Fashion
-            </Link>
-            <Link href={"/shop?category=maxi"} {...categoryLinkProps("maxi")}>
-              Maxi
-            </Link>
+            {visibleCategories.map((category) => (
+              <Link
+                key={category}
+                href={`/shop?category=${category}`}
+                {...categoryLinkProps(category)}
+              >
+                {CATEGORY_LABELS[category]}
+              </Link>
+            ))}
           </div>
 
           {/* right — icons + hamburger */}
@@ -235,27 +229,15 @@ const Navbar2Inner = () => {
           <Link href={"/"} onClick={closeDrawer}>
             Home
           </Link>
-          <Link
-            href={"/shop?category=western"}
-            {...categoryLinkProps("western")}
-          >
-            Western Fashion
-          </Link>
-          <Link
-            href={"/shop?category=top-jeans"}
-            {...categoryLinkProps("top-jeans")}
-          >
-            Top & Jeans
-          </Link>
-          <Link
-            href={"/shop?category=fashion"}
-            {...categoryLinkProps("fashion")}
-          >
-            Pakistani Fashion
-          </Link>
-          <Link href={"/shop?category=maxi"} {...categoryLinkProps("maxi")}>
-            Maxi
-          </Link>
+          {visibleCategories.map((category) => (
+            <Link
+              key={category}
+              href={`/shop?category=${category}`}
+              {...categoryLinkProps(category)}
+            >
+              {CATEGORY_LABELS[category]}
+            </Link>
+          ))}
           {!initials && (
             <>
               <Link href={"/login"} onClick={closeDrawer}>

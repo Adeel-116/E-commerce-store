@@ -490,9 +490,6 @@
     width: 22px;
     height: 22px;
   }
-  .navbar2 {
-    top: -1px;
-  }
 }
 @media (max-width: 1469px) {
   .navbar2-links {

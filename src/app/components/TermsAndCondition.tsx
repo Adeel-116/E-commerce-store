@@ -1,6 +1,6 @@
 import React from "react";
 import "../../app/styles/terms-and-condition.css";
-import StickNavbar from "./StickNavbar";
+import NavbarController from "./NavbarController";
 
 const sections = [
   {
@@ -580,7 +580,7 @@ const sections = [
 const TermsAndCondition = () => {
   return (
     <>
-    <StickNavbar />
+    <NavbarController />
     <div className="pp-wrapper">
       <div className="pp-hero">
         <h1>Terms & Conditions</h1>

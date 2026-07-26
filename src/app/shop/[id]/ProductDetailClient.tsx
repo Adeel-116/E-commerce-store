@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductGrid.css";
-import StickNavbar from "@/app/components/StickNavbar";
+import NavbarController from "@/app/components/NavbarController";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
@@ -57,6 +57,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
 
@@ -71,6 +72,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
       setQuantity(1);
       setSelectedSize(null);
       setSelectedColor(null);
+      setDescriptionExpanded(false);
 
       try {
         const { data } = await api.get("/getProductById", { params: { slug } });
@@ -120,7 +122,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
   if (loading) {
     return (
       <div className="shop-inner-page">
-        <StickNavbar />
+        <NavbarController />
         <div className="shop-inner-status">Loading…</div>
       </div>
     );
@@ -129,7 +131,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
   if (notFound || !product) {
     return (
       <div className="shop-inner-page">
-        <StickNavbar />
+        <NavbarController />
         <div className="shop-inner-status">Product not found.</div>
       </div>
     );
@@ -179,7 +181,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
 
   return (
     <div className="shop-inner-page">
-      <StickNavbar />
+      <NavbarController />
 
       <div className="shop-inner-page-container">
         <div className="shop-inner-container shop-inner-container--stretch">
@@ -272,7 +274,20 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
           <div className="shop-inner-right-container shop-inner-right-centered">
             <h1 className="shop-inner-title">{product.title}</h1>
 
-            <p className="shop-inner-description">{product.description}</p>
+            <p
+              className={`shop-inner-description ${descriptionExpanded ? "shop-inner-description--expanded" : ""}`}
+            >
+              {product.description}
+            </p>
+            {product.description && (
+              <button
+                type="button"
+                className="shop-inner-description-toggle"
+                onClick={() => setDescriptionExpanded((prev) => !prev)}
+              >
+                {descriptionExpanded ? "View less" : "View more"}
+              </button>
+            )}
 
             <hr className="section-divider" />
 
@@ -427,6 +442,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                   ? item.colors[0].images[0]
                   : item.images[0];
                 const itemVisibleColors = (item.colors ?? []).filter(isRealColor);
+                const itemWishlisted = isWishlisted(item._id);
                 return (
                   <Link href={`/shop/${item.slug}`} key={item._id} className="cg-card">
                     <div className="cg-card-image-container">
@@ -436,6 +452,37 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                         title={item.title}
                         className="cg-card-image"
                       />
+                      <button
+                        type="button"
+                        className={`cg-card-wishlist-float${itemWishlisted ? " active" : ""}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleWishlist({
+                            id: item._id,
+                            name: item.title,
+                            description: item.description,
+                            image: itemImage,
+                            stock: item.stock,
+                            price: item.price,
+                            sizes: item.sizes,
+                          });
+                        }}
+                        aria-label={itemWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill={itemWishlisted ? "#1c1c1c" : "none"}
+                          stroke={itemWishlisted ? "#1c1c1c" : "currentColor"}
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                      </button>
                     </div>
                     <div className="cg-card-bottom-section">
                       <h3 className="cg-card-heading">{item.title}</h3>

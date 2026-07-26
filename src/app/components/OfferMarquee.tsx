@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import "../styles/OfferMarquee.css";
 import { FREE_SHIPPING_THRESHOLD } from "../lib/shipping";
 
@@ -11,10 +10,6 @@ const OFFERS = [
 ];
 
 export default function OfferMarquee() {
-  const pathname = usePathname();
-  const isCheckoutPage = pathname?.startsWith("/checkout");
-  if (isCheckoutPage) return null;
-
   const track = [...OFFERS, ...OFFERS, ...OFFERS, ...OFFERS];
 
   return (

@@ -531,6 +531,11 @@
     font-size: 26px;
   }
 
+  .cg-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
   .cg-card-price {
     font-size: 13px;
     font-weight: 700;

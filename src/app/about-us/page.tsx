@@ -57,13 +57,13 @@ function page() {
 
                 <div className="about-story__images">
                     <div className="about-story__img-wrap about-story__img--left">
-                        <img src="/category-maxi.avif" alt="Zarya Style maxi dresses" className="about-story__img" />
+                        <img src="/category-maxi.avif" alt="Zarya Style maxi dresses" title="Zarya Style maxi dresses" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-top">
-                        <img src="/category-fashion.avif" alt="Zarya Style Pakistani fashion wear" className="about-story__img" />
+                        <img src="/category-fashion.avif" alt="Zarya Style Pakistani fashion wear" title="Zarya Style Pakistani fashion wear" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-bot">
-                        <img src="/category-western.avif" alt="Zarya Style western wear" className="about-story__img" />
+                        <img src="/category-western.avif" alt="Zarya Style western wear" title="Zarya Style western wear" className="about-story__img" />
                     </div>
                 </div>
             </section>

@@ -99,6 +99,7 @@ const Navbar2Inner = () => {
               <img
                 src={isSolid ? "/white-version.avif" : "/updated-logo.avif"}
                 alt="Zarya Style"
+                title="Zarya Style"
                 className="navbar2-brand-mark"
               />
 

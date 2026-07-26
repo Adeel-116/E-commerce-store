@@ -46,7 +46,7 @@ const Wishlist = () => {
             {wishlistItems.map((item) => (
               <div className="wl-card" key={item.id}>
                 <div className="wl-card-image-wrap">
-                  <img src={item.image} alt={item.name} className="wl-card-image" />
+                  <img src={item.image} alt={item.name} title={item.name} className="wl-card-image" />
                   <button
                     className="wl-remove-btn"
                     onClick={() => removeFromWishlist(item.id)}

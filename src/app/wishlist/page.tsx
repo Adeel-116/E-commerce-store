@@ -4,6 +4,7 @@ import Wishlist from "../components/Wishlist";
 export const metadata: Metadata = {
   title: "Wishlist",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/wishlist" },
 };
 
 export default function WishlistPage() {

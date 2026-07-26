@@ -426,7 +426,7 @@ export default function Checkout() {
                 cartItems.map((item) => (
                   <div className="co-order-item" key={`${item.id}-${item.size}`}>
                     <div className="co-item-img-wrap">
-                      <img src={item.productImage} alt={item.productName} className="co-item-img" />
+                      <img src={item.productImage} alt={item.productName} title={item.productName} className="co-item-img" />
                       <span className="co-item-badge">{item.quantity}</span>
                     </div>
                     <div className="co-item-info">

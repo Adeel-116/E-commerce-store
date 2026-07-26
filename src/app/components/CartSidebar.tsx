@@ -104,6 +104,7 @@ const CartSidebar = () => {
                     <img
                       src={item.productImage}
                       alt={item.productName}
+                      title={item.productName}
                       className="cart-sidebar-img"
                     />
                   </div>

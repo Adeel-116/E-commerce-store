@@ -152,6 +152,7 @@ const HomeHero = () => {
                 <img
                   src={slide.img}
                   alt={slide.title}
+                  title={slide.title}
                   className="hero-slide-img"
                   ref={(el) => {
                     imgRefs.current[index] = el;

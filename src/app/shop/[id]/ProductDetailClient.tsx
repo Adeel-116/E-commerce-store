@@ -216,7 +216,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                       className={`shop-inner-gallery-thumb${activeImage === index ? " active" : ""}`}
                       onClick={() => setActiveImage(index)}
                     >
-                      <img src={img} alt={`${product.title} ${index + 1}`} />
+                      <img src={img} alt={`${product.title} ${index + 1}`} title={`${product.title} ${index + 1}`} />
                     </button>
                   ))}
                 </div>
@@ -261,6 +261,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                 <img
                   src={galleryImages[activeImage] ?? galleryImages[0]}
                   alt={product.title}
+                  title={product.title}
                   className="shop-inner-static-img"
                 />
               </div>
@@ -432,6 +433,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                       <img
                         src={itemImage}
                         alt={item.title}
+                        title={item.title}
                         className="cg-card-image"
                       />
                     </div>

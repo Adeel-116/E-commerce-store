@@ -4,6 +4,7 @@ import ResetPasswordPage from "../components/ResetPasswordPage";
 export const metadata: Metadata = {
   title: "Reset Password",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/reset-password" },
 };
 
 export default function ResetPassword() {

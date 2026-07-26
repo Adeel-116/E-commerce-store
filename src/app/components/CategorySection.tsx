@@ -43,6 +43,7 @@ function CategoryCard({ category }: { category: Category }) {
       <Image
         src={category.image}
         alt={category.title}
+        title={category.title}
         fill
         sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 25vw"
         objectPosition="top center"

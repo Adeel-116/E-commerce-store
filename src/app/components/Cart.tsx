@@ -84,6 +84,7 @@ const Cart = () => {
                     <img
                       src={item.productImage}
                       alt={item.productName}
+                      title={item.productName}
                       className="product-image"
                     />
                   </div>

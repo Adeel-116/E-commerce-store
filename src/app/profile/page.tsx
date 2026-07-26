@@ -5,6 +5,7 @@ import StickNavbar from "../components/StickNavbar";
 export const metadata: Metadata = {
   title: "My Profile",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/profile" },
 };
 
 export default function ProfilePage() {

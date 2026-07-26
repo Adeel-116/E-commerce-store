@@ -13,6 +13,11 @@ import AppShell from "./components/AppShell";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "./lib/seo";
 import { organizationJsonLd, websiteJsonLd } from "./lib/jsonld";
 
+// Only loads on the real production build — `next dev` (localhost) always
+// runs with NODE_ENV=development, so local browsing never gets counted.
+const GA_MEASUREMENT_ID =
+  process.env.NODE_ENV === "production" ? "G-Y0S9SK599F" : undefined;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -100,6 +105,20 @@ export default function RootLayout({
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-5V6LJLTR');`}
         </Script>
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');`}
+            </Script>
+          </>
+        )}
       </head>
       <body>
         <noscript>

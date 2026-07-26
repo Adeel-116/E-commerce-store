@@ -116,6 +116,7 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
         <img
           src={currentImage}
           alt={card.heading}
+          title={card.heading}
           draggable={false}
           className="cg-card-image"
         />

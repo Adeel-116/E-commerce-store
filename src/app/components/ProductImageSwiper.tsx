@@ -79,6 +79,7 @@ function ImageCarousel({
       <img
         src={images[0]}
         alt={alt}
+        title={alt}
         draggable={false}
         className="cg-card-image"
         onClick={onImageClick}
@@ -105,6 +106,7 @@ function ImageCarousel({
             <img
               src={src}
               alt={`${alt} ${i + 1}`}
+              title={`${alt} ${i + 1}`}
               draggable={false}
               className="cg-card-image"
             />

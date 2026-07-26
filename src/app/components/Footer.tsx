@@ -108,7 +108,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="footer-column">
             <Link href={"/"} className="footer-logo">
-              <img src="/white-version.avif" alt="Zarya Style" className="footer-brand-logo" />
+              <img src="/white-version.avif" alt="Zarya Style" title="Zarya Style" className="footer-brand-logo" />
             </Link>
 
             <p className="footer-description">

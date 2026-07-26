@@ -596,6 +596,11 @@
     width: 52px;
   }
 
+  .navbar2-brand-mark {
+    height: 48px;
+    width: 54px;
+  }
+
   .navbar2-links {
     display: none;
   }
@@ -631,11 +636,16 @@
 /* below 540px — small mobile */
 @media (max-width: 539px) {
   .navbar2 {
-    padding-block: 10px;
+    padding-block: 15px;
   }
 
   .navbar2-logo {
     width: 48px;
+  }
+
+  .navbar2-brand-mark {
+    height: 55px;
+    width: 55px;
   }
 
   .navbar2-actions {

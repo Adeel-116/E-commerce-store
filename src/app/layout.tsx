@@ -15,6 +15,14 @@ export const metadata: Metadata = {
   title: "Zarya Style",
   description:
     "Zarya Style is an online clothing store offering premium everyday and occasion wear.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "../styles/ProductGrid.css";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
@@ -43,7 +43,6 @@ export type GridProduct = {
 };
 
 export function ProductCard({ product }: { product: GridProduct }) {
-  const router = useRouter();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart, openCart } = useCart();
   const {
@@ -60,6 +59,7 @@ export function ProductCard({ product }: { product: GridProduct }) {
   const firstColor = visibleColors[0]?.name ?? null;
 
   const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     toggleWishlist({
       id: product._id,
@@ -88,12 +88,11 @@ export function ProductCard({ product }: { product: GridProduct }) {
   };
 
   return (
-    <div className="cg-card">
+    <Link href={`/shop/${product.slug}`} className="cg-card">
       <div className="cg-card-image-container">
         <ProductImageSwiper
           images={displayImages}
           alt={product.title}
-          onImageClick={() => router.push(`/shop/${product.slug}`)}
           activeIndex={activeImageIndex}
           onIndexChange={onIndexChange}
         />
@@ -184,7 +183,7 @@ export function ProductCard({ product }: { product: GridProduct }) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 

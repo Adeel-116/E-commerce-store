@@ -5,6 +5,7 @@ import Link from "next/link";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductGrid.css";
 import NavbarController from "@/app/components/NavbarController";
+import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
@@ -123,7 +124,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
     return (
       <div className="shop-inner-page">
         <NavbarController />
-        <div className="shop-inner-status">Loading…</div>
+        <ProductDetailSkeleton />
       </div>
     );
   }

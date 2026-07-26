@@ -34,7 +34,7 @@
 }
 
 .footer-brand-logo {
-  height: 60px;
+  height: 91px;
   width: auto;
 }
 
@@ -126,7 +126,7 @@
   height: auto;
   padding: 0 18px;
   background-color: var(--gold-accent);
-  color: var(--charcoal);
+  color: var(--off-white);
   border: none;
   display: flex;
   align-items: center;
@@ -518,7 +518,7 @@
   }
 
   .footer-brand-logo {
-    height: 44px;
+    height: 70px;
   }
 
   .footer-logo-main {

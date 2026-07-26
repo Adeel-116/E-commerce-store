@@ -9,15 +9,15 @@
   /* Zarya Style brand palette — Charcoal / Off-white / Gold */
   --charcoal: #1c1c1c;
   --sand-beige: #efeae1;
-  --gold-accent: #c9a961;
+  --gold-accent: #C89E41;
   --off-white: #f7f5f2;
-  --terracotta: #c9a961;
+  --terracotta: #C89E41;
 
   --lightblack: rgba(28, 28, 28, 0.801);
   --paddinginline: 56px;
   --brandblack: #1c1c1ce8;
   --brandgreen: #1c1c1c;
-  --brandlightgreen: #c9a961e5;
+  --brandlightgreen: #  ;
   --brandcream: #f7f5f2;
 
   /* root vars */

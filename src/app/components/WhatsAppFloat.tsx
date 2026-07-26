@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import "../styles/WhatsAppFloat.css";
 
-const WHATSAPP_NUMBER = "923160653268";
+const WHATSAPP_NUMBER = "923483935003";
 const DEFAULT_MESSAGE = "Hi! I have an enquiry regarding your products.";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     DEFAULT_MESSAGE

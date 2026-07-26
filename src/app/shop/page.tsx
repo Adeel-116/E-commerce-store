@@ -45,145 +45,6 @@ export type ShopProduct = {
   } | null;
 };
 
-function getMockShopProducts(): ShopProduct[] {
-  return [
-    {
-      _id: "smock1",
-      productId: 101,
-      title: "Elegant Summer Dress",
-      slug: "elegant-summer-dress",
-      description: "A beautiful dress.",
-      images: ["/clothing-hero-1-desktop.jpg"],
-      price: 3500,
-      comparePrice: null,
-      category: ["fashion", "maxi"],
-      sizes: ["S", "M", "L"],
-      colors: [
-        {
-          name: "Black",
-          hex: "#000000",
-          images: [
-            "/clothing-hero-1-desktop.jpg",
-            "/clothing-hero-1-mobile.jpg",
-          ],
-        },
-        {
-          name: "White",
-          hex: "#ffffff",
-          images: [
-            "/clothing-hero-2-desktop.jpg",
-            "/clothing-hero-2-mobile.jpg",
-          ],
-        },
-      ],
-      isNew: true,
-      stock: true,
-      status: "active",
-      activeDiscount: null,
-    },
-    {
-      _id: "smock2",
-      productId: 102,
-      title: "Classic Denim Jacket",
-      slug: "classic-denim-jacket",
-      description: "Classic denim.",
-      images: ["/clothing-hero-3-desktop.jpg"],
-      price: 4500,
-      comparePrice: 5000,
-      category: ["top-jeans"],
-      sizes: ["M", "L"],
-      colors: [
-        {
-          name: "Blue",
-          hex: "#0000ff",
-          images: [
-            "/clothing-hero-3-desktop.jpg",
-            "/clothing-hero-2-desktop.jpg",
-          ],
-        },
-        {
-          name: "Dark Blue",
-          hex: "#0000aa",
-          images: [
-            "/clothing-hero-1-mobile.jpg",
-            "/clothing-hero-3-mobile.jpg",
-          ],
-        },
-      ],
-      isNew: false,
-      stock: true,
-      status: "active",
-      activeDiscount: {
-        discountId: "d1",
-        name: "Sale",
-        valueType: "percentage",
-        value: 10,
-      },
-    },
-    {
-      _id: "smock3",
-      productId: 103,
-      title: "Casual White Tee",
-      slug: "casual-white-tee",
-      description: "Simple tee.",
-      images: ["/clothing-hero-2-desktop.jpg"],
-      price: 1500,
-      comparePrice: null,
-      category: ["western"],
-      sizes: ["S", "M", "L", "XL"],
-      colors: [
-        {
-          name: "White",
-          hex: "#ffffff",
-          images: ["/clothing-hero-2-desktop.jpg"],
-        },
-        {
-          name: "Grey",
-          hex: "#888888",
-          images: ["/clothing-hero-2-mobile.jpg"],
-        },
-        {
-          name: "Black",
-          hex: "#000000",
-          images: ["/clothing-hero-1-desktop.jpg"],
-        },
-      ],
-      isNew: true,
-      stock: true,
-      status: "active",
-      activeDiscount: null,
-    },
-    {
-      _id: "smock4",
-      productId: 104,
-      title: "Premium Leather Belt",
-      slug: "premium-leather-belt",
-      description: "A nice belt.",
-      images: ["/clothing-hero-3-mobile.jpg"],
-      price: 2000,
-      comparePrice: null,
-      category: ["accessories"],
-      sizes: ["One Size"],
-      colors: [
-        {
-          name: "Brown",
-          hex: "#8b4513",
-          images: ["/clothing-hero-3-mobile.jpg"],
-        },
-        {
-          name: "Black",
-          hex: "#000000",
-          images: ["/clothing-hero-1-mobile.jpg"],
-        },
-      ],
-      isNew: false,
-      stock: true,
-      status: "active",
-      activeDiscount: null,
-    },
-  ];
-}
-
 export const CATEGORY_LABELS: Record<string, string> = {
   maxi: "Maxi",
   fashion: "Pakistani Fashion",
@@ -317,21 +178,13 @@ function ShopPageContent() {
         const { data } = await api.get("/universalFilter", { params });
         if (cancelled) return;
 
-        if (data?.data && data.data.length > 0) {
-          setProducts(data.data);
-          setTotal(data.total ?? data.data.length);
-          setTotalPages(data.totalPages ?? 1);
-        } else {
-          const mocks = getMockShopProducts();
-          setProducts(mocks);
-          setTotal(mocks.length);
-          setTotalPages(1);
-        }
+        setProducts(data?.data ?? []);
+        setTotal(data?.total ?? 0);
+        setTotalPages(data?.totalPages ?? 1);
       } catch {
         if (!cancelled) {
-          const mocks = getMockShopProducts();
-          setProducts(mocks);
-          setTotal(mocks.length);
+          setProducts([]);
+          setTotal(0);
           setTotalPages(1);
         }
       } finally {

@@ -56,7 +56,8 @@
 
 .navbar2-brand-mark {
   height: 90px;
-  width: auto;
+  width: 100px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -80,16 +81,20 @@
 
 .navbar2-links a {
   font-size: 18px;
-  color: var(--brandcream);
+  color: #181717;
   font-family: medium;
   cursor: pointer;
   font-weight: 300;
   text-decoration: none;
+  transition: color 0.4s ease, opacity 0.2s ease;
 }
 
 .navbar2-links a:hover {
   opacity: 0.7;
-  transition: opacity 0.2s ease;
+}
+
+.navbar2--solid .navbar2-links a {
+  color: var(--brandcream);
 }
 
 /* ── Right icons ── */
@@ -100,10 +105,15 @@
 }
 
 .navbar2-actions svg {
-  color: var(--brandcream);
+  color: #181717;
   width: 24px;
   height: 24px;
   cursor: pointer;
+  transition: color 0.4s ease;
+}
+
+.navbar2--solid .navbar2-actions svg {
+  color: var(--brandcream);
 }
 
 .navbar2-icon-wrap {
@@ -185,9 +195,13 @@
   display: block;
   width: 22px;
   height: 2px;
-  background: var(--brandcream);
-  transition: all 0.3s ease;
+  background: #181717;
+  transition: background-color 0.4s ease, transform 0.3s ease, opacity 0.3s ease;
   transform-origin: center;
+}
+
+.navbar2--solid .navbar2-hamburger span {
+  background: var(--brandcream);
 }
 
 .navbar2-hamburger--open span:nth-child(1) {

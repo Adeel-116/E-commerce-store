@@ -37,6 +37,7 @@ const Navbar2Inner = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isSolid = scrolled || isCheckoutPage || !isHomePage;
 
   useEffect(() => setMounted(true), []);
 
@@ -89,14 +90,14 @@ const Navbar2Inner = () => {
   return (
     <>
       <nav
-        className={`navbar2 ${isProfilePage ? "navbar2-profile" : ""} ${scrolled || isCheckoutPage || !isHomePage ? "navbar2--solid" : ""}`}
+        className={`navbar2 ${isProfilePage ? "navbar2-profile" : ""} ${isSolid ? "navbar2--solid" : ""}`}
       >
         <div className="navbar2-content">
           {/* left — logo */}
           <Link href={"/"}>
             <div className="navbar2-text-logo" id="nav-logo">
               <img
-                src="/updated-logo.png"
+                src={isSolid ? "/white-version.png" : "/updated-logo.png"}
                 alt="Zarya Style"
                 className="navbar2-brand-mark"
               />

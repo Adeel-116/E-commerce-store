@@ -102,6 +102,7 @@
 
 .category-card:hover .category-card-badge {
   background: var(--gold-accent);
+  color: var(--off-white);
 }
 
 /* Responsive */

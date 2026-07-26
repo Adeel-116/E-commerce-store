@@ -58,7 +58,7 @@ const AboutUsContact = () => {
                         </div>
                         <div className="au-contact__detail-item">
                             <span className="au-contact__detail-icon">☎</span>
-                            <a href="tel:+923160653268">+92 316 0653268</a>
+                            <a href="tel:+923483935003">+92 348 3935003</a>
                         </div>
                     </div>
                 </div>

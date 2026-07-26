@@ -18,8 +18,10 @@
 .info-tab {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   width: 100%;
   gap: 14px;
+  text-align: left;
 }
 
 .info-tab-icon {
@@ -94,7 +96,7 @@
   }
 
   .info-tabs-container {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
 

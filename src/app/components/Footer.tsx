@@ -67,7 +67,7 @@ const Footer = () => {
           )}
         </div>
       )}
-      {/* <FooterTab /> */}
+      <FooterTab />
 
       {/* Main Footer Content */}
 

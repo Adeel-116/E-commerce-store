@@ -1,12 +1,12 @@
 import React from "react";
 import "../styles/FooterTab.css";
-import { Truck, ShieldCheck, UserRoundCheck, CreditCard } from "lucide-react";
+import { Truck, ShieldCheck, UserRoundCheck } from "lucide-react";
 
 const tabs = [
   {
     icon: <ShieldCheck />,
-    title: "Why Choose Monk Perfume",
-    text: "Monk Scents offers authentic niche and designer perfumes for men and women, featuring rare and luxurious scents from around the world.",
+    title: "Why Choose Zarya Style",
+    text: "Zarya Style offers authentic, quality stitched and unstitched clothing, featuring the latest trends for men and women.",
   },
   {
     icon: <UserRoundCheck />,
@@ -14,17 +14,9 @@ const tabs = [
     text: "Assisting by chat, email and phone",
   },
   {
-  
     icon: <Truck />,
-    title: "Convenient Shipping on All Orders",
+    title: "Shipping Across All Pakistan",
     text: "We prioritize getting your order to you fast.",
-  },
-  
-  
-  {
-    icon: <CreditCard />,
-    title: "Secured Payment Options",
-    text: "Visa, Discover, Mastercard, Amex, G Pay and Apple Pay",
   },
 ];
 

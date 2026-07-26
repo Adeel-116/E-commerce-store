@@ -69,7 +69,7 @@
 
 .category-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 30px rgba(28, 28, 28, 0.16);
+  /* box-shadow: 0 16px 30px rgba(28, 28, 28, 0.16); */
 }
 
 .category-card-image {

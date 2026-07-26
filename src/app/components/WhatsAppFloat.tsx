@@ -44,7 +44,7 @@ export default function WhatsAppFloat() {
                             </svg>
                         </span>
                         <div>
-                            <p className="whatsapp-popup__title">Zainab Store</p>
+                            <p className="whatsapp-popup__title">Zarya Style</p>
                             <p className="whatsapp-popup__status">
                                 <span className="whatsapp-popup__dot" />
                                 Typically replies instantly

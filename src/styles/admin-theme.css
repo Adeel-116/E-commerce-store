@@ -1,9 +1,9 @@
 :root {
-  --admin-brandblack: #1a1a1a;
-  --admin-brandgreen: #8a9a7e;
-  --admin-brandcream: #f5f5f3;
-  --admin-background: #f5f5f3;
-  --admin-foreground: #1a1a1a;
+  --admin-brandblack: #1c1c1c;
+  --admin-brandgreen: #c9a961;
+  --admin-brandcream: #f7f5f2;
+  --admin-background: #f7f5f2;
+  --admin-foreground: #1c1c1c;
 }
 
 .admin-scope {

@@ -54,29 +54,10 @@
   flex-shrink: 0;
 }
 
-.navbar2-text-logo-words {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  line-height: 1;
-}
-
-.navbar2-text-logo-main {
-  font-family: var(--font-playfair), serif;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--brandcream);
-}
-
-.navbar2-text-logo-sub {
-  font-family: var(--font-playfair), serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold-accent);
+.navbar2-brand-mark {
+  height: 90px;
+  width: auto;
+  flex-shrink: 0;
 }
 
 /* ── Logo ── */

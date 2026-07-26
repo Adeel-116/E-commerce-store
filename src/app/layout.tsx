@@ -12,9 +12,9 @@ import "./globals.css";
 import AppShell from "./components/AppShell";
 
 export const metadata: Metadata = {
-  title: "Zainab Store",
+  title: "Zarya Style",
   description:
-    "Zainab Store is an online clothing store offering premium everyday and occasion wear.",
+    "Zarya Style is an online clothing store offering premium everyday and occasion wear.",
 };
 
 export default function RootLayout({

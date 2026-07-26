@@ -149,7 +149,7 @@ const StickNavbarInner = () => {
           <div className="snb-left">
             <Link href={"/"}>
               <div className="navbar2-text-logo">
-                <img src="/zainab-logo-white.png" alt="Zainab Store" className="navbar2-brand-logo" />
+                <img src="/zarya-logo-white.png" alt="Zarya Style" className="navbar2-brand-logo" />
               </div>
             </Link>
           </div>

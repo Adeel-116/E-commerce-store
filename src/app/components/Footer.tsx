@@ -76,11 +76,11 @@ const Footer = () => {
           {/* Company Info */}
           <div className="footer-column">
             <Link href={"/"} className="footer-logo">
-              <img src="/zainab-logo-white.png" alt="Zainab Store" className="footer-brand-logo" />
+              <img src="/zarya-logo-white.png" alt="Zarya Style" className="footer-brand-logo" />
             </Link>
 
             <p className="footer-description">
-              Zainab Store is your destination for premium everyday and
+              Zarya Style is your destination for premium everyday and
               occasion wear, bringing you a curated clothing shopping
               experience from start to finish.
             </p>
@@ -98,7 +98,7 @@ const Footer = () => {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </svg>
               </span>
-              <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>
+              <a href="mailto:infozaryastyle@gmail.com">infozaryastyle@gmail.com</a>
             </div>
             <div className="footer-contact">
               <span className="footer-contact-icon">
@@ -187,7 +187,7 @@ const Footer = () => {
       <section className="footer-bottom">
         <div className="footer-bottom-container">
           <p className="footer-copyright">
-            Copyright © 2026 <strong>Zainab Store</strong>. All Rights
+            Copyright © 2026 <strong>Zarya Style</strong>. All Rights
             Reserved
           </p>
         </div>

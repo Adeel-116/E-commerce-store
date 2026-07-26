@@ -33,7 +33,7 @@
 .invoice-modal-toolbar-title {
   font-weight: 700;
   font-size: 15px;
-  color: var(--brandblack, #1a1a1a);
+  color: var(--brandblack, #1c1c1c);
 }
 
 .invoice-modal-toolbar-actions {

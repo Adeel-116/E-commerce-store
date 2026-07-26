@@ -48,7 +48,7 @@ export default function LoginPage() {
     <main className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <img src="/zainab-logo.png" alt="Zainab Store" className="login-logo-img" />
+          <img src="/zarya-logo.png" alt="Zarya Style" className="login-logo-img" />
           <div className="login-logo-sub">Admin Dashboard</div>
         </div>
 
@@ -118,7 +118,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="login-footer-text">Zainab Store &copy; {new Date().getFullYear()} — Admin access only</p>
+        <p className="login-footer-text">Zarya Style &copy; {new Date().getFullYear()} — Admin access only</p>
       </div>
     </main>
   );

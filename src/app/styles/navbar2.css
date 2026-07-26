@@ -4,7 +4,7 @@
   position: fixed;
   padding-inline: 50px;
   padding-block: 15px;
-  top: 0;
+  top: var(--offer-marquee-height, 36px);
   left: 0;
   z-index: 999;
   background-color: rgba(28, 28, 28, 0);

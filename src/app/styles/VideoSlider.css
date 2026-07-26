@@ -113,8 +113,8 @@
   border-radius: 18px;
   user-select: none;
   will-change: height;
-  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
-  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.35);
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* box-shadow: 0 20px 46px rgba(0, 0, 0, 0.35); */
 }
 
 .vs-video {

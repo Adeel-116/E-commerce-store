@@ -10,6 +10,8 @@ import CartSidebar from "./CartSidebar";
 import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
 import WhatsAppFloat from "./WhatsAppFloat";
+import SubscribePopup from "./SubscribePopup";
+import OfferMarquee from "./OfferMarquee";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -21,6 +23,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <OfferMarquee />
       <AuthProvider>
         <FilterProvider>
           <WishlistProvider>
@@ -34,6 +37,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </AuthProvider>
       <Footer />
       <WhatsAppFloat />
+      <SubscribePopup />
     </>
   );
 }

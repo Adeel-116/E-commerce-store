@@ -15,6 +15,7 @@
 
   --lightblack: rgba(28, 28, 28, 0.801);
   --paddinginline: 56px;
+  --offer-marquee-height: 36px;
   --brandblack: #1c1c1ce8;
   --brandgreen: #1c1c1c;
   --brandlightgreen: #  ;
@@ -55,6 +56,10 @@
 
 a {
   text-decoration: none;
+}
+
+body {
+  padding-top: var(--offer-marquee-height, 36px);
 }
 
 /* Custom scrollbar */

@@ -6,7 +6,7 @@ const tabs = [
   {
     icon: <ShieldCheck />,
     title: "Why Choose Zarya Style",
-    text: "Zarya Style offers authentic, quality stitched and unstitched clothing, featuring the latest trends for men and women.",
+    text: "Authentic, quality stitched and unstitched clothing for men and women.",
   },
   {
     icon: <UserRoundCheck />,

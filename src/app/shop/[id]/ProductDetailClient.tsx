@@ -48,9 +48,15 @@ function getDiscountPercent(product: Product): number | null {
     : null;
 }
 
-export default function ProductDetailClient({ slug }: { slug: string }) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function ProductDetailClient({
+  slug,
+  initialProduct,
+}: {
+  slug: string;
+  initialProduct?: Product | null;
+}) {
+  const [product, setProduct] = useState<Product | null>(initialProduct ?? null);
+  const [loading, setLoading] = useState(!initialProduct);
   const [notFound, setNotFound] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
 
@@ -62,18 +68,23 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
 
+  // The server already fetched this product for metadata/SEO — reuse it for
+  // the first render instead of re-fetching client-side, which used to leave
+  // the page on a skeleton for an extra full round-trip on every visit.
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      setLoading(true);
-      setNotFound(false);
-      setProduct(null);
-      setActiveImage(0);
-      setQuantity(1);
-      setSelectedSize(null);
-      setSelectedColor(null);
-      setDescriptionExpanded(false);
+      if (!initialProduct) {
+        setLoading(true);
+        setNotFound(false);
+        setProduct(null);
+        setActiveImage(0);
+        setQuantity(1);
+        setSelectedSize(null);
+        setSelectedColor(null);
+        setDescriptionExpanded(false);
+      }
 
       try {
         const { data } = await api.get("/getProductById", { params: { slug } });
@@ -81,11 +92,11 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
 
         if (data?.success && data.data) {
           setProduct(data.data);
-        } else {
+        } else if (!initialProduct) {
           setNotFound(true);
         }
       } catch {
-        if (!cancelled) setNotFound(true);
+        if (!cancelled && !initialProduct) setNotFound(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -94,6 +105,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   useEffect(() => {

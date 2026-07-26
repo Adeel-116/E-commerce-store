@@ -188,21 +188,41 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const quantity = item.quantity ?? 1;
     const unitPrice = item.price ?? 0;
 
+    setCartItems((prev) => {
+      const existing = prev.find((i) => matchesLine(i, item.id, item.size, item.color));
+      if (existing) {
+        return prev.map((i) =>
+          matchesLine(i, item.id, item.size, item.color)
+            ? { ...i, quantity: i.quantity + quantity, lineSubtotal: i.unitPrice * (i.quantity + quantity) }
+            : i
+        );
+      }
+      return [
+        ...prev,
+        {
+          ...item,
+          quantity,
+          unitPrice,
+          lineSubtotal: unitPrice * quantity,
+          bundleApplied: false,
+        },
+      ];
+    });
+    setIsCartOpen(true);
+    ttqAddToCart({
+      content_id: item.id,
+      content_type: "product",
+      content_name: item.productName,
+      price: unitPrice,
+      num_items: quantity,
+      value: unitPrice * quantity,
+    });
+
     api.post("/cart/add", { productId: item.id, size: item.size, color: item.color ?? null, quantity })
-      .then(() => {
-        refetchCart();
-        setIsCartOpen(true);
-        ttqAddToCart({
-          content_id: item.id,
-          content_type: "product",
-          content_name: item.productName,
-          price: unitPrice,
-          num_items: quantity,
-          value: unitPrice * quantity,
-        });
-      })
+      .then(() => refetchCart())
       .catch((err) => {
         console.error("Add to cart failed:", err?.response?.data?.message ?? err.message);
+        refetchCart();
       });
   };
 

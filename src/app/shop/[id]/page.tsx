@@ -10,15 +10,33 @@ type ProductPageProps = {
   params: Promise<{ id: string }>;
 };
 
+type ColorVariant = {
+  name: string;
+  hex: string;
+  images: string[];
+};
+
 type FetchedProduct = {
+  _id: string;
+  productId: number;
   title: string;
   slug: string;
   description: string;
   images: string[];
   price: number;
   comparePrice: number | null;
-  stock: boolean;
   category: string[];
+  sizes: string[];
+  colors: ColorVariant[];
+  isNew: boolean;
+  stock: boolean;
+  status: "active" | "inactive";
+  activeDiscount: {
+    discountId: string;
+    name: string;
+    valueType: "percentage" | "fixed";
+    value: number;
+  } | null;
 };
 
 async function fetchProduct(slug: string): Promise<FetchedProduct | null> {
@@ -108,7 +126,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           }}
         />
       )}
-      <ProductDetailClient slug={slug} />
+      <ProductDetailClient slug={slug} initialProduct={product} />
     </>
   );
 }

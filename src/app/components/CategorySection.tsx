@@ -17,22 +17,22 @@ interface Category {
 const categories: Category[] = [
   {
     title: "Western Fashion",
-    image: "/category-western.png",
+    image: "/category-western.avif",
     href: "/shop?category=western",
   },
   {
     title: "Top & Jeans",
-    image: "/category-top-jeans.png",
+    image: "/category-top-jeans.avif",
     href: "/shop?category=top-jeans",
   },
   {
     title: "Pakistani Fashion",
-    image: "/category-fashion.png",
+    image: "/category-fashion.avif",
     href: "/shop?category=fashion",
   },
   {
     title: "Maxi",
-    image: "/category-maxi.jpg",
+    image: "/category-maxi.avif",
     href: "/shop?category=maxi",
   },
 ];

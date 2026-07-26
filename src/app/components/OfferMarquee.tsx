@@ -2,9 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import "../styles/OfferMarquee.css";
+import { FREE_SHIPPING_THRESHOLD } from "../lib/shipping";
 
 const OFFERS = [
-  "Spend Rs. 4,000+ & Get FREE Shipping",
+  `Spend Rs. ${FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")}+ & Get FREE Shipping`,
   "Spend Rs. 2,500+ & Get a FREE Gift",
   "New Arrivals Dropping Every Week",
 ];

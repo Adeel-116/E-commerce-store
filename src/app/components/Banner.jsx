@@ -6,7 +6,7 @@ const Banner = () => {
   return (
     <>
       <section className="promo-banner" id="offer">
-        <img src="/banner2.png" alt="Store seasonal promotion" />
+        <img src="/banner2.avif" alt="Store seasonal promotion" />
       </section>
     </>
   );

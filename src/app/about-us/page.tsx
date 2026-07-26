@@ -1,9 +1,22 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import NavbarController from '../components/NavbarController'
 import AboutUsReviews from '../components/AboutUsReviews'
 import AboutUsContact from '../components/AboutUsContact'
 import "../styles/about-us.css"
 import "../styles/ShopPage.css"
+import { SITE_NAME } from '../lib/seo'
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: `Discover ${SITE_NAME} — thoughtfully designed, quality stitched and unstitched clothing for men and women, loved by customers across Pakistan.`,
+  alternates: { canonical: "/about-us" },
+  openGraph: {
+    title: `About Us | ${SITE_NAME}`,
+    description: `Discover ${SITE_NAME} — thoughtfully designed, quality stitched and unstitched clothing for men and women, loved by customers across Pakistan.`,
+    url: "/about-us",
+  },
+}
 
 function page() {
     return (
@@ -18,7 +31,7 @@ function page() {
                     <h1 className="shop-page__hero-title">About Us</h1>
                     <span className="shop-page__hero-divider" />
                     <p className="shop-page__hero-subtitle">
-                        Discover Zainab Store — thoughtfully designed clothing that brings
+                        Discover Zarya Style — thoughtfully designed clothing that brings
                         together comfort, quality, and everyday style.
                     </p>
                 </div>
@@ -30,7 +43,7 @@ function page() {
                     <p className="about-tag">Our Story</p>
                     <h2 className="about-story__heading">Crafted For Everyday Style</h2>
                     <p className="about-story__para">
-                        At Zainab Store, our journey began with a simple belief: quality clothing shouldn&apos;t come with
+                        At Zarya Style, our journey began with a simple belief: quality clothing shouldn&apos;t come with
                         an inflated price tag. We built this platform to bring you thoughtfully designed, comfortable pieces
                         without the markup you&apos;d expect from boutique fashion houses.
                     </p>
@@ -44,13 +57,13 @@ function page() {
 
                 <div className="about-story__images">
                     <div className="about-story__img-wrap about-story__img--left">
-                        <img src="/category-maxi.jpg" alt="Zainab Store maxi dresses" className="about-story__img" />
+                        <img src="/category-maxi.avif" alt="Zarya Style maxi dresses" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-top">
-                        <img src="/category-fashion.png" alt="Zainab Store fashion wear" className="about-story__img" />
+                        <img src="/category-fashion.avif" alt="Zarya Style Pakistani fashion wear" className="about-story__img" />
                     </div>
                     <div className="about-story__img-wrap about-story__img--mid-bot">
-                        <img src="/category-western.png" alt="Zainab Store western wear" className="about-story__img" />
+                        <img src="/category-western.avif" alt="Zarya Style western wear" className="about-story__img" />
                     </div>
                 </div>
             </section>
@@ -69,7 +82,7 @@ function page() {
                     <div className="about-mission__card">
                         <h3 className="about-mission__card-title">Quality &amp; Craftsmanship</h3>
                         <p className="about-mission__card-text">
-                            Every piece at Zainab Store is cut from carefully selected fabric and finished with attention
+                            Every piece at Zarya Style is cut from carefully selected fabric and finished with attention
                             to detail, so you can count on comfort and durability with every wear.
                         </p>
                     </div>

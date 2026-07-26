@@ -81,7 +81,7 @@
   z-index: 10;
   background: transparent;
   border: none;
-  color: var(--brandcream);
+  color: var(--charcoal);
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -94,7 +94,7 @@
 }
 
 .hero-nav-btn:hover {
-  background: rgba(255, 255, 242, 0.3);
+  background: rgba(28, 28, 28, 0.12);
 }
 
 .hero-btn-prev {

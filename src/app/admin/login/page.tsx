@@ -48,7 +48,7 @@ export default function LoginPage() {
     <main className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <img src="/updated-logo.png" alt="Zarya Style" className="login-logo-img" />
+          <img src="/updated-logo.avif" alt="Zarya Style" className="login-logo-img" />
           <div className="login-logo-sub">Admin Dashboard</div>
         </div>
 

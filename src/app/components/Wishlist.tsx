@@ -19,8 +19,8 @@ const Wishlist = () => {
         <h1 className="wl-title">My Wishlist</h1>
         <p className="wl-subtitle">
           {wishlistItems.length === 0
-            ? "Your saved fragrances will appear here"
-            : `${wishlistItems.length} ${wishlistItems.length === 1 ? "fragrance" : "fragrances"} saved`}
+            ? "Your saved items will appear here"
+            : `${wishlistItems.length} ${wishlistItems.length === 1 ? "item" : "items"} saved`}
         </p>
       </div>
 
@@ -34,7 +34,7 @@ const Wishlist = () => {
             </div>
             <h2>Nothing saved yet</h2>
             <p>
-              Browse our collection and tap the heart icon on any fragrance to
+              Browse our collection and tap the heart icon on any item to
               save it here.
             </p>
             <Link href="/shop" className="wl-shop-btn">

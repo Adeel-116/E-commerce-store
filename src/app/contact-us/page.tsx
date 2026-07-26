@@ -1,7 +1,21 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import NavbarController from '../components/NavbarController'
 import "../styles/ShopPage.css"
 import AboutUsContact from '../components/AboutUsContact'
+import { SITE_NAME } from '../lib/seo'
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: `Get in touch with ${SITE_NAME} for order questions, sizing help, or general enquiries. We reply by chat, email, and phone.`,
+  alternates: { canonical: "/contact-us" },
+  openGraph: {
+    title: `Contact Us | ${SITE_NAME}`,
+    description: `Get in touch with ${SITE_NAME} for order questions, sizing help, or general enquiries.`,
+    url: "/contact-us",
+  },
+}
+
 function page() {
   return (
     <div>

@@ -25,7 +25,7 @@ const InstagramIcon = ({ size = 16 }: { size?: number }) => (
 
 const POPUP_SESSION_KEY = "subscribe_popup_shown";
 const POPUP_DELAY_MS = 15000;
-const INSTAGRAM_URL = "https://instagram.com/zaryastyle";
+const INSTAGRAM_URL = "https://www.instagram.com/officialzaryastyle";
 
 export default function SubscribePopup() {
   const [show, setShow] = useState(false);
@@ -147,7 +147,7 @@ export default function SubscribePopup() {
               className="subscribe-popup__instagram-link"
             >
               <InstagramIcon size={15} />
-              @zaryastyle
+              @officialzaryastyle
             </a>
           </>
         )}

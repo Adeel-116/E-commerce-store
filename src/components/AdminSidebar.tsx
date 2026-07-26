@@ -65,7 +65,7 @@ export default function AdminSidebar() {
   return (
     <aside className={`admin-sidebar${collapsed ? ' admin-sidebar-collapsed' : ''}`}>
       <div className="admin-sidebar-logo">
-        <img src="/white-version.png" alt="Zarya Style" className="admin-sidebar-logo-img" />
+        <img src="/white-version.avif" alt="Zarya Style" className="admin-sidebar-logo-img" />
       </div>
 
       <nav className="admin-sidebar-nav">

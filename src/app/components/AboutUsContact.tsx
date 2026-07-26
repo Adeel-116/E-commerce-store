@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import "../styles/about-us.css";
 import axios from "axios";
+import { FiMail, FiPhone } from "react-icons/fi";
 const AboutUsContact = () => {
     const [form, setForm] = useState({
         fullName: "",
@@ -53,11 +54,11 @@ const AboutUsContact = () => {
                     </p>
                     <div className="au-contact__details">
                         <div className="au-contact__detail-item">
-                            <span className="au-contact__detail-icon">✉</span>
-                            <a href="mailto:support@zainabstore.com">support@zainabstore.com</a>
+                            <span className="au-contact__detail-icon"><FiMail /></span>
+                            <a href="mailto:infozaryastyle@gmail.com">infozaryastyle@gmail.com</a>
                         </div>
                         <div className="au-contact__detail-item">
-                            <span className="au-contact__detail-icon">☎</span>
+                            <span className="au-contact__detail-icon"><FiPhone /></span>
                             <a href="tel:+923483935003">+92 348 3935003</a>
                         </div>
                     </div>

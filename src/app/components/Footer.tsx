@@ -7,6 +7,38 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import api from "../lib/axios";
 
+const SOCIAL_LINKS = [
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/officialzaryastyle",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+      </svg>
+    ),
+  },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61592224567912",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      </svg>
+    ),
+  },
+  {
+    name: "TikTok",
+    href: "https://www.tiktok.com/@zaryastyle",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+      </svg>
+    ),
+  },
+];
+
 const Footer = () => {
   const pathname = usePathname();
   const isCheckoutPage = pathname?.startsWith("/checkout");
@@ -76,7 +108,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="footer-column">
             <Link href={"/"} className="footer-logo">
-              <img src="/white-version.png" alt="Zarya Style" className="footer-brand-logo" />
+              <img src="/white-version.avif" alt="Zarya Style" className="footer-brand-logo" />
             </Link>
 
             <p className="footer-description">
@@ -116,6 +148,21 @@ const Footer = () => {
               <a href="https://wa.me/923483935003" target="_blank" rel="noopener noreferrer">
                 +92 348 3935003
               </a>
+            </div>
+
+            <div className="footer-socials">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
+                  className="footer-social-icon"
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
 

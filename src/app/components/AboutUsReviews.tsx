@@ -13,7 +13,7 @@ const reviews = [
         name: "Ayesha Khan",
         role: "Lahore",
         rating: 5,
-        text: "The stitching and fabric quality are so much better than I expected for the price. The maxi fit me perfectly and the color was exactly like the pictures. Ordering again for sure.",
+        text: "The stitching and fabric quality on my maxi are so much better than I expected for the price. It fit me perfectly and the color was exactly like the pictures. Ordering again for sure.",
         initial: "A",
     },
     {
@@ -21,7 +21,7 @@ const reviews = [
         name: "Mahnoor Ahmed",
         role: "Karachi",
         rating: 5,
-        text: "I was a little worried about ordering clothes online but this store nailed the sizing. The fabric feels premium and comfortable, perfect for everyday wear. Got so many compliments.",
+        text: "I was a little worried about ordering a 3 piece suit online but this store nailed the sizing. The fabric feels premium and comfortable, perfect for everyday wear. Got so many compliments.",
         initial: "M",
     },
     {
@@ -29,7 +29,7 @@ const reviews = [
         name: "Zara Fatima",
         role: "Islamabad",
         rating: 5,
-        text: "Loved the co-ord set I ordered, the embroidery detail is beautiful in person. Delivery was quick and the packaging felt really premium. Definitely my new favorite store.",
+        text: "Loved the 2 piece suit I ordered, the embroidery detail is beautiful in person. Delivery was quick and the packaging felt really premium. Definitely my new favorite store.",
         initial: "Z",
     },
     {
@@ -37,7 +37,7 @@ const reviews = [
         name: "Bilal Sheikh",
         role: "Rawalpindi",
         rating: 5,
-        text: "Ordered a couple of shirts for myself and the finishing is really clean. True to size and the fabric doesn't feel cheap at all. Fast delivery too.",
+        text: "Ordered a 3 piece suit for my sister and the finishing is really clean. True to size and the fabric doesn't feel cheap at all. Fast delivery too.",
         initial: "B",
     },
     {
@@ -45,7 +45,7 @@ const reviews = [
         name: "Hira Malik",
         role: "Faisalabad",
         rating: 5,
-        text: "This is the third time I'm ordering from here and every single piece has been worth it. The prints are so pretty and the fit is always spot on. Highly recommend to anyone on the fence.",
+        text: "This is the third time I'm ordering from here, maxis and 2 piece suits both, and every single piece has been worth it. The prints are so pretty and the fit is always spot on. Highly recommend to anyone on the fence.",
         initial: "H",
     },
     {
@@ -53,7 +53,7 @@ const reviews = [
         name: "Sana Raza",
         role: "Multan",
         rating: 5,
-        text: "Absolutely in love with my maxi dress, so comfortable and flowy. It photographs even better in person. Customer service was also super helpful with sizing questions.",
+        text: "Absolutely in love with my maxi, so comfortable and flowy. It photographs even better in person. Customer service was also super helpful with sizing questions.",
         initial: "S",
     },
     {
@@ -61,16 +61,8 @@ const reviews = [
         name: "Komal Iqbal",
         role: "Lahore",
         rating: 5,
-        text: "The quality genuinely surprised me, doesn't feel like a budget-friendly price at all. Fits true to size and the fabric is breathable, perfect for daily wear.",
+        text: "The quality of my 3 piece suit genuinely surprised me, doesn't feel like a budget-friendly price at all. Fits true to size and the fabric is breathable, perfect for daily wear.",
         initial: "K",
-    },
-    {
-        id: 8,
-        name: "Amna Sheikh",
-        role: "Karachi",
-        rating: 5,
-        text: "Bought the western co-ord set for a party and it was such a hit. Beautiful stitching, great fit and it arrived earlier than expected. Will definitely be a regular customer now.",
-        initial: "A",
     },
 ];
 

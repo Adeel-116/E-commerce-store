@@ -1,26 +1,31 @@
-// import ImageSection from "./components/ImageSection";
-// import ProductSlider from "./components/ProductSlider";
+import type { Metadata } from "next";
 import ProductGrid from "./components/ProductGrid";
 import CategorySection from "./components/CategorySection";
-import Footer from "./components/Footer";
 import HomeHero from "./components/HomeHero";
 import NavbarController from "./components/NavbarController";
-// import FooterTab from "./components/FooterTab";
-import InfoStrip from "./components/InfoStrip";
 import Banner from "./components/Banner";
-import PromoSection from "./components/PromoSection";
 import AboutUsReviews from "./components/AboutUsReviews";
 import VideoSlider from "./components/VideoSlider";
+import { SITE_NAME, SITE_DESCRIPTION } from "./lib/seo";
+
+export const metadata: Metadata = {
+  title: `${SITE_NAME} — Premium Everyday & Occasion Wear in Pakistan`,
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: `${SITE_NAME} — Premium Everyday & Occasion Wear in Pakistan`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+  },
+};
+
 export default function Home() {
   return (
     <>
       <NavbarController />
       <HomeHero />
-      {/* <InfoStrip/> */}
-      {/* <ProductSlider /> */}
       <CategorySection />
-      <Banner/>
-      {/* <PromoSection/> */}
+      <Banner />
       <ProductGrid />
       <AboutUsReviews />
       <VideoSlider />

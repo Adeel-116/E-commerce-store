@@ -1,9 +1,11 @@
-"use client";
-import Navbar2 from "../components/Navbar2";
+import type { Metadata } from "next";
 import UserProfile from "../components/UserProfile";
-import Footer from "../components/Footer";
-import NavbarController from "../components/NavbarController";
 import StickNavbar from "../components/StickNavbar";
+
+export const metadata: Metadata = {
+  title: "My Profile",
+  robots: { index: false, follow: false },
+};
 
 export default function ProfilePage() {
   return (

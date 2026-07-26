@@ -11,24 +11,24 @@ const heroSlides = [
     title: "Define Your Style",
     subtitle: "New Season Clothing Collection",
     bg: "#1c1c1c",
-    img: "/clothing-hero-1-desktop.jpg",
-    mobileImg: "/clothing-hero-1-mobile.jpg",
+    img: "/clothing-hero-1-desktop.avif",
+    mobileImg: "/clothing-hero-1-mobile.avif",
   },
   {
     id: 2,
     title: "Effortless Elegance",
     subtitle: "Crafted for Every Occasion",
     bg: "#1c1c1c",
-    img: "/clothing-hero-2-desktop.jpg",
-    mobileImg: "/clothing-hero-2-mobile.jpg",
+    img: "/clothing-hero-2-desktop.avif",
+    mobileImg: "/clothing-hero-2-mobile.avif",
   },
   {
     id: 3,
     title: "Wear Your Confidence",
     subtitle: "Timeless Fits, Modern Comfort",
     bg: "#1c1c1c",
-    img: "/clothing-hero-3-desktop.jpg",
-    mobileImg: "/clothing-hero-3-mobile.jpg",
+    img: "/clothing-hero-3-desktop.avif",
+    mobileImg: "/clothing-hero-3-mobile.avif",
   },
 ];
 
@@ -132,6 +132,9 @@ const HomeHero = () => {
   return (
     <>
       <main className="home-hero">
+        <h1 className="sr-only">
+          Zarya Style — Premium Everyday & Occasion Wear in Pakistan
+        </h1>
         <div
           className="hero-swiper"
           onPointerDown={handlePointerDown}

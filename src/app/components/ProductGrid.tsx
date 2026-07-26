@@ -148,12 +148,10 @@ export function ProductCard({ product }: { product: GridProduct }) {
       </div>
 
       <div className="cg-card-bottom-section">
-        <div className="cg-card-heading-row">
-          <h3 className="cg-card-heading">{product.title}</h3>
-          <span className="cg-card-price">
-            Rs.{product.price.toLocaleString()}
-          </span>
-        </div>
+        <h3 className="cg-card-heading">{product.title}</h3>
+        <span className="cg-card-price">
+          Rs.{product.price.toLocaleString()}
+        </span>
 
         {visibleColors.length > 0 && (
           <div

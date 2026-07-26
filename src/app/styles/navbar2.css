@@ -224,7 +224,7 @@
   position: fixed;
   inset: 0;
   background: rgba(13, 13, 13, 0.55);
-  z-index: 500;
+  z-index: 1002;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
@@ -247,7 +247,7 @@
   width: 280px;
   background: #181717;
   /* background: var(--brandblack); */
-  z-index: 999;
+  z-index: 1003;
   transform: translateX(100%);
   transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
   display: none;
@@ -633,7 +633,7 @@
 /* below 540px — small mobile */
 @media (max-width: 539px) {
   .navbar2 {
-    padding-block: 15px;
+    padding-block: 8px;
   }
 
   .navbar2-logo {

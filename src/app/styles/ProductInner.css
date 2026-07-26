@@ -338,22 +338,33 @@
 
 .shop-inner-discount-ribbon {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 16px;
+  left: 16px;
   z-index: 2;
   pointer-events: none;
 }
 
 .shop-inner-discount-tag {
-  display: inline-block;
-  color: var(--off-white);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--charcoal);
   letter-spacing: 0.3px;
   white-space: nowrap;
-  background: var(--charcoal);
-  padding: 5px 12px;
-  border-radius: 3px;
-  font-size: 13px;
+  background: var(--gold-accent);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(28, 28, 28, 0.22);
+}
+
+.shop-inner-discount-tag::before {
+  content: "SAVE";
+  font-size: 9.5px;
   font-weight: 700;
+  letter-spacing: 0.6px;
+  opacity: 0.75;
 }
 
 .shop-inner-right-container {
@@ -389,14 +400,15 @@
 }
 
 .discount-label {
-  background: var(--gold-accent);
-  color: var(--charcoal);
-  font-size: 11px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  background: var(--charcoal);
+  color: var(--gold-accent);
+  font-size: 12.5px;
+  font-weight: 800;
   letter-spacing: 0.4px;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 3px;
+  padding: 4px 10px;
+  border-radius: 999px;
   line-height: 1.4;
   white-space: nowrap;
 }
@@ -701,6 +713,15 @@
 
   .price-current {
     font-size: 28px;
+  }
+
+  .shop-inner-discount-tag {
+    font-size: 12px;
+    padding: 6px 11px;
+  }
+
+  .shop-inner-discount-tag::before {
+    font-size: 8.5px;
   }
 
   #similar-text {

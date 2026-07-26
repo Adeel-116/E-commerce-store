@@ -431,9 +431,13 @@ export default function Checkout() {
                     </div>
                     <div className="co-item-info">
                       <p className="co-item-name">{item.productName}</p>
-                      <p className="co-item-variant">{item.brand}</p>
+                      <p className="co-item-price">PKR {item.lineSubtotal.toFixed(2)}</p>
+                      {(item.size || item.color) && (
+                        <p className="co-item-variant">
+                          {[item.size, item.color].filter(Boolean).join(" / ")}
+                        </p>
+                      )}
                     </div>
-                    <p className="co-item-price">PKR {item.lineSubtotal.toFixed(2)}</p>
                   </div>
                 ))
               )}

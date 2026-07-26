@@ -343,13 +343,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 16px 16px 18px;
-}
-
-.cg-card-heading-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+  border: none;
 }
 
 .cg-card-heading {
@@ -371,13 +365,13 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 2px 0 0;
+  margin: 0;
 }
 
 .cg-card-color-dot {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
+  border-radius: 0;
   border: 1px solid rgba(28, 28, 28, 0.15);
   flex-shrink: 0;
   cursor: pointer;
@@ -404,12 +398,12 @@
   font-weight: 700;
   white-space: nowrap;
   user-select: none;
-  margin: 3px 0 0;
+  margin: 0;
   flex-shrink: 0;
 }
 
 /* Kept for other cg-card consumers (e.g. the "You May Also Like" grid on
-   the product detail page) that don't use the .cg-card-heading-row layout. */
+   the product detail page) that don't use the stacked title/price layout. */
 .cg-card-price-row {
   display: flex;
   align-items: center;
@@ -514,11 +508,6 @@
     width: 30px;
     height: 30px;
   }
-
-  .cg-card-heading-row {
-    flex-direction: column;
-    gap: 2px;
-  }
 }
 
 /* 539px — large mobile */
@@ -539,10 +528,5 @@
   .cg-card-price {
     font-size: 13px;
     font-weight: 700;
-  }
-
-  .cg-card-heading-row {
-    flex-direction: column;
-    gap: 2px;
   }
 }

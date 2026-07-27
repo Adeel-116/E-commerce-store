@@ -182,7 +182,7 @@
 
   .category-grid-item {
     position: relative;
-    height: 230px;
+    height: 280px;
   }
 
   .category-grid-item .category-card {
@@ -193,9 +193,5 @@
     font-size: 11.5px;
     padding: 7px 16px;
     bottom: 12px;
-  }
-
-  .category-grid-item {
-    height: 280px;
   }
 }

@@ -688,9 +688,9 @@
   }
 
   .au-review__text {
-    font-size: 13px;
-    line-clamp: 4;
-    -webkit-line-clamp: 4;
+    font-size: 12.5px;
+    line-clamp: 5;
+    -webkit-line-clamp: 5;
   }
 
   .au-contact__heading {

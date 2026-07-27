@@ -61,18 +61,39 @@
 }
 
 @media (max-width: 640px) {
+  .home-perks-marquee__track {
+    animation-duration: 22s;
+  }
+
   .home-perks-marquee {
-    padding-block: 11px;
+    padding-block: 16px;
   }
 
   .home-perks-marquee__item {
-    font-size: 12px;
-    padding: 0 20px;
-    gap: 8px;
+    font-size: 14px;
+    padding: 0 26px;
+    gap: 10px;
   }
 
   .home-perks-marquee__icon {
-    width: 15px;
-    height: 15px;
+    width: 19px;
+    height: 19px;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-perks-marquee {
+    padding-block: 14px;
+  }
+
+  .home-perks-marquee__item {
+    font-size: 13px;
+    padding: 0 22px;
+    gap: 9px;
+  }
+
+  .home-perks-marquee__icon {
+    width: 17px;
+    height: 17px;
   }
 }

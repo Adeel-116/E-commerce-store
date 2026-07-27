@@ -12,6 +12,7 @@ import ScrollToTop from "./ScrollToTop";
 import WhatsAppFloat from "./WhatsAppFloat";
 import SubscribePopup from "./SubscribePopup";
 import OfferMarquee from "./OfferMarquee";
+import RouteLoadingOverlay from "./RouteLoadingOverlay";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <RouteLoadingOverlay />
       <OfferMarquee />
       <AuthProvider>
         <FilterProvider>

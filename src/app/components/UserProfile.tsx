@@ -301,7 +301,16 @@ const UserProfile = () => {
               <button
                 key={item.key}
                 className={`user-profile__nav-item ${active === item.key ? "active" : ""}`}
-                onClick={() => setActive(item.key)}
+                onClick={() => {
+                  setActive(item.key);
+                  // The "orders" tab is the default active section, so simply
+                  // setting it again on re-click wouldn't change state and the
+                  // fetch effect below wouldn't re-run — refetch explicitly so
+                  // tapping it always shows the latest orders (e.g. right after
+                  // placing a new one), especially on mobile where this is the
+                  // main way back to the list.
+                  if (item.key === "orders") fetchOrders(page);
+                }}
               >
                 {item.label}
               </button>

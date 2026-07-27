@@ -1,5 +1,5 @@
 export const SHIPPING_COST = 200;
-export const FREE_SHIPPING_THRESHOLD = 3000;
+export const FREE_SHIPPING_THRESHOLD = 5000;
 
 // Mirrors backend's shipping.service.ts — rawSubtotal must be pre-discount, pre-bundle.
 export const getShippingRate = (rawSubtotal: number) =>

@@ -41,6 +41,7 @@ type RawProduct = {
   isBestSeller: boolean;
   stock: boolean;
   status: 'active' | 'inactive';
+  displayOrder?: number;
 };
 
 export type ProductSaveData = {
@@ -70,6 +71,7 @@ type FormValues = {
   colors: ColorVariant[];
   isNew: boolean;
   isBestSeller: boolean;
+  displayOrder: string;
 };
 
 const emptyForm = (): FormValues => ({
@@ -84,6 +86,7 @@ const emptyForm = (): FormValues => ({
   colors: [],
   isNew: false,
   isBestSeller: false,
+  displayOrder: '',
 });
 
 interface AdminProductModalProps {
@@ -169,6 +172,7 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
           colors: seededColors,
           isNew: !!p.isNew,
           isBestSeller: !!p.isBestSeller,
+          displayOrder: p.displayOrder != null ? String(p.displayOrder) : '',
         });
       })
       .catch(() => {
@@ -275,6 +279,7 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
         isBestSeller: form.isBestSeller,
         stock: form.stock,
         status: form.status,
+        displayOrder: form.displayOrder ? Number(form.displayOrder) : 0,
       };
 
       if (mode === 'add') {
@@ -369,6 +374,21 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
               onChange={(e) => setField('comparePrice', e.target.value)}
               placeholder="Optional — original/was price"
             />
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-form-label">Display Order</label>
+            <input
+              className="admin-form-input"
+              type="number"
+              value={form.displayOrder}
+              onChange={(e) => setField('displayOrder', e.target.value)}
+              placeholder="0"
+            />
+            <span style={{ fontSize: 11, color: '#aaa', marginTop: 4, display: 'block' }}>
+              Controls where this product shows on Best Sellers and the default Shop
+              page sort — lower numbers appear first. Leave as 0 for no preference.
+            </span>
           </div>
 
           <div className="admin-form-group">

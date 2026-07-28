@@ -403,11 +403,11 @@
   display: inline-flex;
   align-items: center;
   background: var(--charcoal);
-  color: var(--gold-accent);
-  font-size: 12.5px;
+  color: #fff;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.4px;
-  padding: 4px 10px;
+  padding: 5px 11px;
   border-radius: 999px;
   line-height: 1.4;
   white-space: nowrap;
@@ -705,6 +705,21 @@
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-accent) transparent;
+  }
+
+  .shop-inner-gallery-thumbs::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .shop-inner-gallery-thumbs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .shop-inner-gallery-thumbs::-webkit-scrollbar-thumb {
+    background: var(--gold-accent);
+    border-radius: 999px;
   }
 
   .shop-inner-title {

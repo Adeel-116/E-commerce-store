@@ -1,5 +1,5 @@
 "use client";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
 import { CheckCircle } from "lucide-react";
@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { useCart } from "../context/CartContext";
 import "../styles/CartSidebar.css";
 import { getNextBundleSuggestions } from "../lib/cartBundles";
+import { gaViewCart } from "../lib/gaEvents";
 
 const CartSidebar = () => {
   const {
@@ -36,6 +37,21 @@ const CartSidebar = () => {
   const bundleBannerKey = showBundleActivation ? "active" : showBundleSuggestion ? "suggest" : "none";
 
   const bundleBannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isCartOpen || cartItems.length === 0) return;
+    gaViewCart({
+      value: total,
+      items: cartItems.map((item) => ({
+        item_id: item.id,
+        item_name: item.productName,
+        item_variant: item.color ?? undefined,
+        price: item.unitPrice,
+        quantity: item.quantity,
+      })),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCartOpen]);
 
   useLayoutEffect(() => {
     const el = bundleBannerRef.current;

@@ -12,4 +12,16 @@ const Banner = () => {
   );
 };
 
+export const SummerBanner = () => {
+  return (
+    <section className="promo-banner" id="summer-collection">
+      <img
+        src="/summer-banner.avif"
+        alt="Summer Collection"
+        title="Summer Collection"
+      />
+    </section>
+  );
+};
+
 export default Banner;

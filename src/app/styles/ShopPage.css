@@ -814,27 +814,6 @@
     overflow: hidden;
 }
 
-.cg-card-color-swatches {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin: 2px 0;
-}
-
-.cg-card-color-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid rgba(28, 28, 28, 0.15);
-    flex-shrink: 0;
-}
-
-.cg-card-color-more {
-    font-size: 11px;
-    color: var(--muted);
-}
-
 .shop-page__card-pricing {
     display: flex;
     align-items: center;

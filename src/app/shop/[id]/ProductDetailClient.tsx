@@ -9,9 +9,11 @@ import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { Shirt, ShieldCheck, Lock, Truck } from "lucide-react";
+import { Shirt, ShieldCheck, Truck } from "lucide-react";
 import { isRealColor } from "@/app/hooks/useProductCardImages";
 import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/app/lib/shipping";
+import { gaViewItem } from "@/app/lib/gaEvents";
+import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
 
 type ColorVariant = {
   name: string;
@@ -107,6 +109,17 @@ export default function ProductDetailClient({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
+
+  useEffect(() => {
+    if (!product) return;
+    gaViewItem({
+      item_id: product._id,
+      item_name: product.title,
+      item_category: product.category?.[0],
+      price: product.price,
+      value: product.price,
+    });
+  }, [product]);
 
   useEffect(() => {
     if (!product) return;
@@ -216,7 +229,7 @@ export default function ProductDetailClient({
                 <p>
                   <strong>Free Delivery:</strong> On orders above Rs.{" "}
                   {FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")}. Otherwise Rs.{" "}
-                  {SHIPPING_COST} standard shipping, delivered in 4–6 days.
+                  {SHIPPING_COST} standard shipping, delivered in 5–8 days.
                 </p>
               </div>
             </div>
@@ -434,11 +447,10 @@ export default function ProductDetailClient({
               </div>
               <div className="trust-item">
                 <div className="trust-icon">
-                  <Lock />
+                  <Truck />
                 </div>
                 <div className="trust-text">
-                  <strong>Safe and Secure Checkout</strong>
-                  <span>Ensures data protection</span>
+                  <strong>Delivered in 5–8 Days</strong>
                 </div>
               </div>
             </div>
@@ -450,79 +462,13 @@ export default function ProductDetailClient({
           <div className="similar-products-section">
             <h2 id="similar-text">You May Also Like</h2>
             <div className="cg-grid similar-products-grid">
-              {similarProducts.map((item) => {
-                const itemImage = item.colors?.[0]?.images?.length
-                  ? item.colors[0].images[0]
-                  : item.images[0];
-                const itemVisibleColors = (item.colors ?? []).filter(isRealColor);
-                const itemWishlisted = isWishlisted(item._id);
-                return (
-                  <Link href={`/shop/${item.slug}`} key={item._id} className="cg-card">
-                    <div className="cg-card-image-container">
-                      <img
-                        src={itemImage}
-                        alt={item.title}
-                        title={item.title}
-                        className="cg-card-image"
-                      />
-                      <button
-                        type="button"
-                        className={`cg-card-wishlist-float${itemWishlisted ? " active" : ""}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleWishlist({
-                            id: item._id,
-                            name: item.title,
-                            description: item.description,
-                            image: itemImage,
-                            stock: item.stock,
-                            price: item.price,
-                            sizes: item.sizes,
-                          });
-                        }}
-                        aria-label={itemWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill={itemWishlisted ? "#1c1c1c" : "none"}
-                          stroke={itemWishlisted ? "#1c1c1c" : "currentColor"}
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="cg-card-bottom-section">
-                      <h3 className="cg-card-heading">{item.title}</h3>
-                      {itemVisibleColors.length > 0 && (
-                        <div className="cg-card-color-swatches">
-                          {itemVisibleColors.slice(0, 5).map((color) => (
-                            <span
-                              key={color.name}
-                              className="cg-card-color-dot"
-                              style={{ backgroundColor: color.hex }}
-                              title={color.name}
-                            />
-                          ))}
-                          {itemVisibleColors.length > 5 && (
-                            <span className="cg-card-color-more">+{itemVisibleColors.length - 5}</span>
-                          )}
-                        </div>
-                      )}
-                      <div className="cg-card-price-row">
-                        <span className="cg-card-price">
-                          Rs.{item.price.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {similarProducts.map((item) => (
+                <ProductCard
+                  key={item._id}
+                  product={item as unknown as GridProduct}
+                  listName="You May Also Like"
+                />
+              ))}
             </div>
           </div>
         )}

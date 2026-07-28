@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { ttqAddToWishlist } from "../lib/tiktokEvents";
+import { gaAddToWishlist } from "../lib/gaEvents";
 
 export type WishlistItem = {
   id: string;
@@ -47,10 +47,9 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const toggleWishlist = (item: WishlistItem) => {
     const alreadyWishlisted = wishlistItems.some((i) => i.id === item.id);
     if (!alreadyWishlisted) {
-      ttqAddToWishlist({
-        content_id: item.id,
-        content_type: "product",
-        content_name: item.name,
+      gaAddToWishlist({
+        item_id: item.id,
+        item_name: item.name,
         value: item.price ?? 0,
       });
     }

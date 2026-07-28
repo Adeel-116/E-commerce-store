@@ -11,6 +11,7 @@ import {
   useProductCardImages,
   isRealColor,
 } from "../hooks/useProductCardImages";
+import { gaSelectItem, gaViewItemList } from "../lib/gaEvents";
 
 type ColorVariant = {
   name: string;
@@ -42,7 +43,13 @@ export type GridProduct = {
   } | null;
 };
 
-export function ProductCard({ product }: { product: GridProduct }) {
+export function ProductCard({
+  product,
+  listName,
+}: {
+  product: GridProduct;
+  listName?: string;
+}) {
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart, openCart } = useCart();
   const {
@@ -74,7 +81,7 @@ export function ProductCard({ product }: { product: GridProduct }) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!firstSize) return;
+    if (!firstSize || !product.stock) return;
     addToCart({
       id: product._id,
       productName: product.title,
@@ -87,8 +94,25 @@ export function ProductCard({ product }: { product: GridProduct }) {
     openCart();
   };
 
+  const handleCardClick = () => {
+    gaSelectItem({
+      item: {
+        item_id: product._id,
+        item_name: product.title,
+        item_category: product.category?.[0],
+        price: product.price,
+      },
+      listName,
+    });
+  };
+
   return (
-    <Link href={`/shop/${product.slug}`} className="cg-card">
+    <Link
+      href={`/shop/${product.slug}`}
+      className={`cg-card${!product.stock ? " cg-card-outofstock" : ""}`}
+      onClick={handleCardClick}
+      onDragStart={(e) => e.preventDefault()}
+    >
       <div className="cg-card-image-container">
         <ProductImageSwiper
           images={displayImages}
@@ -100,8 +124,19 @@ export function ProductCard({ product }: { product: GridProduct }) {
         <div className="cg-card-scrim" />
 
         <div className="cg-card-badges">
-          {product.isNew && (
-            <span className="cg-badge cg-badge-new">New In</span>
+          {!product.stock ? (
+            <span className="cg-badge cg-badge-outofstock">Out of Stock</span>
+          ) : (
+            <>
+              {product.isNew && (
+                <span className="cg-badge cg-badge-new">New In</span>
+              )}
+              {product.comparePrice && product.comparePrice > product.price && (
+                <span className="cg-badge cg-badge-discount">
+                  -{Math.round((1 - product.price / product.comparePrice) * 100)}%
+                </span>
+              )}
+            </>
           )}
         </div>
 
@@ -127,7 +162,7 @@ export function ProductCard({ product }: { product: GridProduct }) {
         <button
           className="cg-card-quick-add"
           onClick={handleAddToCart}
-          disabled={!firstSize}
+          disabled={!firstSize || !product.stock}
         >
           <svg
             width="15"
@@ -143,15 +178,22 @@ export function ProductCard({ product }: { product: GridProduct }) {
             <circle cx="20" cy="21" r="1" />
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
           </svg>
-          {firstSize ? "Add to Cart" : "Unavailable"}
+          {product.stock && firstSize ? "Add to Cart" : "Unavailable"}
         </button>
       </div>
 
       <div className="cg-card-bottom-section">
         <h3 className="cg-card-heading">{product.title}</h3>
-        <span className="cg-card-price">
-          Rs.{product.price.toLocaleString()}
-        </span>
+        <div className="cg-card-price-row">
+          <span className="cg-card-price">
+            Rs.{product.price.toLocaleString()}
+          </span>
+          {product.comparePrice && product.comparePrice > product.price && (
+            <span className="cg-card-price-original">
+              Rs.{product.comparePrice.toLocaleString()}
+            </span>
+          )}
+        </div>
 
         {visibleColors.length > 0 && (
           <div
@@ -204,7 +246,21 @@ const ProductGrid = ({
         const { data } = await api.get("/universalFilter", {
           params: { status: "active", isBestSeller: "true", limit },
         });
-        if (!cancelled) setProducts(data?.data ?? []);
+        if (!cancelled) {
+          const list: GridProduct[] = data?.data ?? [];
+          setProducts(list);
+          if (list.length > 0) {
+            gaViewItemList({
+              listName: title,
+              items: list.map((p) => ({
+                item_id: p._id,
+                item_name: p.title,
+                item_category: p.category?.[0],
+                price: p.price,
+              })),
+            });
+          }
+        }
       } catch {
         if (!cancelled) setProducts([]);
       } finally {
@@ -215,7 +271,7 @@ const ProductGrid = ({
     return () => {
       cancelled = true;
     };
-  }, [limit]);
+  }, [limit, title]);
 
   return (
     <div className="cg-section">
@@ -246,7 +302,7 @@ const ProductGrid = ({
       ) : (
         <div className="cg-grid">
           {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product._id} product={product} listName={title} />
           ))}
         </div>
       )}

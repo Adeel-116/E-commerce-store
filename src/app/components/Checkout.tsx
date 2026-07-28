@@ -9,13 +9,12 @@ import { useAuth } from "../context/AuthContext";
 import api from "../lib/axios";
 import { getShippingRate, FREE_SHIPPING_BANNER_TEXT } from "../lib/shipping";
 import {
-  ttqIdentify,
-  ttqInitiateCheckout,
-  ttqAddPaymentInfo,
-  ttqPlaceAnOrder,
-  ttqPurchase,
-  TikTokContent,
-} from "../lib/tiktokEvents";
+  gaIdentify,
+  gaBeginCheckout,
+  gaAddPaymentInfo,
+  gaPurchase,
+  GaItem,
+} from "../lib/gaEvents";
 import NavbarController from "./NavbarController";
 
 const COUNTRY_OPTIONS = ["Pakistan"];
@@ -33,7 +32,7 @@ interface SavedAddress {
 }
 
 export default function Checkout() {
-  const { cartItems, pricing } = useCart();
+  const { cartItems, pricing, isLoading: cartLoading } = useCart();
   const { user } = useAuth();
 
   const fallbackSubtotal = cartItems.reduce((s, i) => s + i.lineSubtotal, 0);
@@ -87,19 +86,19 @@ export default function Checkout() {
 
   const total = (couponSummary ? couponSummary.total : subtotal) + shipping;
 
-  const checkoutContents: TikTokContent[] = cartItems.map((item) => ({
-    content_id: item.id,
-    content_type: "product",
-    content_name: item.productName,
+  const checkoutContents: GaItem[] = cartItems.map((item) => ({
+    item_id: item.id,
+    item_name: item.productName,
+    item_variant: item.color ?? undefined,
     price: item.unitPrice,
-    num_items: item.quantity,
+    quantity: item.quantity,
   }));
 
   const initiateCheckoutFiredRef = React.useRef(false);
   useEffect(() => {
     if (initiateCheckoutFiredRef.current || cartItems.length === 0) return;
     initiateCheckoutFiredRef.current = true;
-    ttqInitiateCheckout({ contents: checkoutContents, value: subtotal });
+    gaBeginCheckout({ items: checkoutContents, value: subtotal });
   }, [cartItems]);
 
   const applyAddress = (addr: SavedAddress) => {
@@ -227,8 +226,8 @@ export default function Checkout() {
       phone,
     };
 
-    ttqIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
-    ttqAddPaymentInfo({ contents: checkoutContents, value: total, status: "cod" });
+    gaIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
+    gaAddPaymentInfo({ items: checkoutContents, value: total, paymentType: "cod" });
 
     try {
       const { data } = await api.post("/checkout/create-cod-order", {
@@ -237,8 +236,12 @@ export default function Checkout() {
         ...(coupon ? { couponCode: coupon.code } : {}),
       });
 
-      ttqPlaceAnOrder({ contents: checkoutContents, value: data.total ?? total });
-      ttqPurchase({ contents: checkoutContents, value: data.total ?? total });
+      gaPurchase({
+        transactionId: data.orderId,
+        items: checkoutContents,
+        value: data.total ?? total,
+        shipping,
+      });
       setCodModal({ status: "success", orderId: data.orderId, total: data.total });
       setIsProcessing(false);
     } catch (err: any) {
@@ -250,6 +253,18 @@ export default function Checkout() {
       setIsProcessing(false);
     }
   };
+
+  if (cartLoading) {
+    return (
+      <>
+        <NavbarController />
+        <div className="co-loading-state">
+          <div className="co-loading-spinner" />
+          <p>Loading your cart…</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

@@ -34,6 +34,16 @@ export default function RouteLoadingOverlay() {
       if (!card) return;
       if (card.target && card.target !== "_self") return;
 
+      // The card's own controls (image arrows, wishlist, quick-add, color
+      // swatches) call stopPropagation() to swallow the click before it
+      // becomes a navigation — but that only stops React's synthetic
+      // bubbling, not this native document-level listener. Skip those so
+      // the overlay doesn't flash for clicks that never actually navigate.
+      const control = (event.target as HTMLElement)?.closest(
+        ".cg-card-arrow, .cg-card-wishlist-float, .cg-card-quick-add, .cg-card-color-dot, .cg-card-color-swatches",
+      );
+      if (control) return;
+
       let url: URL;
       try {
         url = new URL(card.href, window.location.href);

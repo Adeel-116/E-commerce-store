@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, useMemo, ReactNode } fr
 import api from "../lib/axios";
 import { clearGuestId } from "../lib/guestId";
 import { fetchBundlesFromApi, getStoredBundles, ProductBundle, saveBundlesToStorage } from "../lib/cartBundles";
-import { ttqAddToCart } from "../lib/tiktokEvents";
+import { gaAddToCart, gaRemoveFromCart } from "../lib/gaEvents";
 
 export type CartItem = {
   id: string;
@@ -141,6 +141,10 @@ function mapCartResponse(cart: any): { items: CartItem[]; pricing: CartPricing |
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [pricing, setPricing] = useState<CartPricing | null>(null);
+  // True right after a local cart mutation (add/remove/quantity change) until
+  // the backend confirms — while true, `pricing` reflects the *previous*
+  // cart state, so consumers should show a frontend-computed total instead.
+  const [pricingStale, setPricingStale] = useState(false);
   const [bundles, setBundles] = useState<ProductBundle[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -152,9 +156,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const { items, pricing } = mapCartResponse(res.data.cart);
         setCartItems(items);
         setPricing(pricing);
+        setPricingStale(false);
       })
       .catch((err) => {
         console.error("Refetch cart failed:", err?.response?.data?.message ?? err.message);
+        setPricingStale(false);
       });
   };
 
@@ -208,13 +214,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         },
       ];
     });
+    setPricingStale(true);
     setIsCartOpen(true);
-    ttqAddToCart({
-      content_id: item.id,
-      content_type: "product",
-      content_name: item.productName,
+    gaAddToCart({
+      item_id: item.id,
+      item_name: item.productName,
+      item_variant: item.color ?? undefined,
       price: unitPrice,
-      num_items: quantity,
+      quantity,
       value: unitPrice * quantity,
     });
 
@@ -227,7 +234,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeItem = (id: string, size?: string, color?: string | null) => {
+    const item = cartItems.find((i) => matchesLine(i, id, size, color));
     setCartItems((prev) => prev.filter((i) => !matchesLine(i, id, size, color)));
+    setPricingStale(true);
+    if (item) {
+      gaRemoveFromCart({
+        item_id: item.id,
+        item_name: item.productName,
+        item_variant: item.color ?? undefined,
+        price: item.unitPrice,
+        quantity: item.quantity,
+        value: item.unitPrice * item.quantity,
+      });
+    }
     api
       .delete("/cart/remove", { params: { productId: id, size, color: color ?? undefined } })
       .then(() => refetchCart())
@@ -249,6 +268,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           : i
       )
     );
+    setPricingStale(true);
     api
       .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
       .then(() => refetchCart())
@@ -280,6 +300,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           : i
       )
     );
+    setPricingStale(true);
     api
       .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
       .then(() => refetchCart())
@@ -340,21 +361,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // While a mutation is in flight, `pricing` still reflects the cart's
+  // previous contents — recompute from `cartItems` (which already updated
+  // optimistically) so the total on screen never lags behind what's shown.
+  // This ignores cross-item bundle savings (only the backend can compute
+  // those), but per-item discounts are applied so it stays close.
   const effectivePricing = useMemo<CartPricing | null>(() => {
     if (cartItems.length === 0) return null;
-    if (pricing) return pricing;
+    if (pricing && !pricingStale) return pricing;
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+    const discountSavings = cartItems.reduce((acc, item) => {
+      if (!item.activeDiscount) return acc;
+      const lineTotal = item.unitPrice * item.quantity;
+      const amount =
+        item.activeDiscount.valueType === "percentage"
+          ? Math.round(lineTotal * (item.activeDiscount.value / 100))
+          : Math.round(item.activeDiscount.value * item.quantity);
+      return acc + amount;
+    }, 0);
+    const afterDiscountSubtotal = subtotal - discountSavings;
+
     return {
       subtotal,
-      discountSavings: 0,
-      afterDiscountSubtotal: subtotal,
-      bundleSavings: 0,
-      total: subtotal,
-      appliedBundles: [],
-      appliedDiscounts: [],
+      discountSavings,
+      afterDiscountSubtotal,
+      bundleSavings: pricing?.bundleSavings ?? 0,
+      total: afterDiscountSubtotal - (pricing?.bundleSavings ?? 0),
+      appliedBundles: pricing?.appliedBundles ?? [],
+      appliedDiscounts: pricing?.appliedDiscounts ?? [],
     };
-  }, [cartItems, pricing]);
+  }, [cartItems, pricing, pricingStale]);
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);

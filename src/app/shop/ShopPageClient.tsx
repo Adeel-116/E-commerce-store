@@ -10,6 +10,7 @@ import { ShopGridSkeleton } from "../components/Skeleton";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import { CATEGORY_LABELS, CATEGORIES, type ShopProduct } from "./constants";
 import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "../lib/shipping";
+import { gaViewItemList } from "../lib/gaEvents";
 
 const PAGE_SIZE = 9;
 // Fixed, generous bounds for the price slider — avoids extra round-trips just
@@ -135,9 +136,21 @@ function ShopPageContent() {
         const { data } = await api.get("/universalFilter", { params });
         if (cancelled) return;
 
-        setProducts(data?.data ?? []);
+        const list: ShopProduct[] = data?.data ?? [];
+        setProducts(list);
         setTotal(data?.total ?? 0);
         setTotalPages(data?.totalPages ?? 1);
+        if (list.length > 0) {
+          gaViewItemList({
+            listName: selectedCategory ? CATEGORY_LABELS[selectedCategory] : "Shop",
+            items: list.map((p) => ({
+              item_id: p._id,
+              item_name: p.title,
+              item_category: p.category?.[0],
+              price: p.price,
+            })),
+          });
+        }
       } catch {
         if (!cancelled) {
           setProducts([]);
@@ -521,6 +534,7 @@ function ShopPageContent() {
                   <ProductCard
                     key={product._id}
                     product={product as unknown as GridProduct}
+                    listName={pageTitle}
                   />
                 ))}
               </div>

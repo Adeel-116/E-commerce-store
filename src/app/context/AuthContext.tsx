@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
 import api, { BASE_URL } from "../lib/axios";
-import { ttqIdentify } from "../lib/tiktokEvents";
+import { gaIdentify } from "../lib/gaEvents";
 
 interface User {
   _id: string;
@@ -45,10 +45,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     accessTokenRef.current = accessToken;
   }, [accessToken]);
 
-  // Identify the visitor to TikTok on every page once we know who they are (login, register, or restored session)
+  // Identify the visitor to GA4 on every page once we know who they are (login, register, or restored session)
   useEffect(() => {
     if (user) {
-      ttqIdentify({ email: user.email, externalId: user._id });
+      gaIdentify({ userId: user._id, email: user.email });
     }
   }, [user]);
 

@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { ttqCompleteRegistration } from "../lib/tiktokEvents";
+import { gaSignUp } from "../lib/gaEvents";
 import "../styles/RegisterPage.css";
 import StickNavbar from "./StickNavbar";
 
@@ -33,7 +33,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-      ttqCompleteRegistration();
+      gaSignUp();
       await mergeCart();
       router.push("/");
     } catch (err: any) {

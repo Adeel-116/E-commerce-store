@@ -4,7 +4,7 @@ import CategorySection from "./components/CategorySection";
 import HomeHero from "./components/HomeHero";
 import HomePerksMarquee from "./components/HomePerksMarquee";
 import NavbarController from "./components/NavbarController";
-import Banner from "./components/Banner";
+import Banner, { SummerBanner } from "./components/Banner";
 import AboutUsReviews from "./components/AboutUsReviews";
 import VideoSlider from "./components/VideoSlider";
 import { SITE_NAME, SITE_DESCRIPTION } from "./lib/seo";
@@ -28,6 +28,7 @@ export default function Home() {
       <HomePerksMarquee />
       <CategorySection />
       <Banner />
+      <SummerBanner />
       <ProductGrid />
       <AboutUsReviews />
       <VideoSlider />

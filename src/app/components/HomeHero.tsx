@@ -11,8 +11,8 @@ const heroSlides = [
     title: "Azadi Sale — Flat 20% Off",
     subtitle: "Use code AZADI79 at checkout",
     bg: "#1c1c1c",
-    img: "/desktop-banner.png",
-    mobileImg: "/mobile-banner.png",
+    img: "/desktop-banner.avif",
+    mobileImg: "/mobile-banner.avif",
     href: "/shop",
     promo: true,
     // Gets extra time on screen since there's more to read (offer, code, CTA)

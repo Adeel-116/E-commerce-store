@@ -208,6 +208,7 @@ export function ProductCard({
                 title={color.name}
                 onMouseEnter={() => previewColor(color.name)}
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   previewColor(
                     activeColorName === color.name ? null : color.name,

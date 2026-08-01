@@ -529,6 +529,17 @@
   color: var(--off-white);
 }
 
+.checkout-btn:disabled {
+  border-color: var(--muted);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.checkout-btn:disabled:hover {
+  background: transparent;
+  color: var(--muted);
+}
+
 /* ── Divider ── */
 .section-divider {
   border: none;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductGrid.css";
 import NavbarController from "@/app/components/NavbarController";
@@ -68,6 +69,7 @@ export default function ProductDetailClient({
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const router = useRouter();
 
   // Illustrative shipping timeline dates, computed from "today" — set only
   // after mount (not during render) so the server-rendered markup and the
@@ -222,6 +224,26 @@ export default function ProductDetailClient({
       productImage: galleryImages[0] ?? product.images[0],
     });
     openCart();
+  };
+
+  // "Quick Checkout" used to be a plain link straight to /checkout — if this
+  // product was never added to the cart first, checkout would load with an
+  // empty cart (subtotal/total showing 0). It needs to add the item first,
+  // same as the Add to Cart button, then navigate — just without popping the
+  // cart sidebar open, since we're leaving the page anyway.
+  const handleQuickCheckout = () => {
+    if (!canAddToCart) return;
+    addToCart({
+      id: product._id,
+      productName: product.title,
+      brand: "",
+      price: product.price,
+      size: selectedSize ?? "",
+      color: selectedColor,
+      quantity,
+      productImage: galleryImages[0] ?? product.images[0],
+    });
+    router.push("/checkout");
   };
 
   return (
@@ -441,9 +463,14 @@ export default function ProductDetailClient({
                 </svg>
               </button>
 
-              <Link href="/checkout" className="checkout-btn">
+              <button
+                type="button"
+                className="checkout-btn"
+                disabled={!canAddToCart}
+                onClick={handleQuickCheckout}
+              >
                 Quick Checkout
-              </Link>
+              </button>
             </div>
 
             <hr className="section-divider" style={{ marginTop: "24px" }} />

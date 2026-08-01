@@ -9,9 +9,8 @@ import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { Shirt, ShieldCheck, Truck } from "lucide-react";
+import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles } from "lucide-react";
 import { isRealColor } from "@/app/hooks/useProductCardImages";
-import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/app/lib/shipping";
 import { gaViewItem } from "@/app/lib/gaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
 
@@ -69,6 +68,26 @@ export default function ProductDetailClient({
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
+
+  // Illustrative shipping timeline dates, computed from "today" — set only
+  // after mount (not during render) so the server-rendered markup and the
+  // client's first render match; the page is served/cached at different
+  // moments than any one visitor's "today", so computing this during render
+  // would produce a hydration mismatch on any day boundary.
+  const [timelineDates, setTimelineDates] = useState<{ ordered: string; shipped: string; delivered: string } | null>(null);
+  useEffect(() => {
+    const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const addDays = (n: number) => {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return d;
+    };
+    setTimelineDates({
+      ordered: fmt(addDays(0)),
+      shipped: fmt(addDays(2)),
+      delivered: `${fmt(addDays(5))} → ${fmt(addDays(8))}`,
+    });
+  }, []);
 
   // The server already fetched this product for metadata/SEO — reuse it for
   // the first render instead of re-fetching client-side, which used to leave
@@ -227,9 +246,7 @@ export default function ProductDetailClient({
               </div>
               <div className="shop-inner-bundle-banner-text">
                 <p>
-                  <strong>Free Delivery:</strong> On orders above Rs.{" "}
-                  {FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")}. Otherwise Rs.{" "}
-                  {SHIPPING_COST} standard shipping, delivered in 5–8 days.
+                  <strong>Free Delivery</strong> on all orders, delivered in 5–8 days.
                 </p>
               </div>
             </div>
@@ -298,6 +315,11 @@ export default function ProductDetailClient({
 
           {/* Right: Product Details */}
           <div className="shop-inner-right-container shop-inner-right-centered">
+            <div className="shop-inner-sale-strip">
+              Azadi Sale — Flat 20% Off, Use Code
+              <span className="shop-inner-sale-code">AZADI79</span>
+            </div>
+
             <h1 className="shop-inner-title">{product.title}</h1>
 
             <p
@@ -420,38 +442,60 @@ export default function ProductDetailClient({
               </button>
 
               <Link href="/checkout" className="checkout-btn">
-                Checkout
+                Quick Checkout
               </Link>
             </div>
 
             <hr className="section-divider" style={{ marginTop: "24px" }} />
 
-            <div className="trust-badges">
-              <div className="trust-item">
-                <div className="trust-icon">
-                  <Shirt />
+            {/* Illustrative shipping timeline — not tied to a real order, just
+                sets delivery-speed expectations before purchase. */}
+            <div className="order-timeline">
+              <div className="order-timeline-step">
+                <div className="order-timeline-icon order-timeline-icon-ordered">
+                  <ShoppingCart />
                 </div>
-                <div className="trust-text">
-                  <strong>Premium Fabric Quality</strong>
-                  <span>Comfortable everyday wear</span>
-                </div>
+                <strong>Ordered</strong>
+                <span>{timelineDates?.ordered ?? "Today"}</span>
               </div>
-              <div className="trust-item">
-                <div className="trust-icon">
-                  <ShieldCheck />
-                </div>
-                <div className="trust-text">
-                  <strong>Authenticity Guarantee</strong>
-                  <span>On all the products</span>
-                </div>
-              </div>
-              <div className="trust-item">
-                <div className="trust-icon">
+              <div className="order-timeline-line" />
+              <div className="order-timeline-step">
+                <div className="order-timeline-icon order-timeline-icon-shipped">
                   <Truck />
                 </div>
-                <div className="trust-text">
-                  <strong>Delivered in 5–8 Days</strong>
+                <strong>Shipped</strong>
+                <span>{timelineDates?.shipped ?? "Within 1–2 days"}</span>
+              </div>
+              <div className="order-timeline-line" />
+              <div className="order-timeline-step">
+                <div className="order-timeline-icon order-timeline-icon-delivered">
+                  <PackageCheck />
                 </div>
+                <strong>Delivered</strong>
+                <span>{timelineDates?.delivered ?? "In 5–8 days"}</span>
+              </div>
+            </div>
+
+            <hr className="section-divider" />
+
+            <div className="perks-row">
+              <div className="perks-item">
+                <div className="perks-icon perks-icon-replacement">
+                  <BadgeCheck />
+                </div>
+                <span>7 Days Replacement Policy</span>
+              </div>
+              <div className="perks-item">
+                <div className="perks-icon perks-icon-quality">
+                  <Award />
+                </div>
+                <span>Finest Quality &amp; Meticulous Stitching</span>
+              </div>
+              <div className="perks-item">
+                <div className="perks-icon perks-icon-unique">
+                  <Sparkles />
+                </div>
+                <span>One-of-a-Kind Unique Designs</span>
               </div>
             </div>
           </div>

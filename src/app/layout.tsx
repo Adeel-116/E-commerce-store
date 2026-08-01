@@ -120,7 +120,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-5V6LJLTR"

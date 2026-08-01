@@ -16,6 +16,7 @@ import {
   GaItem,
 } from "../lib/gaEvents";
 import NavbarController from "./NavbarController";
+import LoadingRing from "./LoadingRing";
 
 const COUNTRY_OPTIONS = ["Pakistan"];
 
@@ -71,7 +72,7 @@ export default function Checkout() {
   >(null);
 
   const isGuest = !user;
-  const shippingRate = getShippingRate(originalSubtotal);
+  const shippingRate = getShippingRate();
   const shipping = shippingRate.price;
 
   const [coupon, setCoupon] = useState<any>(null);
@@ -173,17 +174,14 @@ export default function Checkout() {
   };
 
   const isAddressComplete = Boolean(
-    firstName.trim() &&
     lastName.trim() &&
     line1.trim() &&
     city.trim() &&
     stateField.trim() &&
-    postalCode.trim() &&
     country.trim() &&
     phone.trim()
   );
-  const isContactComplete = !isGuest || Boolean(email.trim());
-  const canSubmit = isContactComplete && isAddressComplete && !isProcessing;
+  const canSubmit = isAddressComplete && !isProcessing;
 
   useEffect(() => {
     if (!user) {
@@ -259,7 +257,7 @@ export default function Checkout() {
       <>
         <NavbarController />
         <div className="co-loading-state">
-          <div className="co-loading-spinner" />
+          <LoadingRing active />
           <p>Loading your cart…</p>
         </div>
       </>
@@ -284,10 +282,9 @@ export default function Checkout() {
                 <input
                   className="co-input"
                   type="email"
-                  placeholder="Email"
+                  placeholder="Email (optional)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
               </div>
             ) : (
@@ -341,7 +338,7 @@ export default function Checkout() {
             </div>
             <div className="co-grid-2">
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                <input className="co-input" type="text" placeholder="First name (optional)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div className="co-field">
                 <input className="co-input" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
@@ -370,10 +367,9 @@ export default function Checkout() {
                   type="text"
                   inputMode="numeric"
                   pattern="\d*"
-                  placeholder="ZIP code"
+                  placeholder="ZIP code (optional)"
                   value={postalCode}
                   onChange={handlePostalCodeChange}
-                  required
                 />
               </div>
             </div>
@@ -478,7 +474,7 @@ export default function Checkout() {
                     <input
                       className="co-input co-discount-input"
                       type="text"
-                      placeholder="Promo Code"
+                      placeholder="Code"
                       value={discountCode}
                       onChange={(e) => {
                         setDiscountCode(e.target.value);

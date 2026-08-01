@@ -178,6 +178,36 @@
 }
 
 /* Title + Description */
+.shop-inner-sale-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--brandblack);
+  background: var(--gold-accent);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.shop-inner-sale-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  background: var(--brandblack);
+  color: var(--gold-accent);
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+}
+
 .shop-inner-title {
   font-family: var(--font-playfair), serif;
   font-size: 32px;
@@ -455,7 +485,7 @@
   border: none;
   border-radius: 6px;
   padding: 0 22px;
-  height: 42px;
+  height: 52px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -485,7 +515,7 @@
   border: 1px solid var(--charcoal);
   border-radius: 6px;
   padding: 0 22px;
-  height: 42px;
+  height: 52px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -556,6 +586,139 @@
 .trust-text span {
   font-size: 13px;
   color: var(--muted);
+}
+
+/* ── Order Timeline (illustrative — Ordered / Shipped / Delivered) ── */
+.order-timeline {
+  display: flex;
+  align-items: flex-start;
+  padding: 24px 0 20px;
+}
+
+.order-timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.order-timeline-step strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.order-timeline-step span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.order-timeline-line {
+  flex: 1;
+  height: 1px;
+  background: var(--bg-soft-2);
+  margin-top: 21px;
+}
+
+.order-timeline-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--sand-beige);
+  border: 1px solid var(--gold-accent);
+}
+
+.order-timeline-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: var(--charcoal);
+  stroke-width: 1.8;
+}
+
+.order-timeline-icon-delivered {
+  background: var(--gold-accent);
+  border-color: var(--gold-accent);
+}
+
+.order-timeline-icon-delivered svg {
+  stroke: var(--off-white);
+}
+
+/* ── Perks Row (replacement / quality / uniqueness) ── */
+.perks-row {
+  display: flex;
+  gap: 24px;
+  padding: 20px 0;
+  flex-wrap: wrap;
+}
+
+.perks-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  text-align: center;
+  min-width: 140px;
+}
+
+.perks-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--sand-beige);
+  border: 1px solid var(--gold-accent);
+}
+
+.perks-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: var(--charcoal);
+  stroke-width: 1.8;
+}
+
+.perks-item span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--charcoal);
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .order-timeline-step strong {
+    font-size: 12px;
+  }
+
+  .order-timeline-step span {
+    font-size: 10px;
+  }
+
+  .order-timeline-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .order-timeline-line {
+    margin-top: 18px;
+  }
+
+  .perks-row {
+    gap: 16px;
+  }
+
+  .perks-item {
+    min-width: 100px;
+  }
 }
 
 /* ── You May Also Like ── */

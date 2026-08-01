@@ -9,7 +9,6 @@ import api from "../lib/axios";
 import { ShopGridSkeleton } from "../components/Skeleton";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import { CATEGORY_LABELS, CATEGORIES, type ShopProduct } from "./constants";
-import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "../lib/shipping";
 import { gaViewItemList } from "../lib/gaEvents";
 
 const PAGE_SIZE = 9;
@@ -369,9 +368,7 @@ function ShopPageContent() {
         </p>
         <h1 className="shop-page__title">{pageTitle}</h1>
         <p className="shop-page__delivery-note">
-          Standard delivery across Pakistan: Rs. {SHIPPING_COST} · Free on orders
-          over Rs. {FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")} · Delivered in
-          4–6 days
+          Free shipping across Pakistan · Delivered in 4–6 days
         </p>
       </div>
 

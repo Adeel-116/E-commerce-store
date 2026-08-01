@@ -1,22 +1,47 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import LoadingRing from "./LoadingRing";
 import "../styles/RouteLoadingOverlay.css";
 
-const VISIBLE_MS = 3000;
+// Nothing loads instantly even once the route has mounted (images, fonts,
+// etc.) — hold the overlay for at least this long after showing it so it
+// never just flashes, but the real dismiss trigger is the pathname match
+// below, not this timer.
+const MIN_VISIBLE_MS = 500;
+// Ceiling in case navigation never actually resolves (e.g. an external
+// redirect within the same origin) — the overlay shouldn't hang forever.
+const MAX_VISIBLE_MS = 8000;
 
 export default function RouteLoadingOverlay() {
-  const [visible, setVisible] = useState(false);
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pathname = usePathname();
 
-  const showForVisibleDuration = useCallback(() => {
-    if (hideTimer.current) clearTimeout(hideTimer.current);
-    setVisible(true);
-    hideTimer.current = setTimeout(() => {
-      setVisible(false);
-      hideTimer.current = null;
-    }, VISIBLE_MS);
+  const [visible, setVisible] = useState(false);
+  const targetKey = useRef<string | null>(null);
+  const shownAt = useRef(0);
+  const maxTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const hide = useCallback(() => {
+    setVisible(false);
+    targetKey.current = null;
+    if (maxTimer.current) {
+      clearTimeout(maxTimer.current);
+      maxTimer.current = null;
+    }
   }, []);
+
+  const showUntilNavigates = useCallback((nextKey: string) => {
+    if (maxTimer.current) clearTimeout(maxTimer.current);
+
+    targetKey.current = nextKey;
+    shownAt.current = performance.now();
+    setVisible(true);
+
+    // Safety net: if the target route never actually shows up (broken link,
+    // navigation cancelled, etc.), don't leave the overlay stuck forever.
+    maxTimer.current = setTimeout(hide, MAX_VISIBLE_MS);
+  }, [hide]);
 
   useEffect(() => {
     const clickHandler = (event: MouseEvent) => {
@@ -53,20 +78,31 @@ export default function RouteLoadingOverlay() {
 
       if (url.origin !== window.location.origin) return;
 
-      const nextKey = `${url.pathname}${url.search}`;
-      const sameKey = nextKey === `${window.location.pathname}${window.location.search}`;
-      if (sameKey) return;
+      if (url.pathname === pathname) return;
 
-      showForVisibleDuration();
+      showUntilNavigates(url.pathname);
     };
 
     document.addEventListener("click", clickHandler);
     return () => document.removeEventListener("click", clickHandler);
-  }, [showForVisibleDuration]);
+  }, [pathname, showUntilNavigates]);
+
+  // The real dismiss signal: the app has actually rendered the route we were
+  // waiting for. Enforce MIN_VISIBLE_MS so it never just flashes on fast
+  // navigations, but otherwise this fires as soon as content is ready —
+  // never on a blind fixed timer.
+  useEffect(() => {
+    if (!targetKey.current || pathname !== targetKey.current) return;
+
+    const elapsed = performance.now() - shownAt.current;
+    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+    const timer = setTimeout(hide, remaining);
+    return () => clearTimeout(timer);
+  }, [pathname, hide]);
 
   useEffect(() => {
     return () => {
-      if (hideTimer.current) clearTimeout(hideTimer.current);
+      if (maxTimer.current) clearTimeout(maxTimer.current);
     };
   }, []);
 
@@ -78,22 +114,7 @@ export default function RouteLoadingOverlay() {
       aria-live="polite"
     >
       <div className="rlo-stack">
-        <div className="rlo-main">
-          <div className="rlo-up">
-            <div className="rlo-loaders">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div className="rlo-loader" key={i} />
-              ))}
-            </div>
-            <div className="rlo-loadersB">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div className="rlo-loaderA" key={i}>
-                  <div className={`rlo-ball rlo-ball${i}`} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <LoadingRing active={visible} />
         <p className="rlo-text">Loading…</p>
       </div>
     </div>

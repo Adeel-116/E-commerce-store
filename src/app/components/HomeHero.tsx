@@ -7,6 +7,19 @@ import Link from "next/link";
 
 const heroSlides = [
   {
+    id: 0,
+    title: "Azadi Sale — Flat 20% Off",
+    subtitle: "Use code AZADI79 at checkout",
+    bg: "#1c1c1c",
+    img: "/desktop-banner.png",
+    mobileImg: "/mobile-banner.png",
+    href: "/shop",
+    promo: true,
+    // Gets extra time on screen since there's more to read (offer, code, CTA)
+    // than the plain lifestyle slides.
+    delay: 5000,
+  },
+  {
     id: 1,
     title: "Define Your Style",
     subtitle: "New Season Clothing Collection",
@@ -39,7 +52,7 @@ const HomeHero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesReady, setImagesReady] = useState(false);
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragState = useRef<{ startX: number; dragging: boolean }>({
     startX: 0,
     dragging: false,
@@ -90,29 +103,35 @@ const HomeHero = () => {
   const goNext = () => goTo(activeIndex + 1);
   const goPrev = () => goTo(activeIndex - 1);
 
+  // Each slide can carry its own on-screen delay (the promo slide gets
+  // longer) — a self-rescheduling setTimeout reads the *current* slide's
+  // delay before queuing the next tick, which a flat setInterval can't do.
   const restartTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const currentDelay = heroSlides[activeIndex]?.delay ?? SLIDE_DELAY;
+    timerRef.current = setTimeout(() => {
       setActiveIndex((prev) => {
         const next = (prev + 1) % heroSlides.length;
         animateIncoming(next);
         return next;
       });
-    }, SLIDE_DELAY);
+    }, currentDelay);
   };
 
   useEffect(() => {
     if (!imagesReady) return;
     restartTimer();
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagesReady]);
+  }, [imagesReady, activeIndex]);
 
+  // Restarting the auto-advance timer is handled by the activeIndex effect
+  // above — it fires whenever goNext/goPrev/goTo changes the index, so a
+  // manual nav (arrow click or drag) automatically gets a fresh countdown.
   const handleNav = (action: () => void) => {
     action();
-    restartTimer();
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -140,11 +159,8 @@ const HomeHero = () => {
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
-          {heroSlides.map((slide, index) => (
-            <div
-              key={slide.id}
-              className={`hero-slide${index === activeIndex ? " hero-slide-active" : ""}`}
-            >
+          {heroSlides.map((slide, index) => {
+            const media = (
               <picture>
                 {slide.mobileImg && (
                   <source media="(max-width: 767px)" srcSet={slide.mobileImg} />
@@ -153,7 +169,7 @@ const HomeHero = () => {
                   src={slide.img}
                   alt={slide.title}
                   title={slide.title}
-                  className="hero-slide-img"
+                  className={`hero-slide-img${slide.promo ? " hero-slide-img--promo" : ""}`}
                   ref={(el) => {
                     imgRefs.current[index] = el;
                   }}
@@ -161,8 +177,23 @@ const HomeHero = () => {
                   draggable={false}
                 />
               </picture>
-            </div>
-          ))}
+            );
+
+            return (
+              <div
+                key={slide.id}
+                className={`hero-slide${index === activeIndex ? " hero-slide-active" : ""}`}
+              >
+                {slide.href ? (
+                  <Link href={slide.href} className="hero-slide-link" aria-label={slide.title}>
+                    {media}
+                  </Link>
+                ) : (
+                  media
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Custom Navigation Arrows */}

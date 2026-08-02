@@ -37,12 +37,26 @@ export const metadata: Metadata = {
     "Pakistani fashion wear",
     "western wear Pakistan",
     "buy clothes online Pakistan",
+    "online clothing store Karachi",
+    "online clothing store Lahore",
+    "online clothing store Islamabad",
+    "women's fashion Karachi",
+    "women's fashion Lahore",
+    "cash on delivery clothes Pakistan",
   ],
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
   alternates: {
     canonical: "/",
+    languages: {
+      "en-PK": "/",
+    },
+  },
+  other: {
+    "geo.region": "PK",
+    "geo.placename": "Karachi, Lahore, Islamabad",
+    "ICBM": "30.3753, 69.3451",
   },
   robots: {
     index: true,
@@ -99,7 +113,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={playfairDisplay.variable}>
+    <html lang="en-PK" className={playfairDisplay.variable}>
       <head>
         <Script id="gtm" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

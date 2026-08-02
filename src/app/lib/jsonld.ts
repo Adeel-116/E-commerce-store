@@ -16,6 +16,16 @@ export function organizationJsonLd() {
       "@type": "PostalAddress",
       addressCountry: "PK",
     },
+    areaServed: [
+      { "@type": "Country", name: "Pakistan" },
+      { "@type": "City", name: "Karachi" },
+      { "@type": "City", name: "Lahore" },
+      { "@type": "City", name: "Islamabad" },
+      { "@type": "City", name: "Rawalpindi" },
+      { "@type": "City", name: "Faisalabad" },
+      { "@type": "City", name: "Multan" },
+      { "@type": "City", name: "Peshawar" },
+    ],
     sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.facebook, SOCIAL_LINKS.tiktok],
   };
 }

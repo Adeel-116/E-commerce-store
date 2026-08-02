@@ -102,6 +102,14 @@ function mapBackendItem(item: any): CartItem {
   const quantity = item.quantity ?? 1;
   const price = p.price ?? 0;
   const unitPrice = item.originalPrice ?? item.price ?? price ?? 0;
+  // Cart lines only store the selected color's name, not an image — look up
+  // that color's own photos on the populated product so the cart shows the
+  // variant the shopper actually picked, instead of always the product's
+  // first/default photo.
+  const variantColor = item.color
+    ? (p.colors ?? []).find((c: { name: string }) => c.name === item.color)
+    : null;
+  const productImage = variantColor?.images?.[0] || p.images?.[0] || "";
   return {
     id: p._id ?? p.id,
     productName: p.title ?? p.name ?? "",
@@ -110,7 +118,7 @@ function mapBackendItem(item: any): CartItem {
     size,
     color: item.color ?? null,
     quantity,
-    productImage: p.images?.[0] || "",
+    productImage,
     unitPrice,
     lineSubtotal: unitPrice * quantity,
     bundleApplied: item.bundleApplied ?? false,

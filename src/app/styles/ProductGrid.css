@@ -101,11 +101,15 @@
   z-index: 3;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
   pointer-events: none;
 }
 
 .cg-badge {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.6px;
@@ -122,15 +126,122 @@
 }
 
 .cg-badge-discount {
+  gap: 3px;
   background: #d21f1f;
   color: #ffffff;
   box-shadow: 0 3px 8px rgba(210, 31, 31, 0.35);
+}
+
+.cg-badge-discount::before {
+  content: "SAVE";
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  opacity: 0.75;
 }
 
 .cg-badge-outofstock {
   background: #6b6b6b;
   color: #ffffff;
   box-shadow: 0 3px 8px rgba(28, 28, 28, 0.2);
+}
+
+/* ── Home slider card top row (tag + discount pills + wishlist) ── */
+.cg-card-top-row {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.cg-card-top-row > * {
+  pointer-events: auto;
+}
+
+/* The discount tag is a sibling rendered just before .cg-card-top-row, so
+   it can't join that row's flex layout — position it to land directly
+   above the tag/wishlist row instead. */
+.cg-card-discount-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+}
+
+/* Push the tag-pill row down when a discount tag is already occupying the
+   top-left spot, so the two stack instead of overlapping. */
+.cg-card:has(.cg-card-discount-tag) .cg-card-top-row {
+  top: 50px;
+}
+
+.card-tag-pill,
+.cg-card-discount-tag {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.card-tag-pill {
+  background: var(--charcoal);
+  color: var(--sand-beige);
+  box-shadow: 0 3px 8px rgba(28, 28, 28, 0.25);
+}
+
+.cg-card-discount-tag {
+  gap: 3px;
+  background: #d21f1f;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(210, 31, 31, 0.35);
+}
+
+.cg-card-discount-tag::before {
+  content: "SAVE";
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  opacity: 0.75;
+}
+
+.cg-pill-margin-left {
+  margin-left: 8px;
+}
+
+.cg-card-wishlist-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+  background: rgba(247, 245, 242, 0.92);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(28, 28, 28, 0.18);
+  transition: background 0.2s ease, transform 0.2s ease;
+  margin-left: auto;
+}
+
+.cg-card-wishlist-btn.active {
+  background: var(--sand-beige);
+}
+
+.cg-card-wishlist-btn:hover {
+  transform: scale(1.08);
 }
 
 /* ── Image container ── */

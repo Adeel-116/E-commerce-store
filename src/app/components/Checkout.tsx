@@ -295,7 +295,8 @@ export default function Checkout() {
               <div className="co-field">
                 <input
                   className="co-input"
-                  type="email"
+                  type="text"
+                  inputMode="email"
                   placeholder="Email (optional)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

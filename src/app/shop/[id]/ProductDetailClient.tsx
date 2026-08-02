@@ -66,8 +66,12 @@ export default function ProductDetailClient({
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    initialProduct?.sizes?.[0] ?? null
+  );
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    initialProduct?.colors?.find(isRealColor)?.name ?? null
+  );
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const { addToCart, openCart } = useCart();
@@ -117,7 +121,11 @@ export default function ProductDetailClient({
         if (cancelled) return;
 
         if (data?.success && data.data) {
-          setProduct(data.data);
+          const fetchedProduct: Product = data.data;
+          setProduct(fetchedProduct);
+          const firstRealColor = (fetchedProduct.colors ?? []).find(isRealColor);
+          setSelectedColor(firstRealColor?.name ?? null);
+          setSelectedSize(fetchedProduct.sizes?.[0] ?? null);
         } else if (!initialProduct) {
           setNotFound(true);
         }

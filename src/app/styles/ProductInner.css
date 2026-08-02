@@ -132,6 +132,31 @@
   object-fit: cover;
   object-position: top center;
   display: block;
+  cursor: zoom-in;
+}
+
+.shop-inner-zoom-btn {
+  position: absolute;
+  top: 58px;
+  right: 14px;
+  background: var(--off-white);
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 2;
+  transition: transform 0.15s ease;
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  box-shadow: 0 1px 4px rgba(28, 28, 28, 0.18);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--charcoal);
+}
+
+.shop-inner-zoom-btn:hover {
+  transform: scale(1.1);
 }
 
 .shop-inner-gallery-thumbs {
@@ -201,7 +226,7 @@
   align-items: center;
   padding: 4px 14px;
   background: var(--brandblack);
-  color: var(--gold-accent);
+  color: #fff;
   border-radius: 999px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -486,7 +511,7 @@
   border-radius: 6px;
   padding: 0 22px;
   height: 52px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -516,7 +541,7 @@
   border-radius: 6px;
   padding: 0 22px;
   height: 52px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.5px;
   cursor: pointer;

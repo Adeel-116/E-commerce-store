@@ -10,7 +10,8 @@ import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles } from "lucide-react";
+import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles, ZoomIn } from "lucide-react";
+import ProductZoomModal from "@/app/components/ProductZoomModal";
 import { isRealColor } from "@/app/hooks/useProductCardImages";
 import { gaViewItem } from "@/app/lib/gaEvents";
 import { metaViewContent } from "@/app/lib/metaEvents";
@@ -68,6 +69,7 @@ export default function ProductDetailClient({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const router = useRouter();
@@ -156,14 +158,11 @@ export default function ProductDetailClient({
 
     (async () => {
       try {
-        const { data } = await api.get("/universalFilter", {
-          params: { status: "active", limit: 5 },
+        const { data } = await api.get("/getSimilarProducts", {
+          params: { excludeId: product._id, limit: 4 },
         });
         if (cancelled) return;
-        const list: Product[] = (data?.data ?? [])
-          .filter((p: Product) => p._id !== product._id)
-          .slice(0, 4);
-        setSimilarProducts(list);
+        setSimilarProducts(data?.data ?? []);
       } catch {
         if (!cancelled) setSimilarProducts([]);
       }
@@ -338,10 +337,30 @@ export default function ProductDetailClient({
                   alt={product.title}
                   title={product.title}
                   className="shop-inner-static-img"
+                  onClick={() => setZoomOpen(true)}
                 />
+
+                <button
+                  type="button"
+                  className="shop-inner-zoom-btn"
+                  onClick={() => setZoomOpen(true)}
+                  aria-label="Zoom image"
+                  title="Zoom image"
+                >
+                  <ZoomIn size={18} />
+                </button>
               </div>
             </div>
           </div>
+
+          {zoomOpen && (
+            <ProductZoomModal
+              images={galleryImages}
+              initialIndex={activeImage}
+              productTitle={product.title}
+              onClose={() => setZoomOpen(false)}
+            />
+          )}
 
           {/* Right: Product Details */}
           <div className="shop-inner-right-container shop-inner-right-centered">

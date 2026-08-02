@@ -318,3 +318,27 @@
   cursor: pointer;
   flex-shrink: 0;
 }
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 640px) {
+  .admin-filter-bar {
+    padding: 12px;
+  }
+
+  .admin-filter-inputs {
+    width: 100%;
+  }
+
+  .admin-filter-input,
+  .admin-filter-select {
+    min-width: 0;
+    flex: 1 1 140px;
+  }
+
+  .admin-filter-select {
+    max-width: none;
+  }
+}

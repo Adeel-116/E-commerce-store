@@ -104,3 +104,17 @@
 .admin-toast-info { background: #f0f4ff; border-color: rgba(21, 101, 192, 0.2); color: #1a2e5a; }
 .admin-toast-info .admin-toast-icon { background: rgba(21, 101, 192, 0.1); color: #1565c0; }
 .admin-toast-info .admin-toast-progress { background: #1565c0; }
+
+@media (max-width: 480px) {
+  .admin-toast-portal {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .admin-toast {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+}

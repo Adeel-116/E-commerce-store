@@ -1,8 +1,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Bell } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAdminSidebar } from '@/context/AdminSidebarContext';
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   '/admin': { title: 'Dashboard', subtitle: 'Overview of your store performance' },
@@ -18,6 +19,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 export default function AdminHeader() {
   const pathname = usePathname();
   const meta = pageTitles[pathname] ?? { title: 'Dashboard', subtitle: '' };
+  const { toggleMobileSidebar } = useAdminSidebar();
 
   const [adminName, setAdminName] = useState('Admin');
 
@@ -43,8 +45,18 @@ export default function AdminHeader() {
   return (
     <header className="admin-header">
       <div className="admin-header-left">
-        <h1 className="admin-header-title">{meta.title}</h1>
-        <span className="admin-header-date">{today}</span>
+        <button
+          className="admin-header-menu-btn"
+          onClick={toggleMobileSidebar}
+          title="Menu"
+          aria-label="Toggle menu"
+        >
+          <Menu size={20} />
+        </button>
+        <div className="admin-header-left-text">
+          <h1 className="admin-header-title">{meta.title}</h1>
+          <span className="admin-header-date">{today}</span>
+        </div>
       </div>
 
       <div className="admin-header-actions">

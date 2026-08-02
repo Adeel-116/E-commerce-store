@@ -377,10 +377,38 @@
 @media (max-width: 768px) {
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
   .admin-dashboard-grid { grid-template-columns: 1fr; }
+  .admin-quick-stats { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .dash-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .dash-period-btns {
+    flex-wrap: wrap;
+  }
+
+  .dash-calendar-popover {
+    left: 0;
+    right: 0;
+    min-width: 0;
+  }
+
+  .admin-stat-card {
+    padding: 14px 16px;
+  }
+
+  .admin-stat-value {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 480px) {
   .admin-stats-grid { grid-template-columns: 1fr; }
+  .admin-quick-stats { grid-template-columns: 1fr; }
 }
 
 .admin-stats-grid {

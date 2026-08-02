@@ -12,7 +12,7 @@ import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles, ZoomIn } from "lucide-react";
 import ProductZoomModal from "@/app/components/ProductZoomModal";
-import { isRealColor } from "@/app/hooks/useProductCardImages";
+import { isRealColor, DEFAULT_VARIANT_NAME } from "@/app/hooks/useProductCardImages";
 import { gaViewItem } from "@/app/lib/gaEvents";
 import { metaViewContent } from "@/app/lib/metaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
@@ -213,9 +213,31 @@ export default function ProductDetailClient({
       ? selectedVariant.images
       : defaultImages;
 
+  // Thumbnail strip shows every color variation's photos together (not just
+  // the active color's) so shoppers can preview any color without switching
+  // first — clicking a thumbnail from another color jumps both the main
+  // image and the color selection to match.
+  const thumbSource = allColors.length > 0 ? allColors : [{ name: "", hex: "", images: product.images }];
+  const allThumbs = thumbSource.flatMap((c) =>
+    c.images.map((img) => ({ url: img, colorName: c.name }))
+  );
+  const activeImageUrl = galleryImages[activeImage] ?? galleryImages[0];
+
   const handleSelectColor = (colorName: string) => {
     setSelectedColor((prev) => (prev === colorName ? null : colorName));
     setActiveImage(0);
+  };
+
+  const handleSelectThumb = (thumb: { url: string; colorName: string }) => {
+    const isRealVariant = thumb.colorName && thumb.colorName !== DEFAULT_VARIANT_NAME;
+    if (isRealVariant && thumb.colorName !== selectedColor) {
+      setSelectedColor(thumb.colorName);
+    }
+    const variantImages = isRealVariant
+      ? productColors.find((c) => c.name === thumb.colorName)?.images ?? defaultImages
+      : defaultImages;
+    const idx = variantImages.indexOf(thumb.url);
+    setActiveImage(idx >= 0 ? idx : 0);
   };
 
   const handleAddToCart = () => {
@@ -281,16 +303,16 @@ export default function ProductDetailClient({
             </div>
 
             <div className="shop-inner-gallery">
-              {galleryImages.length > 1 && (
+              {allThumbs.length > 1 && (
                 <div className="shop-inner-gallery-thumbs">
-                  {galleryImages.map((img, index) => (
+                  {allThumbs.map((thumb, index) => (
                     <button
-                      key={img}
+                      key={`${thumb.colorName}-${thumb.url}-${index}`}
                       type="button"
-                      className={`shop-inner-gallery-thumb${activeImage === index ? " active" : ""}`}
-                      onClick={() => setActiveImage(index)}
+                      className={`shop-inner-gallery-thumb${activeImageUrl === thumb.url ? " active" : ""}`}
+                      onClick={() => handleSelectThumb(thumb)}
                     >
-                      <img src={img} alt={`${product.title} ${index + 1}`} title={`${product.title} ${index + 1}`} />
+                      <img src={thumb.url} alt={`${product.title} ${index + 1}`} title={`${product.title} ${index + 1}`} />
                     </button>
                   ))}
                 </div>
@@ -355,8 +377,8 @@ export default function ProductDetailClient({
 
           {zoomOpen && (
             <ProductZoomModal
-              images={galleryImages}
-              initialIndex={activeImage}
+              images={allThumbs.map((t) => t.url)}
+              initialIndex={Math.max(0, allThumbs.findIndex((t) => t.url === activeImageUrl))}
               productTitle={product.title}
               onClose={() => setZoomOpen(false)}
             />

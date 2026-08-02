@@ -188,7 +188,8 @@
 }
 
 .shop-inner-gallery-thumb.active {
-  border-color: var(--gold-accent);
+  border-color: #fff;
+  box-shadow: 0 0 0 1px rgba(28, 28, 28, 0.35);
 }
 
 .shop-inner-gallery-thumb:hover:not(.active) {
@@ -403,10 +404,10 @@
   display: inline-flex;
   align-items: baseline;
   gap: 3px;
-  color: var(--charcoal);
+  color: #fff;
   letter-spacing: 0.3px;
   white-space: nowrap;
-  background: var(--gold-accent);
+  background: #c62828;
   padding: 7px 14px;
   border-radius: 999px;
   font-size: 14px;

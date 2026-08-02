@@ -125,6 +125,16 @@ export default function HomeProductSlider({ card, currentImage }: Props) {
       <div className="cg-card-bottom-section">
         <h3 className="cg-card-heading">{card.heading}</h3>
 
+        {card.sizes && card.sizes.length > 0 && (
+          <div className="cg-card-size-pills">
+            {card.sizes.map((size) => (
+              <span key={size} className="cg-card-size-pill">
+                {size}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="cg-card-bottom-row">
           <div className="cg-card-price-group">
             {disc ? (

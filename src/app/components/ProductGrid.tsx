@@ -223,6 +223,16 @@ export function ProductCard({
             )}
           </div>
         )}
+
+        {product.sizes?.length > 0 && (
+          <div className="cg-card-size-pills">
+            {product.sizes.map((size) => (
+              <span key={size} className="cg-card-size-pill">
+                {size}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </Link>
   );

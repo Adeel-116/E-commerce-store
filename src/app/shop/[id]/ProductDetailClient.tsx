@@ -13,6 +13,7 @@ import { useWishlist } from "@/app/context/WishlistContext";
 import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles } from "lucide-react";
 import { isRealColor } from "@/app/hooks/useProductCardImages";
 import { gaViewItem } from "@/app/lib/gaEvents";
+import { metaViewContent } from "@/app/lib/metaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
 
 type ColorVariant = {
@@ -134,6 +135,13 @@ export default function ProductDetailClient({
   useEffect(() => {
     if (!product) return;
     gaViewItem({
+      item_id: product._id,
+      item_name: product.title,
+      item_category: product.category?.[0],
+      price: product.price,
+      value: product.price,
+    });
+    metaViewContent({
       item_id: product._id,
       item_name: product.title,
       item_category: product.category?.[0],

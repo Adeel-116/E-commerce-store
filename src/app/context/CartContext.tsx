@@ -4,6 +4,7 @@ import api from "../lib/axios";
 import { clearGuestId } from "../lib/guestId";
 import { fetchBundlesFromApi, getStoredBundles, ProductBundle, saveBundlesToStorage } from "../lib/cartBundles";
 import { gaAddToCart, gaRemoveFromCart } from "../lib/gaEvents";
+import { metaAddToCart } from "../lib/metaEvents";
 
 export type CartItem = {
   id: string;
@@ -235,6 +236,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setPricingStale(true);
     setIsCartOpen(true);
     gaAddToCart({
+      item_id: item.id,
+      item_name: item.productName,
+      item_variant: item.color ?? undefined,
+      price: unitPrice,
+      quantity,
+      value: unitPrice * quantity,
+    });
+    metaAddToCart({
       item_id: item.id,
       item_name: item.productName,
       item_variant: item.color ?? undefined,

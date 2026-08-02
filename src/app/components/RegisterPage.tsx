@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { gaSignUp } from "../lib/gaEvents";
+import { metaCompleteRegistration } from "../lib/metaEvents";
 import "../styles/RegisterPage.css";
 import StickNavbar from "./StickNavbar";
 
@@ -34,6 +35,7 @@ export default function RegisterPage() {
     try {
       await register(name, email, password);
       gaSignUp();
+      metaCompleteRegistration();
       await mergeCart();
       router.push("/");
     } catch (err: any) {

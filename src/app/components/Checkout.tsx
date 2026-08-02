@@ -15,6 +15,12 @@ import {
   gaPurchase,
   GaItem,
 } from "../lib/gaEvents";
+import {
+  metaIdentify,
+  metaInitiateCheckout,
+  metaAddPaymentInfo,
+  metaPurchase,
+} from "../lib/metaEvents";
 import NavbarController from "./NavbarController";
 import LoadingRing from "./LoadingRing";
 
@@ -100,6 +106,7 @@ export default function Checkout() {
     if (initiateCheckoutFiredRef.current || cartItems.length === 0) return;
     initiateCheckoutFiredRef.current = true;
     gaBeginCheckout({ items: checkoutContents, value: subtotal });
+    metaInitiateCheckout({ items: checkoutContents, value: subtotal });
   }, [cartItems]);
 
   const applyAddress = (addr: SavedAddress) => {
@@ -226,6 +233,8 @@ export default function Checkout() {
 
     gaIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
     gaAddPaymentInfo({ items: checkoutContents, value: total, paymentType: "cod" });
+    metaIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
+    metaAddPaymentInfo({ items: checkoutContents, value: total });
 
     try {
       const { data } = await api.post("/checkout/create-cod-order", {
@@ -239,6 +248,11 @@ export default function Checkout() {
         items: checkoutContents,
         value: data.total ?? total,
         shipping,
+      });
+      metaPurchase({
+        transactionId: data.orderId,
+        items: checkoutContents,
+        value: data.total ?? total,
       });
       setCodModal({ status: "success", orderId: data.orderId, total: data.total });
       setIsProcessing(false);

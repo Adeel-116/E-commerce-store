@@ -1,4 +1,4 @@
-import { Percent } from "lucide-react";
+import { Percent, Truck, PackageCheck, BadgeCheck } from "lucide-react";
 import "../styles/HomePerksMarquee.css";
 
 const PERKS: { icon: typeof Percent; text: string; code?: string }[] = [
@@ -6,6 +6,18 @@ const PERKS: { icon: typeof Percent; text: string; code?: string }[] = [
     icon: Percent,
     text: "Azadi Sale — Flat 20% Off, Use Code",
     code: "AZADI79",
+  },
+  {
+    icon: Truck,
+    text: "Free Delivery All Over Pakistan",
+  },
+  {
+    icon: PackageCheck,
+    text: "Cash on Delivery Available",
+  },
+  {
+    icon: BadgeCheck,
+    text: "100% Authentic & Premium Quality",
   },
 ];
 

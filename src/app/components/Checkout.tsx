@@ -11,6 +11,7 @@ import { getShippingRate, FREE_SHIPPING_BANNER_TEXT } from "../lib/shipping";
 import {
   gaIdentify,
   gaBeginCheckout,
+  gaAddShippingInfo,
   gaAddPaymentInfo,
   gaPurchase,
   GaItem,
@@ -189,6 +190,17 @@ export default function Checkout() {
     phone.trim()
   );
   const canSubmit = isAddressComplete && !isProcessing;
+
+  const shippingInfoFiredRef = React.useRef(false);
+  useEffect(() => {
+    if (shippingInfoFiredRef.current || !isAddressComplete) return;
+    shippingInfoFiredRef.current = true;
+    gaAddShippingInfo({
+      items: checkoutContents,
+      value: subtotal,
+      shippingTier: shippingRate.label,
+    });
+  }, [isAddressComplete]);
 
   useEffect(() => {
     if (!user) {

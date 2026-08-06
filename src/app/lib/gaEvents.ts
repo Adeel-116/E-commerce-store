@@ -104,6 +104,20 @@ export function gaBeginCheckout(params: { items: GaItem[]; value: number; curren
   });
 }
 
+export function gaAddShippingInfo(params: {
+  items: GaItem[];
+  value: number;
+  currency?: string;
+  shippingTier?: string;
+}) {
+  event("add_shipping_info", {
+    currency: params.currency ?? GA_CURRENCY,
+    value: params.value,
+    ...(params.shippingTier ? { shipping_tier: params.shippingTier } : {}),
+    items: params.items,
+  });
+}
+
 export function gaAddPaymentInfo(params: {
   items: GaItem[];
   value: number;

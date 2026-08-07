@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -15,8 +16,15 @@ export type GaItem = {
   item_variant?: string;
 };
 
+// Calls the real gtag.js send queue directly so events reach GA4 even if
+// GTM has no tag wired up for them. Falls back to a raw dataLayer push
+// only if gtag.js hasn't finished loading yet.
 function gtag(...args: unknown[]) {
   if (typeof window === "undefined") return;
+  if (typeof window.gtag === "function") {
+    window.gtag(...args);
+    return;
+  }
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(args);
 }

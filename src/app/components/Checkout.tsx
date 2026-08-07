@@ -70,6 +70,7 @@ export default function Checkout() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showErrors, setShowErrors] = useState(false);
 
   // COD doesn't redirect anywhere — success/failure is shown in a modal on this page
   const [codModal, setCodModal] = useState<
@@ -189,7 +190,13 @@ export default function Checkout() {
     country.trim() &&
     phone.trim()
   );
-  const canSubmit = isAddressComplete && !isProcessing;
+  const fieldErrors = {
+    lastName: showErrors && !lastName.trim(),
+    line1: showErrors && !line1.trim(),
+    city: showErrors && !city.trim(),
+    state: showErrors && !stateField.trim(),
+    phone: showErrors && !phone.trim(),
+  };
 
   const shippingInfoFiredRef = React.useRef(false);
   useEffect(() => {
@@ -228,6 +235,12 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAddressComplete) {
+      setShowErrors(true);
+      return;
+    }
+
     setIsProcessing(true);
     setErrorMsg("");
 
@@ -368,11 +381,11 @@ export default function Checkout() {
                 <input className="co-input" type="text" placeholder="First name (optional)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                <input className={`co-input${fieldErrors.lastName ? " co-input-error" : ""}`} type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
               </div>
             </div>
             <div className="co-field co-field-icon">
-              <input className="co-input" type="text" placeholder="Area" value={line1} onChange={(e) => setLine1(e.target.value)} required />
+              <input className={`co-input${fieldErrors.line1 ? " co-input-error" : ""}`} type="text" placeholder="Area" value={line1} onChange={(e) => setLine1(e.target.value)} required />
               <svg className="co-field-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -383,10 +396,10 @@ export default function Checkout() {
             </div>
             <div className="co-grid-3">
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} required />
+                <input className={`co-input${fieldErrors.city ? " co-input-error" : ""}`} type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} required />
               </div>
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="State" value={stateField} onChange={(e) => setStateField(e.target.value)} required />
+                <input className={`co-input${fieldErrors.state ? " co-input-error" : ""}`} type="text" placeholder="State" value={stateField} onChange={(e) => setStateField(e.target.value)} required />
               </div>
               <div className="co-field">
                 <input
@@ -402,7 +415,7 @@ export default function Checkout() {
             </div>
             <div className="co-field">
               <input
-                className="co-input"
+                className={`co-input${fieldErrors.phone ? " co-input-error" : ""}`}
                 type="tel"
                 inputMode="tel"
                 placeholder="Phone"
@@ -440,7 +453,7 @@ export default function Checkout() {
             </div>
           )}
 
-          <button type="submit" className="co-pay-btn" disabled={!canSubmit}>
+          <button type="submit" className="co-pay-btn" disabled={isProcessing}>
             {isProcessing ? "Placing order…" : "Place Order (Cash on Delivery)"}
           </button>
 

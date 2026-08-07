@@ -218,6 +218,15 @@
   box-shadow: 0 0 0 3px rgba(28, 28, 28, 0.08);
 }
 
+.co-input-error {
+  border-color: #e02b2b;
+}
+
+.co-input-error:focus {
+  border-color: #e02b2b;
+  box-shadow: 0 0 0 3px rgba(224, 43, 43, 0.12);
+}
+
 .co-input::placeholder {
   color: var(--muted);
 }

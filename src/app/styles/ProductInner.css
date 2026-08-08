@@ -402,25 +402,15 @@
 
 .shop-inner-discount-tag {
   display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-  color: #fff;
+  align-items: center;
+  color: #ffffff;
   letter-spacing: 0.3px;
   white-space: nowrap;
-  background: #c62828;
-  padding: 7px 14px;
-  border-radius: 999px;
+  background: #d21f1f;
+  padding: 7px 12px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 800;
-  box-shadow: 0 4px 14px rgba(28, 28, 28, 0.22);
-}
-
-.shop-inner-discount-tag::before {
-  content: "SAVE";
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  opacity: 0.75;
 }
 
 .shop-inner-right-container {

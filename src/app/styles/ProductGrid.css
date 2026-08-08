@@ -126,18 +126,10 @@
 }
 
 .cg-badge-discount {
-  gap: 3px;
+  padding: 6px 10px;
+  border-radius: 6px;
   background: #d21f1f;
   color: #ffffff;
-  box-shadow: 0 3px 8px rgba(210, 31, 31, 0.35);
-}
-
-.cg-badge-discount::before {
-  content: "SAVE";
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  opacity: 0.75;
 }
 
 .cg-badge-outofstock {
@@ -201,18 +193,10 @@
 }
 
 .cg-card-discount-tag {
-  gap: 3px;
+  padding: 6px 10px;
+  border-radius: 6px;
   background: #d21f1f;
   color: #ffffff;
-  box-shadow: 0 3px 8px rgba(210, 31, 31, 0.35);
-}
-
-.cg-card-discount-tag::before {
-  content: "SAVE";
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  opacity: 0.75;
 }
 
 .cg-pill-margin-left {

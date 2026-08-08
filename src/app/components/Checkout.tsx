@@ -384,6 +384,17 @@ export default function Checkout() {
                 <input className={`co-input${fieldErrors.lastName ? " co-input-error" : ""}`} type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
               </div>
             </div>
+            <div className="co-field">
+              <input
+                className={`co-input${fieldErrors.phone ? " co-input-error" : ""}`}
+                type="tel"
+                inputMode="tel"
+                placeholder="Phone"
+                value={phone}
+                onChange={handlePhoneChange}
+                required
+              />
+            </div>
             <div className="co-field co-field-icon">
               <input className={`co-input${fieldErrors.line1 ? " co-input-error" : ""}`} type="text" placeholder="Area" value={line1} onChange={(e) => setLine1(e.target.value)} required />
               <svg className="co-field-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2">
@@ -413,26 +424,14 @@ export default function Checkout() {
                 />
               </div>
             </div>
-            <div className="co-field">
-              <input
-                className={`co-input${fieldErrors.phone ? " co-input-error" : ""}`}
-                type="tel"
-                inputMode="tel"
-                placeholder="Phone"
-                value={phone}
-                onChange={handlePhoneChange}
-                required
-              />
-            </div>
           </div>
 
           {/* Shipping method */}
           <div className="co-section">
             <h2 className="co-heading">Shipping method</h2>
-            <p className="co-shipping-banner">{FREE_SHIPPING_BANNER_TEXT}</p>
             <div className="co-shipping-placeholder">
               <span className="co-shipping-rate">
-                {shippingRate.label} — <strong>{shippingRate.price === 0 ? "Free" : `PKR ${shippingRate.price.toFixed(2)}`}</strong>
+                {FREE_SHIPPING_BANNER_TEXT}
               </span>
             </div>
           </div>

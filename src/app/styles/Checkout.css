@@ -1105,6 +1105,11 @@
     height: 44px;
   }
 
+  .co-grid-3 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
   .co-pay-btn{
     height: 48px;
     font-size: 13px;

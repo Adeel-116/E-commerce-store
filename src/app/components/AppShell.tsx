@@ -11,6 +11,7 @@ import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
 import WhatsAppFloat from "./WhatsAppFloat";
 import SubscribePopup from "./SubscribePopup";
+import RecentSalePopup from "./RecentSalePopup";
 import OfferMarquee from "./OfferMarquee";
 import RouteLoadingOverlay from "./RouteLoadingOverlay";
 
@@ -40,6 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Footer />
       <WhatsAppFloat />
       <SubscribePopup />
+      <RecentSalePopup />
     </>
   );
 }

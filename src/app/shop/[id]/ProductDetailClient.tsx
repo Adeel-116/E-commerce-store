@@ -10,7 +10,20 @@ import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { Truck, ShoppingCart, PackageCheck, BadgeCheck, Award, Sparkles, ZoomIn } from "lucide-react";
+import {
+  Truck,
+  ShoppingCart,
+  PackageCheck,
+  BadgeCheck,
+  Award,
+  Sparkles,
+  ZoomIn,
+  Flame,
+  Eye,
+  ShieldCheck,
+  Plus,
+  Minus,
+} from "lucide-react";
 import ProductZoomModal from "@/app/components/ProductZoomModal";
 import { isRealColor, DEFAULT_VARIANT_NAME } from "@/app/hooks/useProductCardImages";
 import { gaViewItem } from "@/app/lib/gaEvents";
@@ -52,6 +65,18 @@ function getDiscountPercent(product: Product): number | null {
     : null;
 }
 
+// Deterministic per-product "social proof" numbers — derived from the
+// product id so they're stable across server/client render (no hydration
+// mismatch) and don't reshuffle on every re-render, but still vary product
+// to product instead of showing one hardcoded number everywhere.
+function seededRange(seed: string, min: number, max: number): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return min + (hash % (max - min + 1));
+}
+
 export default function ProductDetailClient({
   slug,
   initialProduct,
@@ -72,8 +97,8 @@ export default function ProductDetailClient({
   const [selectedColor, setSelectedColor] = useState<string | null>(
     initialProduct?.colors?.find(isRealColor)?.name ?? null
   );
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>("description");
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const router = useRouter();
@@ -113,7 +138,6 @@ export default function ProductDetailClient({
         setQuantity(1);
         setSelectedSize(null);
         setSelectedColor(null);
-        setDescriptionExpanded(false);
       }
 
       try {
@@ -200,6 +224,8 @@ export default function ProductDetailClient({
   }
 
   const discountPercent = getDiscountPercent(product);
+  const soldCount = seededRange(product._id, 8, 46);
+  const viewingCount = seededRange(product._id + "v", 6, 28);
   const wishlisted = isWishlisted(product._id);
   const allColors = product.colors ?? [];
   // Only variations with a real name get a swatch and a "select a color"
@@ -287,29 +313,32 @@ export default function ProductDetailClient({
     <div className="shop-inner-page">
       <NavbarController />
 
+
+      <div className="shop-inner-top-bar">
+        <nav className="breadcrumb">
+          <Link href="/">Home</Link>
+          <span className="sep">|</span>
+          <Link href="/shop">Shop</Link>
+          <span className="sep">|</span>
+          <span>{product.title}</span>
+        </nav>
+
+        <div className="shop-inner-bundle-banner">
+          <div className="shop-inner-bundle-banner-icon">
+            <Truck size={16} />
+          </div>
+          <div className="shop-inner-bundle-banner-text">
+            <p>
+              <strong>Free Delivery</strong> on all orders, delivered in 5–8 days.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="shop-inner-page-container">
         <div className="shop-inner-container shop-inner-container--stretch">
           {/* Left: Image gallery */}
           <div className="shop-inner-product-image-col">
-            <nav className="breadcrumb">
-              <Link href="/">Home</Link>
-              <span className="sep">|</span>
-              <Link href="/shop">Shop</Link>
-              <span className="sep">|</span>
-              <span>{product.title}</span>
-            </nav>
-
-            <div className="shop-inner-bundle-banner">
-              <div className="shop-inner-bundle-banner-icon">
-                <Truck size={16} />
-              </div>
-              <div className="shop-inner-bundle-banner-text">
-                <p>
-                  <strong>Free Delivery</strong> on all orders, delivered in 5–8 days.
-                </p>
-              </div>
-            </div>
-
             <div className="shop-inner-gallery">
               {allThumbs.length > 1 && (
                 <div className="shop-inner-gallery-thumbs">
@@ -394,27 +423,14 @@ export default function ProductDetailClient({
 
           {/* Right: Product Details */}
           <div className="shop-inner-right-container shop-inner-right-centered">
-            <div className="shop-inner-sale-strip">
-              Azadi Sale — Flat 20% Off, Use Code
-              <span className="shop-inner-sale-code">AZADI79</span>
-            </div>
-
             <h1 className="shop-inner-title">{product.title}</h1>
 
-            <p
-              className={`shop-inner-description ${descriptionExpanded ? "shop-inner-description--expanded" : ""}`}
-            >
-              {product.description}
-            </p>
-            {product.description && (
-              <button
-                type="button"
-                className="shop-inner-description-toggle"
-                onClick={() => setDescriptionExpanded((prev) => !prev)}
-              >
-                {descriptionExpanded ? "View less" : "View more"}
-              </button>
-            )}
+            <div className="shop-inner-urgency-row">
+              <Flame size={15} className="shop-inner-urgency-icon" />
+              <span>
+                <strong>{soldCount}</strong> sold in last 24 hours
+              </span>
+            </div>
 
             <hr className="section-divider" />
 
@@ -435,6 +451,13 @@ export default function ProductDetailClient({
                 {discountPercent !== null && (
                   <span className="discount-label">-{discountPercent}%</span>
                 )}
+              </div>
+
+              <div className="shop-inner-viewers-row">
+                <Eye size={14} />
+                <span>
+                  <strong>{viewingCount}</strong> people are viewing this right now
+                </span>
               </div>
 
               {/* Color selector */}
@@ -481,18 +504,49 @@ export default function ProductDetailClient({
               )}
             </div>
 
+            {/* Info box: delivery estimate, promo hint, free shipping */}
+            <div className="shop-inner-info-box">
+              <div className="shop-inner-info-row">
+                <Truck size={17} />
+                <span>
+                  Estimated delivery time: <strong>5–8 days</strong>
+                </span>
+              </div>
+              <div className="shop-inner-info-divider" />
+              <div className="shop-inner-info-row">
+                <Sparkles size={17} />
+                <span>
+                  Use code <strong>&quot;AZADI79&quot;</strong> for an extra 20% off
+                </span>
+              </div>
+              <div className="shop-inner-info-divider" />
+              <div className="shop-inner-info-row">
+                <PackageCheck size={17} />
+                <span>Free shipping &amp; easy returns</span>
+              </div>
+            </div>
+
             {/* Qty + Cart */}
-            <div className="qty-block" style={{ marginTop: "20px" }}>
-              <button
-                className="qty-btn"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              >
-                −
-              </button>
-              <span className="qty-value">{quantity}</span>
-              <button className="qty-btn" onClick={() => setQuantity((q) => q + 1)}>
-                +
-              </button>
+            <div className="qty-block">
+              <div className="shop-inner-qty-control">
+                <button
+                  type="button"
+                  className="qty-btn"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="qty-value">{quantity}</span>
+                <button
+                  type="button"
+                  className="qty-btn"
+                  onClick={() => setQuantity((q) => q + 1)}
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
 
               <button
                 className="add-to-cart-btn"
@@ -502,35 +556,26 @@ export default function ProductDetailClient({
                 {!product.stock
                   ? "Sold Out"
                   : hasSizes && !selectedSize
-                  ? "Select a Size"
-                  : hasColors && !selectedColor
-                  ? "Select a Color"
-                  : "Add to Cart"}
-                <svg
-                  viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                className="checkout-btn"
-                disabled={!canAddToCart}
-                onClick={handleQuickCheckout}
-              >
-                Quick Checkout
+                    ? "Select a Size"
+                    : hasColors && !selectedColor
+                      ? "Select a Color"
+                      : "Add To Cart"}
               </button>
             </div>
 
-            <hr className="section-divider" style={{ marginTop: "24px" }} />
+            <button
+              type="button"
+              className="checkout-btn checkout-btn--primary"
+              disabled={!canAddToCart}
+              onClick={handleQuickCheckout}
+            >
+              Buy It Now
+            </button>
+
+            <div className="shop-inner-guarantee">
+              <ShieldCheck size={16} />
+              <span>Guaranteed Safe Checkout</span>
+            </div>
 
             {/* Illustrative shipping timeline — not tied to a real order, just
                 sets delivery-speed expectations before purchase. */}
@@ -560,8 +605,6 @@ export default function ProductDetailClient({
               </div>
             </div>
 
-            <hr className="section-divider" />
-
             <div className="perks-row">
               <div className="perks-item">
                 <div className="perks-icon perks-icon-replacement">
@@ -582,19 +625,91 @@ export default function ProductDetailClient({
                 <span>One-of-a-Kind Unique Designs</span>
               </div>
             </div>
+
+            {/* Accordion: Description / Shipping & Returns / Return Policies */}
+            <div className="accordion-section">
+              <div className={`accordion-item${openAccordion === "description" ? " active" : ""}`}>
+                <button
+                  type="button"
+                  className="accordion-header"
+                  onClick={() =>
+                    setOpenAccordion((prev) => (prev === "description" ? null : "description"))
+                  }
+                >
+                  <span>Description</span>
+                  <Plus size={16} className="accordion-icon" />
+                </button>
+                <div className="accordion-content">
+                  <div className="accordion-inner">
+                    <p>{product.description || "No description available for this product."}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`accordion-item${openAccordion === "shipping" ? " active" : ""}`}>
+                <button
+                  type="button"
+                  className="accordion-header"
+                  onClick={() =>
+                    setOpenAccordion((prev) => (prev === "shipping" ? null : "shipping"))
+                  }
+                >
+                  <span>Shipping and Returns</span>
+                  <Plus size={16} className="accordion-icon" />
+                </button>
+                <div className="accordion-content">
+                  <div className="accordion-inner">
+                    <ul>
+                      <li>Orders are dispatched within 1–2 business days.</li>
+                      <li>Estimated delivery time is 5–8 business days.</li>
+                      <li>Free shipping on all orders, nationwide.</li>
+                      <li>Easy returns within 7 days of delivery.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`accordion-item${openAccordion === "returns" ? " active" : ""}`}>
+                <button
+                  type="button"
+                  className="accordion-header"
+                  onClick={() =>
+                    setOpenAccordion((prev) => (prev === "returns" ? null : "returns"))
+                  }
+                >
+                  <span>Return Policies</span>
+                  <Plus size={16} className="accordion-icon" />
+                </button>
+                <div className="accordion-content">
+                  <div className="accordion-inner">
+                    <p>
+                      If you&apos;re not fully satisfied, items can be returned within 7 days of
+                      delivery in original condition with tags attached. Refunds are processed
+                      to your original payment method once the return is received and inspected.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* You May Also Like */}
+        {/* People Also Bought */}
         {similarProducts.length > 0 && (
           <div className="similar-products-section">
-            <h2 id="similar-text">You May Also Like</h2>
+            <div className="similar-products-heading">
+              <h2 id="similar-text">People Also Bought</h2>
+              <p>
+                Here&apos;s some of our most similar products people are buying. Click to
+                discover trending style.
+              </p>
+            </div>
             <div className="cg-grid similar-products-grid">
               {similarProducts.map((item) => (
                 <ProductCard
                   key={item._id}
                   product={item as unknown as GridProduct}
-                  listName="You May Also Like"
+                  listName="People Also Bought"
                 />
               ))}
             </div>

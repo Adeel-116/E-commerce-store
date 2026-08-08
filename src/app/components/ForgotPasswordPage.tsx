@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import "../styles/AuthFlow.css";
-import StickNavbar from "./StickNavbar";
+import NavbarController from "./NavbarController";
 
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <StickNavbar />
+      <NavbarController />
       <main className="auth-flow-container">
         <div className="auth-flow-card">
           <div className="auth-flow-header">

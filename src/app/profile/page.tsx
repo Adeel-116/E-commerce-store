@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import UserProfile from "../components/UserProfile";
-import StickNavbar from "../components/StickNavbar";
+import NavbarController from "../components/NavbarController";
 
 export const metadata: Metadata = {
   title: "My Profile",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <>
-      <StickNavbar />
+      <NavbarController />
       <UserProfile />
     </>
   );

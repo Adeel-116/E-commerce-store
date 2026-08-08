@@ -8,7 +8,7 @@ import { useCart } from "../context/CartContext";
 import { gaSignUp } from "../lib/gaEvents";
 import { metaCompleteRegistration } from "../lib/metaEvents";
 import "../styles/RegisterPage.css";
-import StickNavbar from "./StickNavbar";
+import NavbarController from "./NavbarController";
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -48,7 +48,7 @@ export default function RegisterPage() {
   return (
 
     <>
-    <StickNavbar />
+    <NavbarController />
     <main className="register-page-container">
       <div className="register-page-card">
         {/* Header */}

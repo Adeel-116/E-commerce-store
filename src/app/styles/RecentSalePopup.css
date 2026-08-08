@@ -97,7 +97,14 @@
 
 @media (max-width: 640px) {
   .recent-sale-toast {
-    width: calc(100vw - 24px);
-    bottom: 16px;
+    width: calc(100vw - 100px);
+    bottom: 92px;
+  }
+
+  .recent-sale-toast__close {
+    width: 26px;
+    height: 26px;
+    background: var(--sand-beige);
+    color: var(--charcoal);
   }
 }

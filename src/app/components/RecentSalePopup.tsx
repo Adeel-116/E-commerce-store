@@ -64,23 +64,8 @@ export default function RecentSalePopup() {
     };
   }, []);
 
-  // ?debugToast=1 keeps the toast on screen permanently (no cycling) so the
-  // design can be inspected/tweaked without waiting on the real timers.
-  const debugMode =
-    typeof window !== "undefined" && new URLSearchParams(window.location.search).has("debugToast");
-
   useEffect(() => {
     if (dismissed || products.length === 0) return;
-
-    if (debugMode) {
-      const product = pickRandom(products);
-      const name = pickRandom(BUYER_NAMES);
-      const minutesAgo = pickRandom(MINUTES_AGO_POOL);
-      if (!product || !name || minutesAgo === undefined) return;
-      setCurrent({ name, minutesAgo, product });
-      setVisible(true);
-      return;
-    }
 
     let hideTimer: ReturnType<typeof setTimeout>;
     let nextTimer: ReturnType<typeof setTimeout>;
@@ -108,7 +93,7 @@ export default function RecentSalePopup() {
       clearTimeout(nextTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products, dismissed, debugMode]);
+  }, [products, dismissed]);
 
   if (dismissed || !current) return null;
 

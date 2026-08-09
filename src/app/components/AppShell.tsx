@@ -41,7 +41,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Footer />
       <WhatsAppFloat />
       <SubscribePopup />
-      <RecentSalePopup />
+      {/* <RecentSalePopup /> */}
     </>
   );
 }

@@ -24,7 +24,8 @@
     "react-loading-skeleton": "^3.5.0",
     "react-to-print": "^3.3.0",
     "recharts": "^3.8.1",
-    "swiper": "^12.1.4"
+    "swiper": "^12.1.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20",

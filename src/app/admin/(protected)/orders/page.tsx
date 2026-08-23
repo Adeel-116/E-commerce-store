@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import AdminTable, { AdminColumn } from "@/components/AdminTable";
 import AdminModal from "@/components/AdminModal";
@@ -65,6 +64,7 @@ type ApiOrder = {
 type OrderRow = {
   _id: string;
   orderId: string;
+  select: string;
   customer: string;
   lastEmail: boolean;
   qty: number;
@@ -80,8 +80,7 @@ type OrderRow = {
 
 const STATUS_LABEL: Record<string, string> = {
   processing: "Processing",
-  preparation: "Preparation",
-  shipped: "Shipped",
+  dispatch: "Dispatch",
   delivered: "Delivered",
   cancelled: "Cancelled",
   returned: "Returned",
@@ -89,8 +88,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 const STATUS_OPTIONS = [
   "processing",
-  "preparation",
-  "shipped",
+  "dispatch",
   "delivered",
   "cancelled",
   "returned",
@@ -105,12 +103,14 @@ const PAYMENT_STATUS_OPTIONS = [
 ];
 
 const statusClass: Record<string, string> = {
+  // Order statuses
   processing: "admin-badge-info",
-  preparation: "admin-badge-warning",
-  shipped: "admin-badge-teal",
+  dispatch: "admin-badge-teal",
   delivered: "admin-badge-success",
   cancelled: "admin-badge-danger",
   returned: "admin-badge-purple",
+
+  // Payment statuses
   paid: "admin-badge-success",
   pending: "admin-badge-warning",
   failed: "admin-badge-danger",
@@ -161,75 +161,12 @@ function toDatetimeLocalValue(iso: string) {
   )}:${pad(d.getMinutes())}`;
 }
 
-const columns: AdminColumn[] = [
-  { key: "orderId", label: "Order ID", width: "175px" },
-  { key: "customer", label: "Customer" },
-  { key: "date", label: "Date", width: "140px" },
-  { key: "qty", label: "Qty", width: "60px" },
-  {
-    key: "extraCharges",
-    label: "Extra Charges",
-    width: "160px",
-    render: (val) => {
-      const { shipping, discount, bundleSavings } =
-        val as OrderRow["extraCharges"];
-      return (
-        <div style={{ fontSize: 12, lineHeight: 1.7 }}>
-          <div>
-            Shipping: <strong>{fmt(shipping)}</strong>
-          </div>
-          {discount > 0 && (
-            <div style={{ color: "var(--brandgreen)" }}>
-              Discount: <strong>-{fmt(discount)}</strong>
-            </div>
-          )}
-          {bundleSavings > 0 && (
-            <div style={{ color: "var(--brandgreen)" }}>
-              Bundle: <strong>-{fmt(bundleSavings)}</strong>
-            </div>
-          )}
-        </div>
-      );
-    },
-  },
-  { key: "total", label: "Total", width: "90px" },
-  {
-    key: "paymentStatus",
-    label: "Payment",
-    width: "100px",
-    render: (val) => (
-      <span
-        className={`admin-badge ${statusClass[val as string] ?? "admin-badge-neutral"}`}
-      >
-        {String(val)}
-      </span>
-    ),
-  },
-  {
-    key: "status",
-    label: "Status",
-    width: "155px",
-    render: (val) => (
-      <span
-        className={`admin-badge ${statusClass[val as string] ?? "admin-badge-neutral"}`}
-      >
-        {STATUS_LABEL[val as string] ?? String(val)}
-      </span>
-    ),
-  },
-  {
-    key: "lastEmail",
-    label: "Last Email",
-    width: "100px",
-    render: (val) => String(!!val),
-  },
-];
-
 function mapOrder(o: ApiOrder): OrderRow {
   const totalQty = o.items.reduce((sum, i) => sum + i.quantity, 0);
   return {
     _id: o._id,
     orderId: o.orderId,
+    select: o.orderId,
     customer: o.shippingAddress?.fullName || o.guestEmail || o.userId || "—",
     lastEmail: !!o.lastEmailSent,
     qty: totalQty,
@@ -276,7 +213,12 @@ export default function OrdersPage() {
   const [editPaymentStatus, setEditPaymentStatus] = useState("");
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [exportLoading, setExportLoading] = useState(true);
+
+  // --- Selection + export state ---
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
   const [editDetailsOrder, setEditDetailsOrder] = useState<OrderRow | null>(
     null,
   );
@@ -293,63 +235,187 @@ export default function OrdersPage() {
   const [saveDetailsError, setSaveDetailsError] = useState<string | null>(
     null,
   );
-  const fetchCSVOrder = useCallback(async () => {
-    setExportLoading(true);
+
+  // --- Selection helpers (inside component — they use orders/selectedIds state) ---
+  const toggleSelectOne = (orderId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(orderId) ? next.delete(orderId) : next.add(orderId);
+      return next;
+    });
+  };
+
+  const toggleSelectAllOnPage = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const allSelected = orders.every((o) => next.has(o.orderId));
+      orders.forEach((o) =>
+        allSelected ? next.delete(o.orderId) : next.add(o.orderId),
+      );
+      return next;
+    });
+  };
+
+  const columns: AdminColumn[] = useMemo(
+    () => [
+      {
+        key: "select",
+        label: "",
+        width: "36px",
+        render: (val) => (
+          <input
+            type="checkbox"
+            checked={selectedIds.has(val as string)}
+            onClick={(e) => e.stopPropagation()}
+            onChange={() => toggleSelectOne(val as string)}
+          />
+        ),
+      },
+      { key: "orderId", label: "Order ID", width: "175px" },
+      { key: "customer", label: "Customer" },
+      { key: "date", label: "Date", width: "140px" },
+      { key: "qty", label: "Qty", width: "60px" },
+      {
+        key: "extraCharges",
+        label: "Extra Charges",
+        width: "160px",
+        render: (val) => {
+          const { shipping, discount, bundleSavings } =
+            val as OrderRow["extraCharges"];
+          return (
+            <div style={{ fontSize: 12, lineHeight: 1.7 }}>
+              <div>
+                Shipping: <strong>{fmt(shipping)}</strong>
+              </div>
+              {discount > 0 && (
+                <div style={{ color: "var(--brandgreen)" }}>
+                  Discount: <strong>-{fmt(discount)}</strong>
+                </div>
+              )}
+              {bundleSavings > 0 && (
+                <div style={{ color: "var(--brandgreen)" }}>
+                  Bundle: <strong>-{fmt(bundleSavings)}</strong>
+                </div>
+              )}
+            </div>
+          );
+        },
+      },
+      { key: "total", label: "Total", width: "90px" },
+      {
+        key: "paymentStatus",
+        label: "Payment",
+        width: "100px",
+        render: (val) => (
+          <span
+            className={`admin-badge ${statusClass[val as string] ?? "admin-badge-neutral"}`}
+          >
+            {String(val)}
+          </span>
+        ),
+      },
+      {
+        key: "status",
+        label: "Status",
+        width: "155px",
+        render: (val) => (
+          <span
+            className={`admin-badge ${statusClass[val as string] ?? "admin-badge-neutral"}`}
+          >
+            {STATUS_LABEL[val as string] ?? String(val)}
+          </span>
+        ),
+      },
+      {
+        key: "lastEmail",
+        label: "Last Email",
+        width: "100px",
+        render: (val) => String(!!val),
+      },
+    ],
+    [selectedIds, orders],
+  );
+
+  // --- Export helpers ---
+  const buildExportRows = (list: ApiOrder[]) => {
+    const money = (n: unknown) => Number(Number(n ?? 0).toFixed(2));
+    return list.map((order) => {
+      const shipping = order.shippingAddress ?? ({} as ApiOrder["shippingAddress"]);
+      const isPaid = order.payment?.status === "paid";
+      const items = order.items ?? [];
+
+      return {
+        Reference: order.orderId ?? "",
+        "Order Date": new Date(order.createdAt).toLocaleString("en-GB"),
+        "Recipient Name": shipping.fullName || order.guestEmail || "",
+        "Recipient Phone": shipping.phone || "",
+        "Recipient Email": shipping.email || order.guestEmail || "",
+        "Recipient Address": [shipping.line1, shipping.line2]
+          .filter(Boolean)
+          .join(", "),
+        "Recipient City": shipping.city || "",
+        "Recipient Postal Code": shipping.postalCode || "",
+        "Product Name(s)": items
+          .map((i) => i.title)
+          .filter(Boolean)
+          .join(" | "),
+        Quantity: items.reduce((sum, i) => sum + (i.quantity || 0), 0),
+        "Item Total": money(
+          items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        ),
+        Subtotal: money(order.pricing?.subtotal),
+        Shipping: money(order.pricing?.shipping),
+        Discount: money(order.pricing?.discount),
+        "Bundle Savings": money(order.pricing?.bundleSavings),
+        Total: money(order.pricing?.total),
+        "Payment Method": order.payment?.method?.toUpperCase() || "",
+        "Payment Status": order.payment?.status || "",
+        "Order Status": order.status || "",
+        COD: isPaid ? "No" : "Yes",
+      };
+    });
+  };
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async (format: "csv" | "excel") => {
+    setExporting(true);
+    setExportMenuOpen(false);
     try {
-      const { data } = await api.get("/admin/orders");
-      const money = (n: unknown) => Number(Number(n ?? 0).toFixed(2));
-
-      const csvData = data.orders.map((order: any) => {
-        const shipping = order.shippingAddress ?? {};
-        const isPaid = order.payment?.status === "paid";
-        const total = money(order.pricing?.total);
-
-        return {
-          Reference: order.orderId ?? "",
-          "Recipient Name *": shipping.fullName || order.guestEmail || "",
-          "Recipient Phone *": shipping.phone ? `${shipping.phone}` : "",
-          "Recipient Email": shipping.email || order.guestEmail || "",
-          "Recipient Address *": [shipping.line1, shipping.line2]
-            .filter(Boolean)
-            .join(", "),
-          "Recipient City *": shipping.city || "",
-          "Recipient Postal Code": shipping.postalCode
-            ? `${shipping.postalCode}`
-            : "",
-          "Weight (kg) *": "",
-          "Length (cm) *": "",
-          "Width (cm) *": "",
-          "Height (cm) *": "",
-          "Item Description *": (order.items ?? [])
-            .map((item: any) => item.title)
-            .filter(Boolean)
-            .join(", "),
-          "Item Value *": total,
-          "Item Currency *": "PKR",
-          COD: isPaid ? "No" : "Yes",
-          "COD Amount": total,
-        };
+      const { data } = await api.post("/admin/orders/export", {
+        orderIds: Array.from(selectedIds), // empty => backend returns all
       });
+      const rows = buildExportRows(data.orders as ApiOrder[]);
+      const filenameBase = `orders-${new Date().toISOString().split("T")[0]}`;
 
-      const csv = Papa.unparse(csvData, { quotes: true });
-      const blob = new Blob([csv], {
-        type: "text/csv;charset=utf-8;",
-      });
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `orders-${new Date().toISOString().split("T")[0]}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      if (format === "csv") {
+        const csv = Papa.unparse(rows, { quotes: true });
+        downloadBlob(
+          new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+          `${filenameBase}.csv`,
+        );
+      } else {
+        const XLSX = await import("xlsx");
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+        XLSX.writeFile(workbook, `${filenameBase}.xlsx`);
+      }
     } catch (err) {
       console.error("Failed to export orders", err);
     } finally {
-      setExportLoading(false);
+      setExporting(false);
     }
-  }, []);
+  };
 
   const fetchOrders = useCallback(async (page: number) => {
     setLoading(true);
@@ -489,9 +555,9 @@ export default function OrdersPage() {
   const editDetailsRaw = editDetailsOrder?._raw;
   const editDetailsTotal = editDetailsRaw
     ? editDetailsSubtotal +
-      editDetailsRaw.pricing.shipping -
-      editDetailsRaw.pricing.discount -
-      editDetailsRaw.pricing.bundleSavings
+    editDetailsRaw.pricing.shipping -
+    editDetailsRaw.pricing.discount -
+    editDetailsRaw.pricing.bundleSavings
     : 0;
 
   const saveEditDetails = async () => {
@@ -606,6 +672,8 @@ export default function OrdersPage() {
   };
 
   const raw = viewOrder?._raw;
+  const allOnPageSelected =
+    orders.length > 0 && orders.every((o) => selectedIds.has(o.orderId));
 
   return (
     <>
@@ -614,9 +682,72 @@ export default function OrdersPage() {
           <h2 className="admin-page-title">All Orders</h2>
           <p className="admin-page-subtitle">{pagination.total} total orders</p>
         </div>
-        <button className="admin-btn admin-btn-primary" onClick={fetchCSVOrder}>
-          <Plus size={15} /> {"Export Orders"}
-        </button>
+
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            className="admin-btn admin-btn-ghost"
+            onClick={toggleSelectAllOnPage}
+          >
+            {allOnPageSelected ? "Unselect Page" : "Select Page"}
+          </button>
+
+          {selectedIds.size > 0 && (
+            <button
+              className="admin-btn admin-btn-ghost"
+              onClick={() => setSelectedIds(new Set())}
+            >
+              Clear ({selectedIds.size})
+            </button>
+          )}
+
+          <div style={{ position: "relative" }}>
+            <button
+              className="admin-btn admin-btn-primary"
+              onClick={() => setExportMenuOpen((v) => !v)}
+              disabled={exporting}
+            >
+              <Plus size={15} />
+              {exporting
+                ? "Exporting…"
+                : selectedIds.size > 0
+                  ? `Export Selected (${selectedIds.size})`
+                  : "Export Orders"}
+            </button>
+
+            {exportMenuOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  marginTop: 4,
+                  background: "#fff",
+                  border: "1px solid #e2e2e2",
+                  borderRadius: 6,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  zIndex: 30,
+                  minWidth: 160,
+                  overflow: "hidden",
+                }}
+              >
+                <button
+                  className="admin-btn admin-btn-ghost"
+                  style={{ width: "100%", justifyContent: "flex-start", borderRadius: 0 }}
+                  onClick={() => handleExport("csv")}
+                >
+                  Export as CSV
+                </button>
+                <button
+                  className="admin-btn admin-btn-ghost"
+                  style={{ width: "100%", justifyContent: "flex-start", borderRadius: 0 }}
+                  onClick={() => handleExport("excel")}
+                >
+                  Export as Excel
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <AdminTable
@@ -647,7 +778,6 @@ export default function OrdersPage() {
         {viewOrder && raw && (
           <>
             <div className="admin-modal-detail-grid">
-              
               <div className="admin-modal-detail-item">
                 <span className="admin-modal-detail-label">Customer</span>
                 <span className="admin-modal-detail-value">
@@ -669,17 +799,13 @@ export default function OrdersPage() {
                 </span>
               </div>
 
-              <div
-                className="admin-modal-detail-item"
-
-              >
+              <div className="admin-modal-detail-item">
                 <span className="admin-modal-detail-label">Address</span>
                 <span className="admin-modal-detail-value">
                   {raw.shippingAddress.line2} {raw.shippingAddress.line1}{" "}
                   {raw.shippingAddress.city}
                 </span>
               </div>
-
 
               {raw.specialInstructions && (
                 <div
@@ -735,14 +861,11 @@ export default function OrdersPage() {
                         }}
                       />
                       <div style={{ flex: 1, fontSize: 13 }}>
-
                         <div style={{ fontWeight: 600 }}>{item.title}</div>
                         <div style={{ color: "#888" }}>
                           {item.size}
                           {item.color ? ` · ${item.color}` : ""} · Qty: {item.quantity}
                         </div>
-
-
                       </div>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>
                         {fmt(item.originalPrice * item.quantity)}
@@ -1121,12 +1244,12 @@ export default function OrdersPage() {
                                   cursor: "pointer",
                                 }}
                                 onMouseEnter={(e) =>
-                                  (e.currentTarget.style.background =
-                                    "#f5f5f5")
+                                (e.currentTarget.style.background =
+                                  "#f5f5f5")
                                 }
                                 onMouseLeave={(e) =>
-                                  (e.currentTarget.style.background =
-                                    "transparent")
+                                (e.currentTarget.style.background =
+                                  "transparent")
                                 }
                               >
                                 {s.title}
@@ -1172,16 +1295,6 @@ export default function OrdersPage() {
                         }
                       />
                     </div>
-                    {/* <div
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        textAlign: "right",
-                        paddingBottom: 9,
-                      }}
-                    >
-                      {fmt(item.price * item.quantity)}
-                    </div> */}
                     <button
                       type="button"
                       className="admin-btn admin-btn-ghost"
@@ -1210,23 +1323,6 @@ export default function OrdersPage() {
               style={{ margin: "18px 0" }}
             />
 
-            {/* <div className="admin-modal-detail-grid">
-              <div className="admin-modal-detail-item">
-                <span className="admin-modal-detail-label">Subtotal</span>
-                <span className="admin-modal-detail-value">
-                  {fmt(editDetailsSubtotal)}
-                </span>
-              </div>
-              <div className="admin-modal-detail-item">
-                <span className="admin-modal-detail-label">Total</span>
-                <span
-                  className="admin-modal-detail-value"
-                  style={{ color: "var(--brandgreen)", fontWeight: 700 }}
-                >
-                  {fmt(editDetailsTotal)}
-                </span>
-              </div>
-            </div> */}
             <p className="admin-form-hint">
               Subtotal and total update automatically based on quantity —
               price per item is not directly editable.

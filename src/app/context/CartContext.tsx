@@ -1,9 +1,10 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useRef, ReactNode } from "react";
 import api from "../lib/axios";
 import { clearGuestId } from "../lib/guestId";
 import { fetchBundlesFromApi, getStoredBundles, ProductBundle, saveBundlesToStorage } from "../lib/cartBundles";
 import { gaAddToCart, gaRemoveFromCart } from "../lib/gaEvents";
+import { metaAddToCart } from "../lib/metaEvents";
 
 export type CartItem = {
   id: string;
@@ -101,6 +102,14 @@ function mapBackendItem(item: any): CartItem {
   const quantity = item.quantity ?? 1;
   const price = p.price ?? 0;
   const unitPrice = item.originalPrice ?? item.price ?? price ?? 0;
+  // Cart lines only store the selected color's name, not an image — look up
+  // that color's own photos on the populated product so the cart shows the
+  // variant the shopper actually picked, instead of always the product's
+  // first/default photo.
+  const variantColor = item.color
+    ? (p.colors ?? []).find((c: { name: string }) => c.name === item.color)
+    : null;
+  const productImage = variantColor?.images?.[0] || p.images?.[0] || "";
   return {
     id: p._id ?? p.id,
     productName: p.title ?? p.name ?? "",
@@ -109,7 +118,7 @@ function mapBackendItem(item: any): CartItem {
     size,
     color: item.color ?? null,
     quantity,
-    productImage: p.images?.[0] || "",
+    productImage,
     unitPrice,
     lineSubtotal: unitPrice * quantity,
     bundleApplied: item.bundleApplied ?? false,
@@ -140,6 +149,12 @@ function mapCartResponse(cart: any): { items: CartItem[]; pricing: CartPricing |
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Mirrors `cartItems` synchronously so code queued inside a chained
+  // Promise (see `runQuantityChange`) can read the latest line state at the
+  // moment it actually runs, instead of whatever `cartItems` closure value
+  // was captured back when the chain step was first queued.
+  const cartItemsRef = useRef<CartItem[]>([]);
+  cartItemsRef.current = cartItems;
   const [pricing, setPricing] = useState<CartPricing | null>(null);
   // True right after a local cart mutation (add/remove/quantity change) until
   // the backend confirms — while true, `pricing` reflects the *previous*
@@ -149,16 +164,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Mutations (add/remove/quantity/size) can overlap in flight — e.g. two
+  // quick clicks on the quantity stepper fire two PATCH+refetch pairs, and
+  // the network can resolve them out of order. Without a guard, an older
+  // refetch that lands after a newer one would stomp the newer state back
+  // down (the bug where a quantity flashes to the new value then reverts).
+  // Every refetch is tagged with a ticket; only the most recent one is
+  // allowed to apply its result.
+  const refetchTicket = useRef(0);
+
   const refetchCart = () => {
+    const ticket = ++refetchTicket.current;
     api
       .get("/cart")
       .then((res) => {
+        if (ticket !== refetchTicket.current) return;
         const { items, pricing } = mapCartResponse(res.data.cart);
         setCartItems(items);
         setPricing(pricing);
         setPricingStale(false);
       })
       .catch((err) => {
+        if (ticket !== refetchTicket.current) return;
         console.error("Refetch cart failed:", err?.response?.data?.message ?? err.message);
         setPricingStale(false);
       });
@@ -224,6 +251,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       quantity,
       value: unitPrice * quantity,
     });
+    metaAddToCart({
+      item_id: item.id,
+      item_name: item.productName,
+      item_variant: item.color ?? undefined,
+      price: unitPrice,
+      quantity,
+      value: unitPrice * quantity,
+    });
 
     api.post("/cart/add", { productId: item.id, size: item.size, color: item.color ?? null, quantity })
       .then(() => refetchCart())
@@ -233,7 +268,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const removeItem = (id: string, size?: string, color?: string | null) => {
+  const removeItem = (id: string, size?: string, color?: string | null): Promise<void> => {
     const item = cartItems.find((i) => matchesLine(i, id, size, color));
     setCartItems((prev) => prev.filter((i) => !matchesLine(i, id, size, color)));
     setPricingStale(true);
@@ -247,7 +282,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         value: item.unitPrice * item.quantity,
       });
     }
-    api
+    return api
       .delete("/cart/remove", { params: { productId: id, size, color: color ?? undefined } })
       .then(() => refetchCart())
       .catch((err) => {
@@ -256,64 +291,70 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  const increaseQuantity = (id: string, size?: string, color?: string | null) => {
-    const item = cartItems.find((i) => matchesLine(i, id, size, color));
-    if (!item) return;
-    const newQty = item.quantity + 1;
-    const perUnit = item.lineSubtotal / item.quantity;
-    setCartItems((prev) =>
-      prev.map((i) =>
-        matchesLine(i, id, item.size, item.color)
-          ? { ...i, quantity: newQty, lineSubtotal: perUnit * newQty }
-          : i
-      )
-    );
-    setPricingStale(true);
-    api
-      .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
-      .then(() => refetchCart())
-      .catch((err) => {
-        console.error("Update quantity failed:", err?.response?.data?.message ?? err.message);
+  // Per-line in-flight guard: while a quantity PATCH for a given line is
+  // pending, a second click on the same stepper queues behind it instead of
+  // firing a second overlapping PATCH+refetch — that overlap was the source
+  // of the "flashes to 2, reverts to 1" bug (two absolute-quantity writes on
+  // the backend, whichever save() lands last wins, and the frontend can't
+  // tell which refetch is fresher without this).
+  const quantityInFlight = useRef<Map<string, Promise<void>>>(new Map());
+  const lineKey = (id: string, size?: string, color?: string | null) =>
+    `${id}::${size ?? ""}::${normalizeColor(color)}`;
+
+  const runQuantityChange = (
+    id: string,
+    size: string | undefined,
+    color: string | null | undefined,
+    step: 1 | -1
+  ): Promise<void> => {
+    const key = lineKey(id, size, color);
+    const prior = quantityInFlight.current.get(key) ?? Promise.resolve();
+    const next = prior
+      .catch(() => {})
+      .then(() => {
+        const item = cartItemsRef.current.find((i) => matchesLine(i, id, size, color));
+        if (!item) return;
+
+        if (step === -1 && item.quantity <= 1) {
+          return removeItem(id, item.size, item.color);
+        }
+
+        const newQty = item.quantity + step;
+        const perUnit = item.lineSubtotal / item.quantity;
         setCartItems((prev) =>
           prev.map((i) =>
             matchesLine(i, id, item.size, item.color)
-              ? { ...i, quantity: newQty - 1, lineSubtotal: item.lineSubtotal }
+              ? { ...i, quantity: newQty, lineSubtotal: perUnit * newQty }
               : i
           )
         );
+        setPricingStale(true);
+
+        return api
+          .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
+          .then(() => refetchCart())
+          .catch((err) => {
+            console.error("Update quantity failed:", err?.response?.data?.message ?? err.message);
+            setCartItems((prev) =>
+              prev.map((i) =>
+                matchesLine(i, id, item.size, item.color)
+                  ? { ...i, quantity: item.quantity, lineSubtotal: item.lineSubtotal }
+                  : i
+              )
+            );
+          });
       });
+
+    quantityInFlight.current.set(key, next);
+    return next;
+  };
+
+  const increaseQuantity = (id: string, size?: string, color?: string | null) => {
+    void runQuantityChange(id, size, color, 1);
   };
 
   const decreaseQuantity = (id: string, size?: string, color?: string | null) => {
-    const item = cartItems.find((i) => matchesLine(i, id, size, color));
-    if (!item) return;
-    if (item.quantity <= 1) {
-      removeItem(id, item.size, item.color);
-      return;
-    }
-    const newQty = item.quantity - 1;
-    const perUnit = item.lineSubtotal / item.quantity;
-    setCartItems((prev) =>
-      prev.map((i) =>
-        matchesLine(i, id, item.size, item.color)
-          ? { ...i, quantity: newQty, lineSubtotal: perUnit * newQty }
-          : i
-      )
-    );
-    setPricingStale(true);
-    api
-      .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
-      .then(() => refetchCart())
-      .catch((err) => {
-        console.error("Update quantity failed:", err?.response?.data?.message ?? err.message);
-        setCartItems((prev) =>
-          prev.map((i) =>
-            matchesLine(i, id, item.size, item.color)
-              ? { ...i, quantity: newQty + 1, lineSubtotal: item.lineSubtotal }
-              : i
-          )
-        );
-      });
+    void runQuantityChange(id, size, color, -1);
   };
 
   const changeSize = (id: string, size: string, currentSize?: string, color?: string | null) => {

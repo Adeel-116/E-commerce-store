@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -15,8 +16,15 @@ export type GaItem = {
   item_variant?: string;
 };
 
+// Calls the real gtag.js send queue directly so events reach GA4 even if
+// GTM has no tag wired up for them. Falls back to a raw dataLayer push
+// only if gtag.js hasn't finished loading yet.
 function gtag(...args: unknown[]) {
   if (typeof window === "undefined") return;
+  if (typeof window.gtag === "function") {
+    window.gtag(...args);
+    return;
+  }
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(args);
 }
@@ -100,6 +108,20 @@ export function gaBeginCheckout(params: { items: GaItem[]; value: number; curren
   event("begin_checkout", {
     currency: params.currency ?? GA_CURRENCY,
     value: params.value,
+    items: params.items,
+  });
+}
+
+export function gaAddShippingInfo(params: {
+  items: GaItem[];
+  value: number;
+  currency?: string;
+  shippingTier?: string;
+}) {
+  event("add_shipping_info", {
+    currency: params.currency ?? GA_CURRENCY,
+    value: params.value,
+    ...(params.shippingTier ? { shipping_tier: params.shippingTier } : {}),
     items: params.items,
   });
 }

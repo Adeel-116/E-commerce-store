@@ -1,23 +1,23 @@
-import { Truck, Gift, Award, ShieldCheck } from "lucide-react";
+import { Percent, Truck, PackageCheck, BadgeCheck } from "lucide-react";
 import "../styles/HomePerksMarquee.css";
-import { FREE_SHIPPING_THRESHOLD } from "../lib/shipping";
 
-const PERKS = [
+const PERKS: { icon: typeof Percent; text: string; code?: string }[] = [
+  {
+    icon: Percent,
+    text: "Sale — Flat 20% Off, Use Code",
+    code: "STYLE20",
+  },
   {
     icon: Truck,
-    text: "Delivery in 5–8 Days Across All Pakistan",
+    text: "Free Delivery All Over Pakistan",
   },
   {
-    icon: ShieldCheck,
-    text: `Free Shipping on Orders Over Rs. ${FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")}`,
+    icon: PackageCheck,
+    text: "Cash on Delivery Available",
   },
   {
-    icon: Gift,
-    text: "Weekly Rewards & Free Gifts for Subscribers",
-  },
-  {
-    icon: Award,
-    text: "Authentic, Quality-Checked Clothing",
+    icon: BadgeCheck,
+    text: "100% Authentic & Premium Quality",
   },
 ];
 
@@ -33,6 +33,7 @@ export default function HomePerksMarquee() {
             <span className="home-perks-marquee__item" key={index}>
               <Icon className="home-perks-marquee__icon" size={18} />
               {perk.text}
+              {perk.code && <span className="home-perks-marquee__code">{perk.code}</span>}
             </span>
           );
         })}

@@ -1,0 +1,110 @@
+.recent-sale-toast {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 320px;
+  max-width: calc(100vw - 40px);
+  background: white;
+  border: 1.5px solid var(--charcoal);
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(28, 28, 28, 0.2);
+  padding: 12px;
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.recent-sale-toast--visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.recent-sale-toast__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.recent-sale-toast__img {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--sand-beige);
+}
+
+.recent-sale-toast__body {
+  min-width: 0;
+}
+
+.recent-sale-toast__text {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
+.recent-sale-toast__text strong {
+  font-weight: 800;
+}
+
+.recent-sale-toast__product {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--charcoal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-sale-toast__time {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #d21f1f;
+}
+
+.recent-sale-toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.recent-sale-toast__close:hover {
+  background: var(--sand-beige);
+  color: var(--charcoal);
+}
+
+@media (max-width: 640px) {
+  .recent-sale-toast {
+    width: calc(100vw - 100px);
+    bottom: 92px;
+  }
+
+  .recent-sale-toast__close {
+    width: 26px;
+    height: 26px;
+    background: var(--sand-beige);
+    color: var(--charcoal);
+  }
+}

@@ -208,6 +208,7 @@ export function ProductCard({
                 title={color.name}
                 onMouseEnter={() => previewColor(color.name)}
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   previewColor(
                     activeColorName === color.name ? null : color.name,
@@ -220,6 +221,16 @@ export function ProductCard({
                 +{visibleColors.length - 5}
               </span>
             )}
+          </div>
+        )}
+
+        {product.sizes?.length > 0 && (
+          <div className="cg-card-size-pills">
+            {product.sizes.map((size) => (
+              <span key={size} className="cg-card-size-pill">
+                {size}
+              </span>
+            ))}
           </div>
         )}
       </div>

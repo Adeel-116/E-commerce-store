@@ -13,6 +13,7 @@ import { useFilter } from "../context/FilterContext";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { gaSearch } from "../lib/gaEvents";
+import { metaSearch } from "../lib/metaEvents";
 
 const SUGGESTIONS_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/getTitleSuggestion`;
 const FILTER_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/universalFilter`;
@@ -92,7 +93,10 @@ const StickNavbarInner = () => {
   const goToShop = (searchTerm: string) => {
     setShowDropdown(false);
     const trimmed = searchTerm.trim();
-    if (trimmed) gaSearch({ searchString: trimmed });
+    if (trimmed) {
+      gaSearch({ searchString: trimmed });
+      metaSearch({ searchString: trimmed });
+    }
     saveFilter({ title: searchTerm || undefined, page: 1, limit: 15 });
     router.push("/shop");
   };

@@ -1,7 +1,6 @@
 import React from "react";
 import "../styles/FooterTab.css";
 import { Truck, ShieldCheck, UserRoundCheck } from "lucide-react";
-import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "../lib/shipping";
 
 const tabs = [
   {
@@ -17,7 +16,7 @@ const tabs = [
   {
     icon: <Truck />,
     title: "Shipping Across All Pakistan",
-    text: `Standard delivery Rs. ${SHIPPING_COST}, free on orders over Rs. ${FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")}. Delivered in 4–6 days.`,
+    text: "Free shipping on all orders. Delivered in 4–6 days.",
   },
 ];
 

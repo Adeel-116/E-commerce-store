@@ -190,3 +190,39 @@
 .admin-modal-tab-active { color: var(--admin-brandgreen); border-bottom-color: var(--admin-brandgreen); font-weight: 600; }
 
 .admin-form-hint { font-size: 11px; color: #bbb; margin-top: 4px; line-height: 1.4; }
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 640px) {
+  .admin-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .admin-modal {
+    max-width: none !important;
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .admin-modal-header {
+    padding: 16px 16px;
+  }
+
+  .admin-modal-body {
+    padding: 16px;
+  }
+
+  .admin-modal-footer {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .admin-form-grid,
+  .admin-modal-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

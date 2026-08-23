@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { gaAddToWishlist } from "../lib/gaEvents";
+import { metaAddToWishlist } from "../lib/metaEvents";
 
 export type WishlistItem = {
   id: string;
@@ -48,6 +49,11 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
     const alreadyWishlisted = wishlistItems.some((i) => i.id === item.id);
     if (!alreadyWishlisted) {
       gaAddToWishlist({
+        item_id: item.id,
+        item_name: item.name,
+        value: item.price ?? 0,
+      });
+      metaAddToWishlist({
         item_id: item.id,
         item_name: item.name,
         value: item.price ?? 0,

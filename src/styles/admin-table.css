@@ -199,3 +199,39 @@
 }
 
 .upload-icon-pulse { animation: upload-icon-pulse 2s ease-in-out infinite; }
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 640px) {
+  .admin-table-toolbar {
+    padding: 12px 14px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-table-toolbar-left,
+  .admin-table-toolbar-right {
+    width: 100%;
+  }
+
+  .admin-table-toolbar-right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .admin-table-search {
+    max-width: none;
+  }
+
+  .admin-pagination {
+    padding: 12px 14px;
+    justify-content: center;
+  }
+
+  .admin-pagination-info {
+    width: 100%;
+    text-align: center;
+  }
+}

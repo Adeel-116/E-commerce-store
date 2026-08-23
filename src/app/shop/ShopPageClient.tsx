@@ -9,7 +9,6 @@ import api from "../lib/axios";
 import { ShopGridSkeleton } from "../components/Skeleton";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import { CATEGORY_LABELS, CATEGORIES, type ShopProduct } from "./constants";
-import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "../lib/shipping";
 import { gaViewItemList } from "../lib/gaEvents";
 
 const PAGE_SIZE = 9;
@@ -55,7 +54,6 @@ function ShopPageContent() {
   const [outOfStock, setOutOfStock] = useState(false);
   const [sort, setSort] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [openSections, setOpenSections] = useState({
     availability: true,
@@ -369,9 +367,7 @@ function ShopPageContent() {
         </p>
         <h1 className="shop-page__title">{pageTitle}</h1>
         <p className="shop-page__delivery-note">
-          Standard delivery across Pakistan: Rs. {SHIPPING_COST} · Free on orders
-          over Rs. {FREE_SHIPPING_THRESHOLD.toLocaleString("en-PK")} · Delivered in
-          4–6 days
+          Free shipping across Pakistan · Delivered in 4–6 days
         </p>
       </div>
 
@@ -435,48 +431,6 @@ function ShopPageContent() {
             </p>
 
             <div className="shop-page__toolbar-right">
-              <div className="shop-page__view-toggle">
-                <button
-                  type="button"
-                  className={`shop-page__view-btn${viewMode === "grid" ? " active" : ""}`}
-                  onClick={() => setViewMode("grid")}
-                  aria-label="Grid view"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className={`shop-page__view-btn${viewMode === "list" ? " active" : ""}`}
-                  onClick={() => setViewMode("list")}
-                  aria-label="List view"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                  </svg>
-                </button>
-              </div>
-
               <div className="shop-page__sort-wrap">
                 <span className="shop-page__sort-label">Sort by:</span>
                 <select
@@ -527,9 +481,7 @@ function ShopPageContent() {
                 </button>
               </div>
             ) : (
-              <div
-                className={`shop-page__grid${viewMode === "list" ? " shop-page__grid--list" : ""}`}
-              >
+              <div className="shop-page__grid">
                 {products.map((product) => (
                   <ProductCard
                     key={product._id}

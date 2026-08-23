@@ -39,6 +39,7 @@ type RawProduct = {
   colors: ColorVariant[];
   isNew: boolean;
   isBestSeller: boolean;
+  showInYouMayAlsoLike: boolean;
   stock: boolean;
   status: 'active' | 'inactive';
   displayOrder?: number;
@@ -71,6 +72,7 @@ type FormValues = {
   colors: ColorVariant[];
   isNew: boolean;
   isBestSeller: boolean;
+  showInYouMayAlsoLike: boolean;
   displayOrder: string;
 };
 
@@ -86,6 +88,7 @@ const emptyForm = (): FormValues => ({
   colors: [],
   isNew: false,
   isBestSeller: false,
+  showInYouMayAlsoLike: false,
   displayOrder: '',
 });
 
@@ -172,6 +175,7 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
           colors: seededColors,
           isNew: !!p.isNew,
           isBestSeller: !!p.isBestSeller,
+          showInYouMayAlsoLike: !!p.showInYouMayAlsoLike,
           displayOrder: p.displayOrder != null ? String(p.displayOrder) : '',
         });
       })
@@ -277,6 +281,7 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
         colors: form.colors,
         isNew: form.isNew,
         isBestSeller: form.isBestSeller,
+        showInYouMayAlsoLike: form.showInYouMayAlsoLike,
         stock: form.stock,
         status: form.status,
         displayOrder: form.displayOrder ? Number(form.displayOrder) : 0,
@@ -600,6 +605,27 @@ export default function AdminProductModal({ mode, selectedProduct, onClose, onSa
                 <span className="admin-toggle-track" />
               </label>
             </div>
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-form-label">You May Also Like</label>
+            <div className="admin-toggle-row">
+              <span className="admin-toggle-label">
+                {form.showInYouMayAlsoLike ? 'Shown on product pages' : 'Not shown'}
+              </span>
+              <label className="admin-toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={form.showInYouMayAlsoLike}
+                  onChange={(e) => setField('showInYouMayAlsoLike', e.target.checked)}
+                />
+                <span className="admin-toggle-track" />
+              </label>
+            </div>
+            <span style={{ fontSize: 11, color: '#aaa', marginTop: 4, display: 'block' }}>
+              When on, this product can appear in the &quot;You May Also Like&quot;
+              section on other products&apos; pages.
+            </span>
           </div>
 
           <div className="admin-form-group">

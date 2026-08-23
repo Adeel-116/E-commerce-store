@@ -11,11 +11,19 @@ import { getShippingRate, FREE_SHIPPING_BANNER_TEXT } from "../lib/shipping";
 import {
   gaIdentify,
   gaBeginCheckout,
+  gaAddShippingInfo,
   gaAddPaymentInfo,
   gaPurchase,
   GaItem,
 } from "../lib/gaEvents";
+import {
+  metaIdentify,
+  metaInitiateCheckout,
+  metaAddPaymentInfo,
+  metaPurchase,
+} from "../lib/metaEvents";
 import NavbarController from "./NavbarController";
+import LoadingRing from "./LoadingRing";
 
 const COUNTRY_OPTIONS = ["Pakistan"];
 
@@ -62,6 +70,7 @@ export default function Checkout() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showErrors, setShowErrors] = useState(false);
 
   // COD doesn't redirect anywhere — success/failure is shown in a modal on this page
   const [codModal, setCodModal] = useState<
@@ -71,7 +80,7 @@ export default function Checkout() {
   >(null);
 
   const isGuest = !user;
-  const shippingRate = getShippingRate(originalSubtotal);
+  const shippingRate = getShippingRate();
   const shipping = shippingRate.price;
 
   const [coupon, setCoupon] = useState<any>(null);
@@ -99,6 +108,7 @@ export default function Checkout() {
     if (initiateCheckoutFiredRef.current || cartItems.length === 0) return;
     initiateCheckoutFiredRef.current = true;
     gaBeginCheckout({ items: checkoutContents, value: subtotal });
+    metaInitiateCheckout({ items: checkoutContents, value: subtotal });
   }, [cartItems]);
 
   const applyAddress = (addr: SavedAddress) => {
@@ -173,17 +183,31 @@ export default function Checkout() {
   };
 
   const isAddressComplete = Boolean(
-    firstName.trim() &&
     lastName.trim() &&
     line1.trim() &&
     city.trim() &&
     stateField.trim() &&
-    postalCode.trim() &&
     country.trim() &&
     phone.trim()
   );
-  const isContactComplete = !isGuest || Boolean(email.trim());
-  const canSubmit = isContactComplete && isAddressComplete && !isProcessing;
+  const fieldErrors = {
+    lastName: showErrors && !lastName.trim(),
+    line1: showErrors && !line1.trim(),
+    city: showErrors && !city.trim(),
+    state: showErrors && !stateField.trim(),
+    phone: showErrors && !phone.trim(),
+  };
+
+  const shippingInfoFiredRef = React.useRef(false);
+  useEffect(() => {
+    if (shippingInfoFiredRef.current || !isAddressComplete) return;
+    shippingInfoFiredRef.current = true;
+    gaAddShippingInfo({
+      items: checkoutContents,
+      value: subtotal,
+      shippingTier: shippingRate.label,
+    });
+  }, [isAddressComplete]);
 
   useEffect(() => {
     if (!user) {
@@ -211,6 +235,12 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAddressComplete) {
+      setShowErrors(true);
+      return;
+    }
+
     setIsProcessing(true);
     setErrorMsg("");
 
@@ -228,6 +258,8 @@ export default function Checkout() {
 
     gaIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
     gaAddPaymentInfo({ items: checkoutContents, value: total, paymentType: "cod" });
+    metaIdentify({ email: shippingAddress.email, phone: shippingAddress.phone });
+    metaAddPaymentInfo({ items: checkoutContents, value: total });
 
     try {
       const { data } = await api.post("/checkout/create-cod-order", {
@@ -241,6 +273,11 @@ export default function Checkout() {
         items: checkoutContents,
         value: data.total ?? total,
         shipping,
+      });
+      metaPurchase({
+        transactionId: data.orderId,
+        items: checkoutContents,
+        value: data.total ?? total,
       });
       setCodModal({ status: "success", orderId: data.orderId, total: data.total });
       setIsProcessing(false);
@@ -259,7 +296,7 @@ export default function Checkout() {
       <>
         <NavbarController />
         <div className="co-loading-state">
-          <div className="co-loading-spinner" />
+          <LoadingRing active />
           <p>Loading your cart…</p>
         </div>
       </>
@@ -283,11 +320,11 @@ export default function Checkout() {
               <div className="co-field">
                 <input
                   className="co-input"
-                  type="email"
-                  placeholder="Email"
+                  type="text"
+                  inputMode="email"
+                  placeholder="Email (optional)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
               </div>
             ) : (
@@ -341,14 +378,25 @@ export default function Checkout() {
             </div>
             <div className="co-grid-2">
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                <input className="co-input" type="text" placeholder="First name (optional)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                <input className={`co-input${fieldErrors.lastName ? " co-input-error" : ""}`} type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
               </div>
             </div>
+            <div className="co-field">
+              <input
+                className={`co-input${fieldErrors.phone ? " co-input-error" : ""}`}
+                type="tel"
+                inputMode="tel"
+                placeholder="Phone"
+                value={phone}
+                onChange={handlePhoneChange}
+                required
+              />
+            </div>
             <div className="co-field co-field-icon">
-              <input className="co-input" type="text" placeholder="Area" value={line1} onChange={(e) => setLine1(e.target.value)} required />
+              <input className={`co-input${fieldErrors.line1 ? " co-input-error" : ""}`} type="text" placeholder="Area" value={line1} onChange={(e) => setLine1(e.target.value)} required />
               <svg className="co-field-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -359,10 +407,10 @@ export default function Checkout() {
             </div>
             <div className="co-grid-3">
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} required />
+                <input className={`co-input${fieldErrors.city ? " co-input-error" : ""}`} type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} required />
               </div>
               <div className="co-field">
-                <input className="co-input" type="text" placeholder="State" value={stateField} onChange={(e) => setStateField(e.target.value)} required />
+                <input className={`co-input${fieldErrors.state ? " co-input-error" : ""}`} type="text" placeholder="State" value={stateField} onChange={(e) => setStateField(e.target.value)} required />
               </div>
               <div className="co-field">
                 <input
@@ -370,33 +418,20 @@ export default function Checkout() {
                   type="text"
                   inputMode="numeric"
                   pattern="\d*"
-                  placeholder="ZIP code"
+                  placeholder="ZIP code (optional)"
                   value={postalCode}
                   onChange={handlePostalCodeChange}
-                  required
                 />
               </div>
-            </div>
-            <div className="co-field">
-              <input
-                className="co-input"
-                type="tel"
-                inputMode="tel"
-                placeholder="Phone"
-                value={phone}
-                onChange={handlePhoneChange}
-                required
-              />
             </div>
           </div>
 
           {/* Shipping method */}
           <div className="co-section">
             <h2 className="co-heading">Shipping method</h2>
-            <p className="co-shipping-banner">{FREE_SHIPPING_BANNER_TEXT}</p>
             <div className="co-shipping-placeholder">
               <span className="co-shipping-rate">
-                {shippingRate.label} — <strong>{shippingRate.price === 0 ? "Free" : `PKR ${shippingRate.price.toFixed(2)}`}</strong>
+                {FREE_SHIPPING_BANNER_TEXT}
               </span>
             </div>
           </div>
@@ -417,7 +452,7 @@ export default function Checkout() {
             </div>
           )}
 
-          <button type="submit" className="co-pay-btn" disabled={!canSubmit}>
+          <button type="submit" className="co-pay-btn" disabled={isProcessing}>
             {isProcessing ? "Placing order…" : "Place Order (Cash on Delivery)"}
           </button>
 
@@ -478,7 +513,7 @@ export default function Checkout() {
                     <input
                       className="co-input co-discount-input"
                       type="text"
-                      placeholder="Promo Code"
+                      placeholder="Code"
                       value={discountCode}
                       onChange={(e) => {
                         setDiscountCode(e.target.value);

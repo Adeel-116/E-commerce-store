@@ -449,7 +449,7 @@
 
 .au-contact__input::placeholder,
 .au-contact__textarea::placeholder {
-  color: (--charcoal);
+  color: var(--charcoal);
 }
 
 .au-contact__input:focus,

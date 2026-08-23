@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import "../styles/LoginPage.css";
-import StickNavbar from "./StickNavbar";
+import NavbarController from "./NavbarController";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -42,7 +42,7 @@ export default function LoginPage() {
   return (
 
     <>
-    <StickNavbar />
+    <NavbarController />
     <main className="login-page-container">
       <div className="login-page-card">
         {/* Header */}

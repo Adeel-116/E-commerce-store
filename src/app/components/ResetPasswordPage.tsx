@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import "../styles/AuthFlow.css";
-import StickNavbar from "./StickNavbar";
+import NavbarController from "./NavbarController";
 
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth();
@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <StickNavbar />
+      <NavbarController />
       <main className="auth-flow-container">
         <div className="auth-flow-card">
           <div className="auth-flow-header">

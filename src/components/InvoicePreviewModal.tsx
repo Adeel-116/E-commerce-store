@@ -117,7 +117,7 @@ export default function InvoicePreviewModal({
         <div className="invoice-modal-scroll">
           <div className="invoice-page" ref={printRef}>
             <div className="invoice-header">
-              <img src="/zainab-logo.png" alt="Zainab Store" className="invoice-logo" />
+              <img src="/updated-logo.avif" alt="Zarya Style" className="invoice-logo" />
               <div className="invoice-header-meta">
                 <h1 className="invoice-title">INVOICE</h1>
                 <div className="invoice-meta-row"><span>Invoice No.</span><strong>{invoiceNumber}</strong></div>
@@ -191,7 +191,7 @@ export default function InvoicePreviewModal({
               <div className="invoice-totals-row invoice-grand-total"><span>Grand Total</span><span>{fmt(order.pricing.total)}</span></div>
             </div>
 
-            <div className="invoice-footer">Thank you for shopping with Zainab Store</div>
+            <div className="invoice-footer">Thank you for shopping with Zarya Style</div>
           </div>
         </div>
       </div>

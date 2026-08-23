@@ -18,6 +18,9 @@ import { organizationJsonLd, websiteJsonLd } from "./lib/jsonld";
 const GA_MEASUREMENT_ID =
   process.env.NODE_ENV === "production" ? "G-Y0S9SK599F" : undefined;
 
+const META_PIXEL_ID =
+  process.env.NODE_ENV === "production" ? "2049359839276860" : undefined;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -34,12 +37,26 @@ export const metadata: Metadata = {
     "Pakistani fashion wear",
     "western wear Pakistan",
     "buy clothes online Pakistan",
+    "online clothing store Karachi",
+    "online clothing store Lahore",
+    "online clothing store Islamabad",
+    "women's fashion Karachi",
+    "women's fashion Lahore",
+    "cash on delivery clothes Pakistan",
   ],
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
   alternates: {
     canonical: "/",
+    languages: {
+      "en-PK": "/",
+    },
+  },
+  other: {
+    "geo.region": "PK",
+    "geo.placename": "Karachi, Lahore, Islamabad",
+    "ICBM": "30.3753, 69.3451",
   },
   robots: {
     index: true,
@@ -96,7 +113,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={playfairDisplay.variable}>
+    <html lang="en-PK" className={playfairDisplay.variable}>
       <head>
         <Script id="gtm" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -119,8 +136,22 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        {META_PIXEL_ID && (
+          <Script id="meta-pixel" strategy="afterInteractive">
+            {`!function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${META_PIXEL_ID}');
+            fbq('track', 'PageView');`}
+          </Script>
+        )}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-5V6LJLTR"
@@ -129,6 +160,17 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        {META_PIXEL_ID && (
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              alt=""
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+            />
+          </noscript>
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}

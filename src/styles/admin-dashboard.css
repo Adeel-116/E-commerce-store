@@ -507,6 +507,10 @@
   background: #fce8e6;
   color: #c62828;
 }
+.admin-stat-icon-teal {
+  background: #e0f2f1;
+  color: #00838f;
+}
 
 .admin-stat-info {
   flex: 1;

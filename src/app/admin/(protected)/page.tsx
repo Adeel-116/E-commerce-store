@@ -489,6 +489,28 @@ export default function DashboardPage() {
         />
 
         <StatCard
+          icon={TrendingUp}
+          iconClass="admin-stat-icon-teal"
+          label="Marketing Cost"
+          value={fmtPKR(totalMarketingCost)}
+          sub="Ad spend"
+          tooltipContent={
+            <>
+              <div className="tooltip-row">
+                <span>Marketing Cost:</span>{" "}
+                <span>{fmtPKR(totalMarketingCost)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Impact on Net Profit:</span>{" "}
+                <span className="tooltip-red">
+                  -{fmtPKR(totalMarketingCost)}
+                </span>
+              </div>
+            </>
+          }
+        />
+
+        <StatCard
           icon={AlertCircle}
           iconClass="admin-stat-icon-danger"
           label="Cancelled Orders"

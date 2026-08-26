@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -11,33 +11,69 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Layers,
   Boxes,
   MessageSquare,
   Mail,
   X,
-} from 'lucide-react';
-import { useAuth } from '@/context/AdminAuthContext';
-import { useAdminSidebar } from '@/context/AdminSidebarContext';
-import '@/styles/admin-sidebar.css';
+} from "lucide-react";
+import { useAuth } from "@/context/AdminAuthContext";
+import { useAdminSidebar } from "@/context/AdminSidebarContext";
+import "@/styles/admin-sidebar.css";
 
 const navItems = [
   {
-    section: 'Overview',
+    section: "Overview",
     items: [
-      { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+      {
+        href: "/admin",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        exact: true,
+      },
+      {
+        href: "/admin/marketing",
+        label: "Marketing",
+        icon: Layers,
+        exact: false,
+      },
     ],
   },
   {
-    section: 'Management',
+    section: "Management",
     items: [
-      { href: '/admin/orders', label: 'Orders', icon: ShoppingBag, exact: false },
-      { href: '/admin/products', label: 'Products', icon: Package, exact: false },
-      { href: '/admin/bundles', label: 'Bundles', icon: Boxes, exact: false },
-      { href: '/admin/discounts', label: 'Discounts', icon: Tag, exact: false },
-      { href: '/admin/contact-us', label: 'Contact Us', icon: MessageSquare, exact: false },
-      { href: '/admin/subscribers', label: 'Subscribers', icon: Mail, exact: false },
-      { href: '/admin/customers', label: 'Customers', icon: Mail, exact: false },
-
+      {
+        href: "/admin/orders",
+        label: "Orders",
+        icon: ShoppingBag,
+        exact: false,
+      },
+      {
+        href: "/admin/products",
+        label: "Products",
+        icon: Package,
+        exact: false,
+      },
+      { href: "/admin/bundles", label: "Bundles", icon: Boxes, exact: false },
+      { href: "/admin/discounts", label: "Discounts", icon: Tag, exact: false },
+      {
+        href: "/admin/contact-us",
+        label: "Contact Us",
+        icon: MessageSquare,
+        exact: false,
+      },
+      {
+        href: "/admin/subscribers",
+        label: "Subscribers",
+        icon: Mail,
+        exact: false,
+      },
+      {
+        href: "/admin/customers",
+        label: "Customers",
+        icon: Mail,
+        exact: false,
+      },
     ],
   },
 ];
@@ -54,7 +90,7 @@ export default function AdminSidebar() {
     setLoggingOut(true);
     try {
       await logout();
-      router.push('/admin/login');
+      router.push("/admin/login");
     } finally {
       setLoggingOut(false);
     }
@@ -71,10 +107,14 @@ export default function AdminSidebar() {
         <div className="admin-sidebar-backdrop" onClick={closeMobileSidebar} />
       )}
       <aside
-        className={`admin-sidebar${collapsed ? ' admin-sidebar-collapsed' : ''}${mobileOpen ? ' admin-sidebar-mobile-open' : ''}`}
+        className={`admin-sidebar${collapsed ? " admin-sidebar-collapsed" : ""}${mobileOpen ? " admin-sidebar-mobile-open" : ""}`}
       >
         <div className="admin-sidebar-logo">
-          <img src="/white-version.avif" alt="Zarya Style" className="admin-sidebar-logo-img" />
+          <img
+            src="/white-version.avif"
+            alt="Zarya Style"
+            className="admin-sidebar-logo-img"
+          />
           <button
             className="admin-sidebar-close"
             onClick={closeMobileSidebar}
@@ -94,7 +134,7 @@ export default function AdminSidebar() {
                   key={href}
                   href={href}
                   data-label={label}
-                  className={`admin-sidebar-item${isActive(href, exact) ? ' admin-sidebar-item-active' : ''}`}
+                  className={`admin-sidebar-item${isActive(href, exact) ? " admin-sidebar-item-active" : ""}`}
                 >
                   <Icon size={18} className="admin-sidebar-icon" />
                   <span className="admin-sidebar-item-label">{label}</span>
@@ -114,14 +154,14 @@ export default function AdminSidebar() {
           >
             <LogOut size={15} className="admin-sidebar-icon" />
             <span className="admin-sidebar-toggle-label">
-              {loggingOut ? 'Logging out…' : 'Logout'}
+              {loggingOut ? "Logging out…" : "Logout"}
             </span>
           </button>
 
           <button
             className="admin-sidebar-toggle"
             onClick={() => setCollapsed((c) => !c)}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
             <span className="admin-sidebar-toggle-label">Collapse</span>

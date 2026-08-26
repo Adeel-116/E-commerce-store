@@ -1,36 +1,65 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar,
-} from 'recharts';
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
 import {
-  Coins, ShoppingCart, Package, Users,
-  UserPlus, TrendingUp, Shirt,
-  ArrowRight, RefreshCw, Loader2, AlertCircle, Calendar,
-} from 'lucide-react';
-import api from '@/lib/axios';
-import Link from 'next/link';
-import DateRangeCalendar from '@/components/DateRangeCalendar';
-import '@/styles/admin-dashboard.css';
+  Coins,
+  ShoppingCart,
+  Package,
+  Users,
+  UserPlus,
+  TrendingUp,
+  Shirt,
+  ArrowRight,
+  RefreshCw,
+  Loader2,
+  AlertCircle,
+  Calendar,
+} from "lucide-react";
+import api from "@/lib/axios";
+import Link from "next/link";
+import DateRangeCalendar from "@/components/DateRangeCalendar";
+import "@/styles/admin-dashboard.css";
 
-type Period = '7d' | '30d' | '90d';
+type Period = "7d" | "30d" | "90d";
 
 function fmtShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
-
 interface DashboardData {
   success?: boolean;
   period?: string;
 
   // Financial Stats
+  totalSales?: number;
+  totalDiscounts?: number;
   revenue: number;
-  grossProfit: number;
+  shippingCustomerPaid?: number;
+  shippingWePaid?: number;
+  totalMarketingCost?: number;
   netProfit: number;
+  grossProfit?: number;
   totalOrders: number;
   totalPaidOrderAmount: number;
+
+  cancelledOrders?: { count: number; amount: number };
+  returnedOrders?: { count: number; amount: number };
 
   orders?: {
     total?: number;
@@ -58,23 +87,30 @@ interface DashboardData {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  processing: '#1565c0',
-  preparation: '#f57f17',
-  shipped: '#00838f',
-  delivered: '#c9a961',
-  cancelled: '#c62828',
-  returned: '#6a1b9a',
+  processing: "#1565c0",
+  preparation: "#f57f17",
+  shipped: "#00838f",
+  delivered: "#c9a961",
+  cancelled: "#c62828",
+  returned: "#6a1b9a",
 };
 
-const SIZE_COLORS: string[] = ['#1565c0', '#c9a961', '#f57f17', '#6a1b9a', '#00838f', '#c62828'];
+const SIZE_COLORS: string[] = [
+  "#1565c0",
+  "#c9a961",
+  "#f57f17",
+  "#6a1b9a",
+  "#00838f",
+  "#c62828",
+];
 
 const STATUS_BADGE: Record<string, string> = {
-  processing: 'admin-badge-info',
-  preparation: 'admin-badge-warning',
-  shipped: 'admin-badge-teal',
-  delivered: 'admin-badge-success',
-  cancelled: 'admin-badge-danger',
-  returned: 'admin-badge-purple',
+  processing: "admin-badge-info",
+  preparation: "admin-badge-warning",
+  shipped: "admin-badge-teal",
+  delivered: "admin-badge-success",
+  cancelled: "admin-badge-danger",
+  returned: "admin-badge-purple",
 };
 
 function fmtPKR(n: number) {
@@ -87,12 +123,14 @@ function StatCard({
   label,
   value,
   sub,
+  tooltipContent,
 }: {
   icon: React.ComponentType<{ size?: number }>;
   iconClass: string;
   label: string;
   value: string;
   sub: string;
+  tooltipContent?: React.ReactNode;
 }) {
   return (
     <div className="admin-stat-card">
@@ -100,19 +138,32 @@ function StatCard({
         <Icon size={20} />
       </div>
       <div className="admin-stat-info">
-        <div className="admin-stat-label">{label}</div>
+        <div className="admin-stat-label">
+          {label}
+          <div className="admin-stat-change admin-stat-change-neutral">
+            {sub}
+          </div>
+        </div>
         <div className="admin-stat-value">{value}</div>
-        <div className="admin-stat-change admin-stat-change-neutral">{sub}</div>
       </div>
+      {tooltipContent && (
+        <div className="admin-stat-tooltip">
+          <div className="admin-stat-tooltip-content">{tooltipContent}</div>
+          <div className="admin-stat-tooltip-arrow"></div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function DashboardPage() {
-  const [period, setPeriod] = useState<Period>('30d');
-  const [customRange, setCustomRange] = useState<{ from: string; to: string } | null>(null);
-  const [draftFrom, setDraftFrom] = useState('');
-  const [draftTo, setDraftTo] = useState('');
+  const [period, setPeriod] = useState<Period>("30d");
+  const [customRange, setCustomRange] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  const [draftFrom, setDraftFrom] = useState("");
+  const [draftTo, setDraftTo] = useState("");
   const [rangeAnchor, setRangeAnchor] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [data, setData] = useState<DashboardData | null>(null);
@@ -123,12 +174,15 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!showCalendar) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(e.target as Node)
+      ) {
         setShowCalendar(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showCalendar]);
 
   const fetchStats = useCallback(async () => {
@@ -138,11 +192,14 @@ export default function DashboardPage() {
       const query = customRange
         ? `startDate=${customRange.from}&endDate=${customRange.to}`
         : `period=${period}`;
-      const { data: res } = await api.get<DashboardData>(`/admin/dashboard/stats?${query}`);
+      const { data: res } = await api.get<DashboardData>(
+        `/admin/dashboard/stats?${query}`,
+      );
       setData(res);
     } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg || 'Failed to load dashboard stats');
+      const msg = (e as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setError(msg || "Failed to load dashboard stats");
     } finally {
       setLoading(false);
     }
@@ -218,29 +275,45 @@ export default function DashboardPage() {
   const recentOrders = data.recentOrders ?? [];
   const itemsSoldBySize = data.itemsSoldBySize ?? {};
   const itemsSoldBySizeEntries = Object.entries(itemsSoldBySize);
-  const totalItemsSold = itemsSoldBySizeEntries.reduce((sum, [, val]) => sum + val, 0);
+  const cancelledOrders = data.cancelledOrders ?? { count: 0, amount: 0 };
+  const returnedOrders = data.returnedOrders ?? { count: 0, amount: 0 };
 
-  const itemsSoldBySizeChartData = itemsSoldBySizeEntries.map(([size, count], i) => ({
-    name: size,
-    count,
-    fill: SIZE_COLORS[i % SIZE_COLORS.length],
-  }));
+  const totalSales = data.totalSales ?? 0;
+  const totalDiscounts = data.totalDiscounts ?? 0;
+  const shippingCustomerPaid = data.shippingCustomerPaid ?? 0;
+  const shippingWePaid = data.shippingWePaid ?? 0;
+  const totalMarketingCost = data.totalMarketingCost ?? 0;
 
-  const avgOrderValue = ordersTotal > 0
-    ? Math.round(revenue / ordersTotal)
-    : 0;
+  const totalItemsSold = itemsSoldBySizeEntries.reduce(
+    (sum, [, val]) => sum + val,
+    0,
+  );
+
+  const itemsSoldBySizeChartData = itemsSoldBySizeEntries.map(
+    ([size, count], i) => ({
+      name: size,
+      count,
+      fill: SIZE_COLORS[i % SIZE_COLORS.length],
+    }),
+  );
+
+  const avgOrderValue = ordersTotal > 0 ? Math.round(revenue / ordersTotal) : 0;
 
   const orderStatusEntries = Object.entries(ordersByStatus);
 
   const orderStatusChartData = orderStatusEntries.map(([key, val]) => ({
-    name: key.replace('_', ' '),
+    name: key.replace("_", " "),
     count: val,
-    fill: STATUS_COLORS[key] ?? '#ccc',
+    fill: STATUS_COLORS[key] ?? "#ccc",
   }));
 
   const periodLabel = customRange
     ? `${fmtShortDate(customRange.from)} – ${fmtShortDate(customRange.to)}`
-    : period === '7d' ? 'last 7 days' : period === '30d' ? 'last 30 days' : 'last 90 days';
+    : period === "7d"
+      ? "last 7 days"
+      : period === "30d"
+        ? "last 30 days"
+        : "last 90 days";
 
   return (
     <>
@@ -251,39 +324,47 @@ export default function DashboardPage() {
           <div className="dash-subtitle">Overview for {periodLabel}</div>
         </div>
         <div className="dash-period-btns">
-          {(['7d', '30d', '90d'] as Period[]).map((p) => (
+          {(["7d", "30d", "90d"] as Period[]).map((p) => (
             <button
               key={p}
-              className={`dash-period-btn${!customRange && period === p ? ' active' : ''}`}
+              className={`dash-period-btn${!customRange && period === p ? " active" : ""}`}
               onClick={() => selectPeriod(p)}
             >
-              {p === '7d' ? '7 Days' : p === '30d' ? '30 Days' : '90 Days'}
+              {p === "7d" ? "7 Days" : p === "30d" ? "30 Days" : "90 Days"}
             </button>
           ))}
 
           <div className="dash-calendar-wrap" ref={calendarRef}>
             <button
-              className={`dash-period-btn dash-calendar-btn${customRange ? ' active' : ''}`}
+              className={`dash-period-btn dash-calendar-btn${customRange ? " active" : ""}`}
               onClick={() => {
-                setDraftFrom(customRange?.from ?? '');
-                setDraftTo(customRange?.to ?? '');
+                setDraftFrom(customRange?.from ?? "");
+                setDraftTo(customRange?.to ?? "");
                 setRangeAnchor(null);
                 setShowCalendar((v) => !v);
               }}
             >
               <Calendar size={13} />
-              {customRange ? `${fmtShortDate(customRange.from)} – ${fmtShortDate(customRange.to)}` : 'Custom'}
+              {customRange
+                ? `${fmtShortDate(customRange.from)} – ${fmtShortDate(customRange.to)}`
+                : "Custom"}
             </button>
 
             {showCalendar && (
               <div className="dash-calendar-popover">
                 <div className="dash-calendar-summary">
-                  <span>{draftFrom ? fmtShortDate(draftFrom) : 'Start date'}</span>
+                  <span>
+                    {draftFrom ? fmtShortDate(draftFrom) : "Start date"}
+                  </span>
                   <ArrowRight size={12} />
-                  <span>{draftTo ? fmtShortDate(draftTo) : 'End date'}</span>
+                  <span>{draftTo ? fmtShortDate(draftTo) : "End date"}</span>
                 </div>
 
-                <DateRangeCalendar from={draftFrom} to={draftTo} onSelectDay={handleSelectDay} />
+                <DateRangeCalendar
+                  from={draftFrom}
+                  to={draftTo}
+                  onSelectDay={handleSelectDay}
+                />
 
                 <div className="dash-calendar-actions">
                   <button
@@ -307,7 +388,11 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <button className="dash-refresh-btn" onClick={fetchStats} title="Refresh">
+          <button
+            className="dash-refresh-btn"
+            onClick={fetchStats}
+            title="Refresh"
+          >
             <RefreshCw size={14} />
           </button>
         </div>
@@ -319,17 +404,17 @@ export default function DashboardPage() {
         <StatCard
           icon={Coins}
           iconClass="admin-stat-icon-blue"
-          label="Revenue"
-          value={fmtPKR(data.revenue)}
-          sub="This period"
+          label="Total Sales"
+          value={fmtPKR(totalSales)}
+          sub="Valid orders"
         />
 
         <StatCard
           icon={TrendingUp}
           iconClass="admin-stat-icon-green"
-          label="Gross Profit"
-          value={fmtPKR(data.grossProfit)}
-          sub="Before operating expenses"
+          label="Revenue"
+          value={fmtPKR(revenue)}
+          sub="Sales − Discounts"
         />
 
         <StatCard
@@ -337,22 +422,115 @@ export default function DashboardPage() {
           iconClass="admin-stat-icon-purple"
           label="Net Profit"
           value={fmtPKR(data.netProfit)}
-          sub="After all expenses"
+          sub="Cost after all expenses"
+          tooltipContent={
+            <>
+              <div className="tooltip-row">
+                <span>Total Sales:</span> <span>{fmtPKR(totalSales)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Discounts:</span>{" "}
+                <span className="tooltip-red">-{fmtPKR(totalDiscounts)}</span>
+              </div>
+              <div className="tooltip-divider"></div>
+              <div className="tooltip-row">
+                <span>Revenue:</span> <span>{fmtPKR(revenue)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Shipping (We Paid):</span>{" "}
+                <span className="tooltip-red">-{fmtPKR(shippingWePaid)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Marketing Cost:</span>{" "}
+                <span className="tooltip-red">
+                  -{fmtPKR(totalMarketingCost)}
+                </span>
+              </div>
+              <div className="tooltip-row">
+                <span>Returned Amount:</span>{" "}
+                <span className="tooltip-red">
+                  -{fmtPKR(returnedOrders.amount)}
+                </span>
+              </div>
+              <div className="tooltip-divider"></div>
+              <div className="tooltip-row font-medium">
+                <span>Net Profit:</span> <span>{fmtPKR(data.netProfit)}</span>
+              </div>
+            </>
+          }
         />
 
         <StatCard
-          icon={Coins}
-          iconClass="admin-stat-icon-blue"
-          label="Paid Order Amount"
-          value={fmtPKR(data.totalPaidOrderAmount)}
-          sub="Total value of paid orders"
+          icon={Package}
+          iconClass="admin-stat-icon-amber"
+          label="Shipping Cost"
+          value={fmtPKR(shippingWePaid)}
+          sub="We Paid"
+          tooltipContent={
+            <>
+              <div className="tooltip-row">
+                <span>Subtotal</span> <span>{fmtPKR(revenue)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Shipping (Customer Paid)</span>{" "}
+                <span>{fmtPKR(shippingCustomerPaid)}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Shipping (We Paid)</span>{" "}
+                <span>{fmtPKR(shippingWePaid)}</span>
+              </div>
+              <div className="tooltip-divider"></div>
+              <div className="tooltip-row font-medium">
+                <span>Total Sale</span>{" "}
+                <span>{fmtPKR(revenue + shippingCustomerPaid)}</span>
+              </div>
+            </>
+          }
         />
 
+        <StatCard
+          icon={AlertCircle}
+          iconClass="admin-stat-icon-danger"
+          label="Cancelled Orders"
+          value={String(cancelledOrders.count)}
+          sub={fmtPKR(cancelledOrders.amount)}
+          tooltipContent={
+            <>
+              <div className="tooltip-row">
+                <span>Cancelled Orders:</span>{" "}
+                <span>{cancelledOrders.count}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Cancelled Amount:</span>{" "}
+                <span>{fmtPKR(cancelledOrders.amount)}</span>
+              </div>
+            </>
+          }
+        />
+
+        <StatCard
+          icon={RefreshCw}
+          iconClass="admin-stat-icon-purple"
+          label="Returned Orders"
+          value={String(returnedOrders.count)}
+          sub={fmtPKR(returnedOrders.amount)}
+          tooltipContent={
+            <>
+              <div className="tooltip-row">
+                <span>Returned Orders:</span>{" "}
+                <span>{returnedOrders.count}</span>
+              </div>
+              <div className="tooltip-row">
+                <span>Returned Amount:</span>{" "}
+                <span>{fmtPKR(returnedOrders.amount)}</span>
+              </div>
+            </>
+          }
+        />
       </div>
 
       {/* Stat Cards — Row 2 */}
       <div className="admin-stats-grid">
-
         <StatCard
           icon={ShoppingCart}
           iconClass="admin-stat-icon-amber"
@@ -381,7 +559,11 @@ export default function DashboardPage() {
           iconClass="admin-stat-icon-blue"
           label="Items Sold"
           value={String(totalItemsSold)}
-          sub={itemsSoldBySizeEntries.map(([size, count]) => `${size}: ${count}`).join(' · ') || 'This period'}
+          sub={
+            itemsSoldBySizeEntries
+              .map(([size, count]) => `${size}: ${count}`)
+              .join(" · ") || "This period"
+          }
         />
       </div>
 
@@ -397,9 +579,9 @@ export default function DashboardPage() {
                 <div className="dash-order-status-label">
                   <span
                     className="dash-status-dot"
-                    style={{ background: STATUS_COLORS[key] ?? '#ccc' }}
+                    style={{ background: STATUS_COLORS[key] ?? "#ccc" }}
                   />
-                  <span>{key.replace('_', ' ')}</span>
+                  <span>{key.replace("_", " ")}</span>
                 </div>
                 <span className="dash-order-status-count">{val}</span>
               </div>
@@ -415,8 +597,11 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={orderStatusChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0e8" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#aaa' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#aaa' }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#aaa" }} />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#aaa" }}
+                  allowDecimals={false}
+                />
                 <Tooltip />
                 <Bar dataKey="count" name="Orders" radius={[4, 4, 0, 0]}>
                   {orderStatusChartData.map((entry, i) => (
@@ -462,8 +647,11 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={itemsSoldBySizeChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0e8" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#aaa' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#aaa' }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#aaa" }} />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#aaa" }}
+                  allowDecimals={false}
+                />
                 <Tooltip />
                 <Bar dataKey="count" name="Items" radius={[4, 4, 0, 0]}>
                   {itemsSoldBySizeChartData.map((entry, i) => (
@@ -491,22 +679,29 @@ export default function DashboardPage() {
           {topProducts.map((p, i) => (
             <div key={p._id} className="dash-top-product-item">
               <div
-                className={`admin-top-item-rank ${i === 0
-                  ? 'admin-top-item-rank-gold'
-                  : i === 1
-                    ? 'admin-top-item-rank-silver'
-                    : i === 2
-                      ? 'admin-top-item-rank-bronze'
-                      : ''
-                  }`}
+                className={`admin-top-item-rank ${
+                  i === 0
+                    ? "admin-top-item-rank-gold"
+                    : i === 1
+                      ? "admin-top-item-rank-silver"
+                      : i === 2
+                        ? "admin-top-item-rank-bronze"
+                        : ""
+                }`}
               >
                 {i + 1}
               </div>
               <div className="admin-top-item-info">
-                <div className="admin-top-item-name">{p.title ?? 'Untitled'}</div>
-                <div className="admin-top-item-units">{p.totalSold ?? 0} units sold</div>
+                <div className="admin-top-item-name">
+                  {p.title ?? "Untitled"}
+                </div>
+                <div className="admin-top-item-units">
+                  {p.totalSold ?? 0} units sold
+                </div>
               </div>
-              <span className="admin-top-item-revenue">{fmtPKR(p.revenue ?? 0)}</span>
+              <span className="admin-top-item-revenue">
+                {fmtPKR(p.revenue ?? 0)}
+              </span>
             </div>
           ))}
         </div>
@@ -524,26 +719,30 @@ export default function DashboardPage() {
             )}
             {recentOrders.map((order) => (
               <div key={order._id} className="admin-recent-item">
-                <span className="admin-recent-item-id">{order.orderId ?? '—'}</span>
+                <span className="admin-recent-item-id">
+                  {order.orderId ?? "—"}
+                </span>
                 <div className="admin-recent-item-info">
                   <div className="admin-recent-item-sub">
                     {order.createdAt
-                      ? new Date(order.createdAt).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })
-                      : '—'}
+                      ? new Date(order.createdAt).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "—"}
                   </div>
                 </div>
                 <span className="admin-recent-item-amount">
                   {fmtPKR(order.pricing?.total ?? 0)}
                 </span>
                 <span
-                  className={`admin-badge ${(order.status && STATUS_BADGE[order.status]) ?? 'admin-badge-neutral'
-                    }`}
+                  className={`admin-badge ${
+                    (order.status && STATUS_BADGE[order.status]) ??
+                    "admin-badge-neutral"
+                  }`}
                 >
-                  {order.status ?? 'unknown'}
+                  {order.status ?? "unknown"}
                 </span>
               </div>
             ))}

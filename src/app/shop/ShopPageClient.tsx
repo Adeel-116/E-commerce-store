@@ -140,7 +140,9 @@ function ShopPageContent() {
         setTotalPages(data?.totalPages ?? 1);
         if (list.length > 0) {
           gaViewItemList({
-            listName: selectedCategory ? CATEGORY_LABELS[selectedCategory] : "Shop",
+            listName: selectedCategory
+              ? CATEGORY_LABELS[selectedCategory]
+              : "Shop",
             items: list.map((p) => ({
               item_id: p._id,
               item_name: p.title,
@@ -367,7 +369,7 @@ function ShopPageContent() {
         </p>
         <h1 className="shop-page__title">{pageTitle}</h1>
         <p className="shop-page__delivery-note">
-          Free shipping across Pakistan · Delivered in 4–6 days
+          Rs 140 standard shipping across Pakistan · Delivered in 4–6 days
         </p>
       </div>
 

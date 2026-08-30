@@ -22,7 +22,10 @@ const CartSidebar = () => {
     clearCart,
   } = useCart();
 
-  const fallbackSubtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
+  const fallbackSubtotal = cartItems.reduce(
+    (acc, item) => acc + item.lineSubtotal,
+    0,
+  );
   const originalSubtotal = pricing?.subtotal ?? fallbackSubtotal;
   const total = pricing?.total ?? fallbackSubtotal;
   const discountSavings = pricing?.discountSavings ?? 0;
@@ -33,8 +36,13 @@ const CartSidebar = () => {
   const bundleSuggestions = getNextBundleSuggestions(cartItems, bundles);
 
   const showBundleActivation = appliedBundles.length > 0;
-  const showBundleSuggestion = !showBundleActivation && bundleSuggestions.length > 0;
-  const bundleBannerKey = showBundleActivation ? "active" : showBundleSuggestion ? "suggest" : "none";
+  const showBundleSuggestion =
+    !showBundleActivation && bundleSuggestions.length > 0;
+  const bundleBannerKey = showBundleActivation
+    ? "active"
+    : showBundleSuggestion
+      ? "suggest"
+      : "none";
 
   const bundleBannerRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +67,7 @@ const CartSidebar = () => {
     gsap.fromTo(
       el,
       { opacity: 0, y: -8, height: 0 },
-      { opacity: 1, y: 0, height: "auto", duration: 0.35, ease: "power2.out" }
+      { opacity: 1, y: 0, height: "auto", duration: 0.35, ease: "power2.out" },
     );
   }, [bundleBannerKey]);
 
@@ -107,7 +115,9 @@ const CartSidebar = () => {
                 const hasDiscount = !!item.activeDiscount;
                 const discountAmount = item.activeDiscount
                   ? item.activeDiscount.valueType === "percentage"
-                    ? Math.round(originalLineTotal * (item.activeDiscount.value / 100))
+                    ? Math.round(
+                        originalLineTotal * (item.activeDiscount.value / 100),
+                      )
                     : Math.round(item.activeDiscount.value * item.quantity)
                   : 0;
                 const discountedLineTotal = hasDiscount
@@ -115,105 +125,158 @@ const CartSidebar = () => {
                   : item.lineSubtotal;
 
                 return (
-                <div className="cart-sidebar-item" key={`${item.id}-${item.size}-${item.color ?? ''}`}>
-                  <div className="cart-sidebar-img-wrap">
-                    <img
-                      src={item.productImage}
-                      alt={item.productName}
-                      title={item.productName}
-                      className="cart-sidebar-img"
-                    />
-                  </div>
+                  <div
+                    className="cart-sidebar-item"
+                    key={`${item.id}-${item.size}-${item.color ?? ""}-${item.stitching ?? ""}`}
+                  >
+                    <div className="cart-sidebar-img-wrap">
+                      <img
+                        src={item.productImage}
+                        alt={item.productName}
+                        title={item.productName}
+                        className="cart-sidebar-img"
+                      />
+                    </div>
 
-                  <div className="cart-sidebar-info">
-                    <h4 className="cart-sidebar-item-name">{item.productName}</h4>
+                    <div className="cart-sidebar-info">
+                      <h4 className="cart-sidebar-item-name">
+                        {item.productName}
+                      </h4>
 
-                    {(item.size || item.color) && (
-                      <p className="csb-item-size">
-                        {item.size && <>Size: {item.size}</>}
-                        {item.size && item.color ? " · " : ""}
-                        {item.color && <>Color: {item.color}</>}
-                      </p>
-                    )}
+                      {(item.size || item.color || item.stitching) && (
+                        <p className="csb-item-size">
+                          {[
+                            item.size ? `Size: ${item.size}` : "",
+                            item.color ? `Color: ${item.color}` : "",
+                            item.stitching ? `Type: ${item.stitching}` : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      )}
 
-                    <div className="cart-sidebar-controls">
-                      <div className="csb-quantity-box">
+                      <div className="cart-sidebar-controls">
+                        <div className="csb-quantity-box">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              decreaseQuantity(
+                                item.id,
+                                item.size,
+                                item.color,
+                                item.stitching,
+                              )
+                            }
+                          >
+                            −
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              increaseQuantity(
+                                item.id,
+                                item.size,
+                                item.color,
+                                item.stitching,
+                              )
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => decreaseQuantity(item.id, item.size, item.color)}
+                          className="csb-remove-btn"
+                          onClick={() =>
+                            removeItem(
+                              item.id,
+                              item.size,
+                              item.color,
+                              item.stitching,
+                            )
+                          }
                         >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => increaseQuantity(item.id, item.size, item.color)}
-                        >
-                          +
+                          Remove
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        className="csb-remove-btn"
-                        onClick={() => removeItem(item.id, item.size, item.color)}
-                      >
-                        Remove
-                      </button>
                     </div>
-                  </div>
 
-                  <div className="cart-sidebar-item-price-group">
-                    {hasDiscount ? (
-                      <>
-                        <p className="cart-sidebar-item-total cart-sidebar-item-total--original">
-                          PKR {originalLineTotal.toFixed(2)}
-                        </p>
-                        <p className="cart-sidebar-item-total cart-sidebar-item-total--discounted">
+                    <div className="cart-sidebar-item-price-group">
+                      {hasDiscount ? (
+                        <>
+                          <p className="cart-sidebar-item-total cart-sidebar-item-total--original">
+                            PKR {originalLineTotal.toFixed(2)}
+                          </p>
+                          <p className="cart-sidebar-item-total cart-sidebar-item-total--discounted">
+                            PKR {discountedLineTotal.toFixed(2)}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="cart-sidebar-item-total">
                           PKR {discountedLineTotal.toFixed(2)}
                         </p>
-                      </>
-                    ) : (
-                      <p className="cart-sidebar-item-total">
-                        PKR {discountedLineTotal.toFixed(2)}
-                      </p>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
                 );
               })}
             </div>
 
             <div className="cart-sidebar-footer">
               {(showBundleActivation || showBundleSuggestion) && (
-                <div className="csb-bundle-banner-zone" ref={bundleBannerRef} key={bundleBannerKey}>
+                <div
+                  className="csb-bundle-banner-zone"
+                  ref={bundleBannerRef}
+                  key={bundleBannerKey}
+                >
                   {showBundleSuggestion &&
                     bundleSuggestions.map((s) => {
                       const item = cartItems.find((i) => i.id === s.productId);
                       return (
-                        <p className="csb-bundle-suggestion-banner" key={s.productId}>
+                        <p
+                          className="csb-bundle-suggestion-banner"
+                          key={s.productId}
+                        >
                           Add {s.unitsNeeded} more {item?.productName ?? "item"}
-                          {s.unitsNeeded > 1 ? "s" : ""} to get a discount of PKR {s.savedAmount.toFixed(2)}.
+                          {s.unitsNeeded > 1 ? "s" : ""} to get a discount of
+                          PKR {s.savedAmount.toFixed(2)}.
                         </p>
                       );
                     })}
 
                   {showBundleActivation &&
                     appliedBundles.map((bundle, i) => {
-                      const item = cartItems.find((it) => it.id === bundle.productId);
+                      const item = cartItems.find(
+                        (it) => it.id === bundle.productId,
+                      );
                       return (
-                        <div className="csb-bundle-activation-banner" key={`${bundle.productId}-${bundle.numberOfItems}-${i}`}>
+                        <div
+                          className="csb-bundle-activation-banner"
+                          key={`${bundle.productId}-${bundle.numberOfItems}-${i}`}
+                        >
                           <div className="csb-bundle-banner-content">
-                            <CheckCircle size={20} className="csb-bundle-banner-icon" />
+                            <CheckCircle
+                              size={20}
+                              className="csb-bundle-banner-icon"
+                            />
                             <div className="csb-bundle-banner-text">
-                              <h3 className="csb-bundle-banner-title">Bundle Activated</h3>
+                              <h3 className="csb-bundle-banner-title">
+                                Bundle Activated
+                              </h3>
                               <p className="csb-bundle-banner-subtitle">
-                                {bundle.numberOfItems} × {item?.productName ?? "item"}
-                                {bundle.timesApplied > 1 ? ` (×${bundle.timesApplied})` : ""}
+                                {bundle.numberOfItems} ×{" "}
+                                {item?.productName ?? "item"}
+                                {bundle.timesApplied > 1
+                                  ? ` (×${bundle.timesApplied})`
+                                  : ""}
                               </p>
                             </div>
                           </div>
                           <div className="csb-bundle-banner-savings">
-                            <p className="csb-bundle-savings-amount">Save PKR {bundle.totalSavings.toFixed(2)}</p>
+                            <p className="csb-bundle-savings-amount">
+                              Save PKR {bundle.totalSavings.toFixed(2)}
+                            </p>
                           </div>
                         </div>
                       );

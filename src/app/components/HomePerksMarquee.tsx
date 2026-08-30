@@ -9,7 +9,7 @@ const PERKS: { icon: typeof Percent; text: string; code?: string }[] = [
   },
   {
     icon: Truck,
-    text: "Free Delivery All Over Pakistan",
+    text: "Rs 140 Standard Delivery All Over Pakistan",
   },
   {
     icon: PackageCheck,
@@ -33,7 +33,9 @@ export default function HomePerksMarquee() {
             <span className="home-perks-marquee__item" key={index}>
               <Icon className="home-perks-marquee__icon" size={18} />
               {perk.text}
-              {perk.code && <span className="home-perks-marquee__code">{perk.code}</span>}
+              {perk.code && (
+                <span className="home-perks-marquee__code">{perk.code}</span>
+              )}
             </span>
           );
         })}

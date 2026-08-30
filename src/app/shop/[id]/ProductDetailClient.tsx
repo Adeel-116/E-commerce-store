@@ -25,7 +25,10 @@ import {
   Minus,
 } from "lucide-react";
 import ProductZoomModal from "@/app/components/ProductZoomModal";
-import { isRealColor, DEFAULT_VARIANT_NAME } from "@/app/hooks/useProductCardImages";
+import {
+  isRealColor,
+  DEFAULT_VARIANT_NAME,
+} from "@/app/hooks/useProductCardImages";
 import { gaViewItem } from "@/app/lib/gaEvents";
 import { metaViewContent } from "@/app/lib/metaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
@@ -51,6 +54,9 @@ type Product = {
   isNew: boolean;
   stock: boolean;
   status: "active" | "inactive";
+  isStitched?: boolean;
+  isUnstitched?: boolean;
+  stitchedPrice?: number | null;
   activeDiscount: {
     discountId: string;
     name: string;
@@ -84,7 +90,9 @@ export default function ProductDetailClient({
   slug: string;
   initialProduct?: Product | null;
 }) {
-  const [product, setProduct] = useState<Product | null>(initialProduct ?? null);
+  const [product, setProduct] = useState<Product | null>(
+    initialProduct ?? null,
+  );
   const [loading, setLoading] = useState(!initialProduct);
   const [notFound, setNotFound] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
@@ -92,13 +100,30 @@ export default function ProductDetailClient({
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(
-    initialProduct?.sizes?.[0] ?? null
+    initialProduct?.sizes?.[0] ?? null,
   );
   const [selectedColor, setSelectedColor] = useState<string | null>(
-    initialProduct?.colors?.find(isRealColor)?.name ?? null
+    initialProduct?.colors?.find(isRealColor)?.name ?? null,
+  );
+
+  const hasStitchingOptions = !!(
+    initialProduct?.isStitched && initialProduct?.isUnstitched
+  );
+  const [selectedStitching, setSelectedStitching] = useState<
+    "stitched" | "unstitched" | null
+  >(
+    hasStitchingOptions
+      ? "unstitched"
+      : initialProduct?.isStitched
+        ? "stitched"
+        : initialProduct?.isUnstitched
+          ? "unstitched"
+          : null,
   );
   const [zoomOpen, setZoomOpen] = useState(false);
-  const [openAccordion, setOpenAccordion] = useState<string | null>("description");
+  const [openAccordion, setOpenAccordion] = useState<string | null>(
+    "description",
+  );
   const { addToCart, openCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const router = useRouter();
@@ -108,9 +133,14 @@ export default function ProductDetailClient({
   // client's first render match; the page is served/cached at different
   // moments than any one visitor's "today", so computing this during render
   // would produce a hydration mismatch on any day boundary.
-  const [timelineDates, setTimelineDates] = useState<{ ordered: string; shipped: string; delivered: string } | null>(null);
+  const [timelineDates, setTimelineDates] = useState<{
+    ordered: string;
+    shipped: string;
+    delivered: string;
+  } | null>(null);
   useEffect(() => {
-    const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const fmt = (d: Date) =>
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     const addDays = (n: number) => {
       const d = new Date();
       d.setDate(d.getDate() + n);
@@ -147,9 +177,23 @@ export default function ProductDetailClient({
         if (data?.success && data.data) {
           const fetchedProduct: Product = data.data;
           setProduct(fetchedProduct);
-          const firstRealColor = (fetchedProduct.colors ?? []).find(isRealColor);
+          const firstRealColor = (fetchedProduct.colors ?? []).find(
+            isRealColor,
+          );
           setSelectedColor(firstRealColor?.name ?? null);
           setSelectedSize(fetchedProduct.sizes?.[0] ?? null);
+          const hasStitchingOpts = !!(
+            fetchedProduct.isStitched && fetchedProduct.isUnstitched
+          );
+          setSelectedStitching(
+            hasStitchingOpts
+              ? "unstitched"
+              : fetchedProduct.isStitched
+                ? "stitched"
+                : fetchedProduct.isUnstitched
+                  ? "unstitched"
+                  : null,
+          );
         } else if (!initialProduct) {
           setNotFound(true);
         }
@@ -234,11 +278,22 @@ export default function ProductDetailClient({
   const hasSizes = product.sizes.length > 0;
   const hasColors = productColors.length > 0;
   const canAddToCart =
-    product.stock && (!hasSizes || !!selectedSize) && (!hasColors || !!selectedColor);
+    product.stock &&
+    (!hasSizes || !!selectedSize) &&
+    (!hasColors || !!selectedColor) &&
+    (!(product.isStitched && product.isUnstitched) || !!selectedStitching);
+
+  const currentPrice =
+    selectedStitching === "stitched" &&
+    typeof product.stitchedPrice === "number"
+      ? product.stitchedPrice
+      : product.price;
 
   // Default view is the first variation's photos (falling back to the
   // product's own images); picking a color switches to that color's photos.
-  const defaultImages = allColors[0]?.images?.length ? allColors[0].images : product.images;
+  const defaultImages = allColors[0]?.images?.length
+    ? allColors[0].images
+    : product.images;
   const selectedVariant = selectedColor
     ? productColors.find((c) => c.name === selectedColor)
     : undefined;
@@ -251,9 +306,12 @@ export default function ProductDetailClient({
   // the active color's) so shoppers can preview any color without switching
   // first — clicking a thumbnail from another color jumps both the main
   // image and the color selection to match.
-  const thumbSource = allColors.length > 0 ? allColors : [{ name: "", hex: "", images: product.images }];
+  const thumbSource =
+    allColors.length > 0
+      ? allColors
+      : [{ name: "", hex: "", images: product.images }];
   const allThumbs = thumbSource.flatMap((c) =>
-    c.images.map((img) => ({ url: img, colorName: c.name }))
+    c.images.map((img) => ({ url: img, colorName: c.name })),
   );
   const activeImageUrl = galleryImages[activeImage] ?? galleryImages[0];
 
@@ -263,12 +321,14 @@ export default function ProductDetailClient({
   };
 
   const handleSelectThumb = (thumb: { url: string; colorName: string }) => {
-    const isRealVariant = thumb.colorName && thumb.colorName !== DEFAULT_VARIANT_NAME;
+    const isRealVariant =
+      thumb.colorName && thumb.colorName !== DEFAULT_VARIANT_NAME;
     if (isRealVariant && thumb.colorName !== selectedColor) {
       setSelectedColor(thumb.colorName);
     }
     const variantImages = isRealVariant
-      ? productColors.find((c) => c.name === thumb.colorName)?.images ?? defaultImages
+      ? (productColors.find((c) => c.name === thumb.colorName)?.images ??
+        defaultImages)
       : defaultImages;
     const idx = variantImages.indexOf(thumb.url);
     setActiveImage(idx >= 0 ? idx : 0);
@@ -280,9 +340,10 @@ export default function ProductDetailClient({
       id: product._id,
       productName: product.title,
       brand: "",
-      price: product.price,
+      price: currentPrice,
       size: selectedSize ?? "",
       color: selectedColor,
+      stitching: selectedStitching,
       quantity,
       productImage: galleryImages[0] ?? product.images[0],
     });
@@ -300,9 +361,10 @@ export default function ProductDetailClient({
       id: product._id,
       productName: product.title,
       brand: "",
-      price: product.price,
+      price: currentPrice,
       size: selectedSize ?? "",
       color: selectedColor,
+      stitching: selectedStitching,
       quantity,
       productImage: galleryImages[0] ?? product.images[0],
     });
@@ -312,7 +374,6 @@ export default function ProductDetailClient({
   return (
     <div className="shop-inner-page">
       <NavbarController />
-
 
       <div className="shop-inner-top-bar">
         <nav className="breadcrumb">
@@ -329,7 +390,8 @@ export default function ProductDetailClient({
           </div>
           <div className="shop-inner-bundle-banner-text">
             <p>
-              <strong>Free Delivery</strong> on all orders, delivered in 5–8 days.
+              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5–8
+              days.
             </p>
           </div>
         </div>
@@ -349,7 +411,11 @@ export default function ProductDetailClient({
                       className={`shop-inner-gallery-thumb${activeImageUrl === thumb.url ? " active" : ""}`}
                       onClick={() => handleSelectThumb(thumb)}
                     >
-                      <img src={thumb.url} alt={`${product.title} ${index + 1}`} title={`${product.title} ${index + 1}`} />
+                      <img
+                        src={thumb.url}
+                        alt={`${product.title} ${index + 1}`}
+                        title={`${product.title} ${index + 1}`}
+                      />
                     </button>
                   ))}
                 </div>
@@ -415,7 +481,10 @@ export default function ProductDetailClient({
           {zoomOpen && (
             <ProductZoomModal
               images={allThumbs.map((t) => t.url)}
-              initialIndex={Math.max(0, allThumbs.findIndex((t) => t.url === activeImageUrl))}
+              initialIndex={Math.max(
+                0,
+                allThumbs.findIndex((t) => t.url === activeImageUrl),
+              )}
               productTitle={product.title}
               onClose={() => setZoomOpen(false)}
             />
@@ -438,7 +507,7 @@ export default function ProductDetailClient({
             <div className="shop-inner-size-price">
               <div className="price-box-container">
                 <span className="price-current">
-                  Rs.{(product.price * quantity).toLocaleString()}
+                  Rs.{(currentPrice * quantity).toLocaleString()}
                 </span>
                 {product.comparePrice && (
                   <span className="price-original">
@@ -456,9 +525,68 @@ export default function ProductDetailClient({
               <div className="shop-inner-viewers-row">
                 <Eye size={14} />
                 <span>
-                  <strong>{viewingCount}</strong> people are viewing this right now
+                  <strong>{viewingCount}</strong> people are viewing this right
+                  now
                 </span>
               </div>
+
+              {/* Stitching selector */}
+              {(product.isStitched || product.isUnstitched) && (
+                <div className="shop-inner-size-selector">
+                  <span
+                    className="shop-inner-size-label"
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    {product.isStitched && product.isUnstitched
+                      ? "Stitching Type"
+                      : "Type"}
+                    {product.isStitched &&
+                      product.isUnstitched &&
+                      selectedStitching !== "stitched" && (
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            color: "var(--brandgreen)",
+                            textTransform: "none",
+                            fontWeight: 600,
+                            padding: "2px 6px",
+                            background: "rgba(34,139,34, 0.1)",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          ✨ Want to buy stitched? Click here!
+                        </span>
+                      )}
+                  </span>
+                  {product.isStitched && product.isUnstitched ? (
+                    <div className="shop-inner-size-options">
+                      <button
+                        type="button"
+                        className={`shop-inner-size-pill${selectedStitching === "unstitched" ? " active" : ""}`}
+                        onClick={() => setSelectedStitching("unstitched")}
+                      >
+                        Unstitched
+                      </button>
+                      <button
+                        type="button"
+                        className={`shop-inner-size-pill${selectedStitching === "stitched" ? " active" : ""}`}
+                        onClick={() => setSelectedStitching("stitched")}
+                      >
+                        Stitched
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="shop-inner-size-options">
+                      <span
+                        className="shop-inner-size-pill active"
+                        style={{ cursor: "default" }}
+                      >
+                        {product.isStitched ? "Stitched" : "Unstitched"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Color selector */}
               {hasColors && (
@@ -500,11 +628,13 @@ export default function ProductDetailClient({
                   </div>
                 </div>
               ) : (
-                <p className="shop-inner-size-hint">No sizes available for this product.</p>
+                <p className="shop-inner-size-hint">
+                  No sizes available for this product.
+                </p>
               )}
             </div>
 
-            {/* Info box: delivery estimate, promo hint, free shipping */}
+            {/* Info box: delivery estimate, promo hint, standard shipping */}
             <div className="shop-inner-info-box">
               <div className="shop-inner-info-row">
                 <Truck size={17} />
@@ -516,13 +646,14 @@ export default function ProductDetailClient({
               <div className="shop-inner-info-row">
                 <Sparkles size={17} />
                 <span>
-                  Use code <strong>&quot;STYLE20&quot;</strong> for an extra 20% off
+                  Use code <strong>&quot;STYLE20&quot;</strong> for an extra 20%
+                  off
                 </span>
               </div>
               <div className="shop-inner-info-divider" />
               <div className="shop-inner-info-row">
                 <PackageCheck size={17} />
-                <span>Free shipping &amp; easy returns</span>
+                <span>Standard shipping &amp; easy returns</span>
               </div>
             </div>
 
@@ -628,12 +759,16 @@ export default function ProductDetailClient({
 
             {/* Accordion: Description / Shipping & Returns / Return Policies */}
             <div className="accordion-section">
-              <div className={`accordion-item${openAccordion === "description" ? " active" : ""}`}>
+              <div
+                className={`accordion-item${openAccordion === "description" ? " active" : ""}`}
+              >
                 <button
                   type="button"
                   className="accordion-header"
                   onClick={() =>
-                    setOpenAccordion((prev) => (prev === "description" ? null : "description"))
+                    setOpenAccordion((prev) =>
+                      prev === "description" ? null : "description",
+                    )
                   }
                 >
                   <span>Description</span>
@@ -641,17 +776,24 @@ export default function ProductDetailClient({
                 </button>
                 <div className="accordion-content">
                   <div className="accordion-inner">
-                    <p>{product.description || "No description available for this product."}</p>
+                    <p>
+                      {product.description ||
+                        "No description available for this product."}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className={`accordion-item${openAccordion === "shipping" ? " active" : ""}`}>
+              <div
+                className={`accordion-item${openAccordion === "shipping" ? " active" : ""}`}
+              >
                 <button
                   type="button"
                   className="accordion-header"
                   onClick={() =>
-                    setOpenAccordion((prev) => (prev === "shipping" ? null : "shipping"))
+                    setOpenAccordion((prev) =>
+                      prev === "shipping" ? null : "shipping",
+                    )
                   }
                 >
                   <span>Shipping and Returns</span>
@@ -662,19 +804,25 @@ export default function ProductDetailClient({
                     <ul>
                       <li>Orders are dispatched within 1–2 business days.</li>
                       <li>Estimated delivery time is 5–8 business days.</li>
-                      <li>Free shipping on all orders, nationwide.</li>
+                      <li>
+                        Rs 140 standard shipping on all orders, nationwide.
+                      </li>
                       <li>Easy returns within 7 days of delivery.</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
-              <div className={`accordion-item${openAccordion === "returns" ? " active" : ""}`}>
+              <div
+                className={`accordion-item${openAccordion === "returns" ? " active" : ""}`}
+              >
                 <button
                   type="button"
                   className="accordion-header"
                   onClick={() =>
-                    setOpenAccordion((prev) => (prev === "returns" ? null : "returns"))
+                    setOpenAccordion((prev) =>
+                      prev === "returns" ? null : "returns",
+                    )
                   }
                 >
                   <span>Return Policies</span>
@@ -683,9 +831,10 @@ export default function ProductDetailClient({
                 <div className="accordion-content">
                   <div className="accordion-inner">
                     <p>
-                      If you&apos;re not fully satisfied, items can be returned within 7 days of
-                      delivery in original condition with tags attached. Refunds are processed
-                      to your original payment method once the return is received and inspected.
+                      If you&apos;re not fully satisfied, items can be returned
+                      within 7 days of delivery in original condition with tags
+                      attached. Refunds are processed to your original payment
+                      method once the return is received and inspected.
                     </p>
                   </div>
                 </div>
@@ -700,8 +849,8 @@ export default function ProductDetailClient({
             <div className="similar-products-heading">
               <h2 id="similar-text">People Also Bought</h2>
               <p>
-                Here&apos;s some of our most similar products people are buying. Click to
-                discover trending style.
+                Here&apos;s some of our most similar products people are buying.
+                Click to discover trending style.
               </p>
             </div>
             <div className="cg-grid similar-products-grid">

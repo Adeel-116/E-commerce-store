@@ -16,7 +16,7 @@ const tabs = [
   {
     icon: <Truck />,
     title: "Shipping Across All Pakistan",
-    text: "Free shipping on all orders. Delivered in 4–6 days.",
+    text: "Rs 140 standard shipping on all orders. Delivered in 4–6 days.",
   },
 ];
 

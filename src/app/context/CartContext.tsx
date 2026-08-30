@@ -1,8 +1,21 @@
 "use client";
-import { createContext, useContext, useState, useEffect, useMemo, useRef, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  ReactNode,
+} from "react";
 import api from "../lib/axios";
 import { clearGuestId } from "../lib/guestId";
-import { fetchBundlesFromApi, getStoredBundles, ProductBundle, saveBundlesToStorage } from "../lib/cartBundles";
+import {
+  fetchBundlesFromApi,
+  getStoredBundles,
+  ProductBundle,
+  saveBundlesToStorage,
+} from "../lib/cartBundles";
 import { gaAddToCart, gaRemoveFromCart } from "../lib/gaEvents";
 import { metaAddToCart } from "../lib/metaEvents";
 
@@ -15,6 +28,8 @@ export type CartItem = {
   size: string;
   /** selected color name, if the product has color variants */
   color?: string | null;
+  /** whether the item is stitched or unstitched */
+  stitching?: "stitched" | "unstitched" | null;
   quantity: number;
   productImage: string;
   /** undiscounted unit price the backend charged for this line */
@@ -70,11 +85,37 @@ type CartContextType = {
   bundles: ProductBundle[];
   isCartOpen: boolean;
   isLoading: boolean;
-  addToCart: (item: Omit<CartItem, "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"> & { quantity?: number }) => void;
-  removeItem: (id: string, size?: string, color?: string | null) => void;
-  increaseQuantity: (id: string, size?: string, color?: string | null) => void;
-  decreaseQuantity: (id: string, size?: string, color?: string | null) => void;
-  changeSize: (id: string, size: string, currentSize?: string, color?: string | null) => void;
+  addToCart: (
+    item: Omit<
+      CartItem,
+      "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"
+    > & { quantity?: number },
+  ) => void;
+  removeItem: (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => void;
+  increaseQuantity: (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => void;
+  decreaseQuantity: (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => void;
+  changeSize: (
+    id: string,
+    size: string,
+    currentSize?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => void;
   clearCart: () => void;
   mergeCart: () => Promise<void>;
   openCart: () => void;
@@ -86,15 +127,20 @@ const CartContext = createContext<CartContextType | null>(null);
 // A cart line is uniquely identified by (id, size, color) — normalize missing
 // color to null so "no color selected" always compares consistently.
 const normalizeColor = (color?: string | null) => color || null;
+const normalizeStitching = (stitching?: string | null) => stitching || null;
 const matchesLine = (
   item: CartItem,
   id: string,
   size?: string,
-  color?: string | null
+  color?: string | null,
+  stitching?: "stitched" | "unstitched" | null,
 ) =>
   item.id === id &&
   (!size || item.size === size) &&
-  (color === undefined || normalizeColor(item.color) === normalizeColor(color));
+  (color === undefined ||
+    normalizeColor(item.color) === normalizeColor(color)) &&
+  (stitching === undefined ||
+    normalizeStitching(item.stitching) === normalizeStitching(stitching));
 
 function mapBackendItem(item: any): CartItem {
   const p = item.productId ?? {};
@@ -117,6 +163,7 @@ function mapBackendItem(item: any): CartItem {
     price,
     size,
     color: item.color ?? null,
+    stitching: item.stitching ?? null,
     quantity,
     productImage,
     unitPrice,
@@ -127,7 +174,10 @@ function mapBackendItem(item: any): CartItem {
 }
 
 /** Backend is the source of truth for discounts and bundle pricing — never recompute totals client-side. */
-function mapCartResponse(cart: any): { items: CartItem[]; pricing: CartPricing | null } {
+function mapCartResponse(cart: any): {
+  items: CartItem[];
+  pricing: CartPricing | null;
+} {
   const p = cart?.pricing;
   const pricing: CartPricing | null = p
     ? {
@@ -186,7 +236,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       })
       .catch((err) => {
         if (ticket !== refetchTicket.current) return;
-        console.error("Refetch cart failed:", err?.response?.data?.message ?? err.message);
+        console.error(
+          "Refetch cart failed:",
+          err?.response?.data?.message ?? err.message,
+        );
         setPricingStale(false);
       });
   };
@@ -199,7 +252,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const fetchedBundles = await fetchBundlesFromApi();
-      const nextBundles = fetchedBundles.length > 0 ? fetchedBundles : storedBundles;
+      const nextBundles =
+        fetchedBundles.length > 0 ? fetchedBundles : storedBundles;
       setBundles(nextBundles);
       saveBundlesToStorage(nextBundles);
     };
@@ -217,17 +271,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const addToCart = (item: Omit<CartItem, "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"> & { quantity?: number }) => {
+  const addToCart = (
+    item: Omit<
+      CartItem,
+      "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"
+    > & { quantity?: number },
+  ) => {
     const quantity = item.quantity ?? 1;
     const unitPrice = item.price ?? 0;
 
     setCartItems((prev) => {
-      const existing = prev.find((i) => matchesLine(i, item.id, item.size, item.color));
+      const existing = prev.find((i) =>
+        matchesLine(i, item.id, item.size, item.color, item.stitching),
+      );
       if (existing) {
         return prev.map((i) =>
-          matchesLine(i, item.id, item.size, item.color)
-            ? { ...i, quantity: i.quantity + quantity, lineSubtotal: i.unitPrice * (i.quantity + quantity) }
-            : i
+          matchesLine(i, item.id, item.size, item.color, item.stitching)
+            ? {
+                ...i,
+                quantity: i.quantity + quantity,
+                lineSubtotal: i.unitPrice * (i.quantity + quantity),
+              }
+            : i,
         );
       }
       return [
@@ -260,17 +325,36 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       value: unitPrice * quantity,
     });
 
-    api.post("/cart/add", { productId: item.id, size: item.size, color: item.color ?? null, quantity })
+    api
+      .post("/cart/add", {
+        productId: item.id,
+        size: item.size,
+        color: item.color ?? null,
+        stitching: item.stitching ?? null,
+        quantity,
+      })
       .then(() => refetchCart())
       .catch((err) => {
-        console.error("Add to cart failed:", err?.response?.data?.message ?? err.message);
+        console.error(
+          "Add to cart failed:",
+          err?.response?.data?.message ?? err.message,
+        );
         refetchCart();
       });
   };
 
-  const removeItem = (id: string, size?: string, color?: string | null): Promise<void> => {
-    const item = cartItems.find((i) => matchesLine(i, id, size, color));
-    setCartItems((prev) => prev.filter((i) => !matchesLine(i, id, size, color)));
+  const removeItem = (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ): Promise<void> => {
+    const item = cartItems.find((i) =>
+      matchesLine(i, id, size, color, stitching),
+    );
+    setCartItems((prev) =>
+      prev.filter((i) => !matchesLine(i, id, size, color, stitching)),
+    );
     setPricingStale(true);
     if (item) {
       gaRemoveFromCart({
@@ -283,10 +367,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     }
     return api
-      .delete("/cart/remove", { params: { productId: id, size, color: color ?? undefined } })
+      .delete("/cart/remove", {
+        params: {
+          productId: id,
+          size,
+          color: color ?? undefined,
+          stitching: stitching ?? undefined,
+        },
+      })
       .then(() => refetchCart())
       .catch((err) => {
-        console.error("Remove from cart failed:", err?.response?.data?.message ?? err.message);
+        console.error(
+          "Remove from cart failed:",
+          err?.response?.data?.message ?? err.message,
+        );
         refetchCart();
       });
   };
@@ -298,49 +392,70 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // the backend, whichever save() lands last wins, and the frontend can't
   // tell which refetch is fresher without this).
   const quantityInFlight = useRef<Map<string, Promise<void>>>(new Map());
-  const lineKey = (id: string, size?: string, color?: string | null) =>
-    `${id}::${size ?? ""}::${normalizeColor(color)}`;
+  const lineKey = (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) =>
+    `${id}::${size ?? ""}::${normalizeColor(color)}::${normalizeStitching(stitching)}`;
 
   const runQuantityChange = (
     id: string,
     size: string | undefined,
     color: string | null | undefined,
-    step: 1 | -1
+    stitching: "stitched" | "unstitched" | null | undefined,
+    step: 1 | -1,
   ): Promise<void> => {
-    const key = lineKey(id, size, color);
+    const key = lineKey(id, size, color, stitching);
     const prior = quantityInFlight.current.get(key) ?? Promise.resolve();
     const next = prior
       .catch(() => {})
       .then(() => {
-        const item = cartItemsRef.current.find((i) => matchesLine(i, id, size, color));
+        const item = cartItemsRef.current.find((i) =>
+          matchesLine(i, id, size, color, stitching),
+        );
         if (!item) return;
 
         if (step === -1 && item.quantity <= 1) {
-          return removeItem(id, item.size, item.color);
+          return removeItem(id, item.size, item.color, item.stitching);
         }
 
         const newQty = item.quantity + step;
         const perUnit = item.lineSubtotal / item.quantity;
         setCartItems((prev) =>
           prev.map((i) =>
-            matchesLine(i, id, item.size, item.color)
+            matchesLine(i, id, item.size, item.color, item.stitching)
               ? { ...i, quantity: newQty, lineSubtotal: perUnit * newQty }
-              : i
-          )
+              : i,
+          ),
         );
         setPricingStale(true);
 
         return api
-          .patch("/cart/quantity", { productId: id, size: item.size, color: item.color ?? null, quantity: newQty })
+          .patch("/cart/quantity", {
+            productId: id,
+            size: item.size,
+            color: item.color ?? null,
+            stitching: item.stitching ?? null,
+            quantity: newQty,
+          })
           .then(() => refetchCart())
           .catch((err) => {
-            console.error("Update quantity failed:", err?.response?.data?.message ?? err.message);
+            console.error(
+              "Update quantity failed:",
+              err?.response?.data?.message ?? err.message,
+            );
             setCartItems((prev) =>
               prev.map((i) =>
-                matchesLine(i, id, item.size, item.color)
-                  ? { ...i, quantity: item.quantity, lineSubtotal: item.lineSubtotal }
-                  : i
-              )
+                matchesLine(i, id, item.size, item.color, item.stitching)
+                  ? {
+                      ...i,
+                      quantity: item.quantity,
+                      lineSubtotal: item.lineSubtotal,
+                    }
+                  : i,
+              ),
             );
           });
       });
@@ -349,30 +464,65 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return next;
   };
 
-  const increaseQuantity = (id: string, size?: string, color?: string | null) => {
-    void runQuantityChange(id, size, color, 1);
+  const increaseQuantity = (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => {
+    void runQuantityChange(id, size, color, stitching, 1);
   };
 
-  const decreaseQuantity = (id: string, size?: string, color?: string | null) => {
-    void runQuantityChange(id, size, color, -1);
+  const decreaseQuantity = (
+    id: string,
+    size?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => {
+    void runQuantityChange(id, size, color, stitching, -1);
   };
 
-  const changeSize = (id: string, size: string, currentSize?: string, color?: string | null) => {
-    const item = cartItems.find((i) => matchesLine(i, id, currentSize, color));
+  const changeSize = (
+    id: string,
+    size: string,
+    currentSize?: string,
+    color?: string | null,
+    stitching?: "stitched" | "unstitched" | null,
+  ) => {
+    const item = cartItems.find((i) =>
+      matchesLine(i, id, currentSize, color, stitching),
+    );
     if (!item || item.size === size) return;
     const oldSize = item.size;
 
     setCartItems((prev) =>
-      prev.map((i) => (matchesLine(i, id, oldSize, item.color) ? { ...i, size } : i))
+      prev.map((i) =>
+        matchesLine(i, id, oldSize, item.color, item.stitching)
+          ? { ...i, size }
+          : i,
+      ),
     );
 
     api
-      .post("/cart/updateSize", { productId: id, oldSize, newSize: size, color: item.color ?? null })
+      .post("/cart/updateSize", {
+        productId: id,
+        oldSize,
+        newSize: size,
+        color: item.color ?? null,
+        stitching: item.stitching ?? null,
+      })
       .then(() => refetchCart())
       .catch((err) => {
-        console.error("Update size failed:", err?.response?.data?.message ?? err.message);
+        console.error(
+          "Update size failed:",
+          err?.response?.data?.message ?? err.message,
+        );
         setCartItems((prev) =>
-          prev.map((i) => (matchesLine(i, id, size, item.color) ? { ...i, size: oldSize } : i))
+          prev.map((i) =>
+            matchesLine(i, id, size, item.color, item.stitching)
+              ? { ...i, size: oldSize }
+              : i,
+          ),
         );
       });
   };
@@ -385,7 +535,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setPricing(null);
       })
       .catch((err) => {
-        console.error("Clear cart failed:", err?.response?.data?.message ?? err.message);
+        console.error(
+          "Clear cart failed:",
+          err?.response?.data?.message ?? err.message,
+        );
       });
   };
 
@@ -398,7 +551,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setCartItems(items);
       setPricing(pricing);
     } catch (err: any) {
-      console.error("Cart merge failed:", err?.response?.data?.message ?? err.message);
+      console.error(
+        "Cart merge failed:",
+        err?.response?.data?.message ?? err.message,
+      );
     }
   };
 
@@ -411,7 +567,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (cartItems.length === 0) return null;
     if (pricing && !pricingStale) return pricing;
 
-    const subtotal = cartItems.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+    const subtotal = cartItems.reduce(
+      (acc, item) => acc + item.unitPrice * item.quantity,
+      0,
+    );
     const discountSavings = cartItems.reduce((acc, item) => {
       if (!item.activeDiscount) return acc;
       const lineTotal = item.unitPrice * item.quantity;

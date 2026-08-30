@@ -129,11 +129,13 @@ export function ProductCard({
           ) : (
             <>
               {product.isNew && (
-                <span className="cg-badge cg-badge-new">New In</span>
+                <span className="cg-badge cg-badge-new">New Arrivals</span>
               )}
               {product.comparePrice && product.comparePrice > product.price && (
                 <span className="cg-badge cg-badge-discount">
-                  -{Math.round((1 - product.price / product.comparePrice) * 100)}%
+                  -
+                  {Math.round((1 - product.price / product.comparePrice) * 100)}
+                  %
                 </span>
               )}
             </>

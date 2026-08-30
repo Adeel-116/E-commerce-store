@@ -339,9 +339,10 @@
   border: 1px solid var(--bg-soft-2);
   background: var(--off-white);
   color: var(--charcoal);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   border-radius: 6px;
+  letter-spacing: 0.4px;
   cursor: pointer;
   transition: background 0.18s, border-color 0.18s, color 0.18s;
 }
@@ -362,7 +363,7 @@
   margin: 0;
 }
 
-/* ── Info box: delivery / promo / free shipping ── */
+/* ── Info box: delivery / promo / standard shipping ── */
 .shop-inner-info-box {
   display: flex;
   flex-direction: column;

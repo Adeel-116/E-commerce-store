@@ -58,6 +58,7 @@ type ApiOrder = {
   status: string;
   lastEmailSent?: boolean;
   specialInstructions?: string;
+  notes?: string;
   createdAt: string;
 };
 
@@ -131,6 +132,7 @@ type EditItemDraft = {
   quantity: number;
   price: number;
   originalPrice: number;
+  image?: string;
 };
 
 type TitleSuggestion = {
@@ -151,6 +153,11 @@ type EditDetailsForm = {
   country: string;
   orderDate: string;
   items: EditItemDraft[];
+  // Pricing overrides
+  shipping: number;
+  discount: number;
+  bundleSavings: number;
+  notes: string;
 };
 
 function toDatetimeLocalValue(iso: string) {
@@ -232,9 +239,7 @@ export default function OrdersPage() {
   >(null);
   const suggestionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saveDetailsLoading, setSaveDetailsLoading] = useState(false);
-  const [saveDetailsError, setSaveDetailsError] = useState<string | null>(
-    null,
-  );
+  const [saveDetailsError, setSaveDetailsError] = useState<string | null>(null);
 
   // --- Selection helpers (inside component — they use orders/selectedIds state) ---
   const toggleSelectOne = (orderId: string) => {
@@ -340,7 +345,8 @@ export default function OrdersPage() {
   const buildExportRows = (list: ApiOrder[]) => {
     const money = (n: unknown) => Number(Number(n ?? 0).toFixed(2));
     return list.map((order) => {
-      const shipping = order.shippingAddress ?? ({} as ApiOrder["shippingAddress"]);
+      const shipping =
+        order.shippingAddress ?? ({} as ApiOrder["shippingAddress"]);
       const isPaid = order.payment?.status === "paid";
       const items = order.items ?? [];
 
@@ -476,7 +482,13 @@ export default function OrdersPage() {
         quantity: i.quantity,
         price: i.price,
         originalPrice: i.originalPrice,
+        image: i.image || "",
       })),
+      // Pricing fields
+      shipping: raw.pricing.shipping,
+      discount: raw.pricing.discount,
+      bundleSavings: raw.pricing.bundleSavings,
+      notes: raw.notes || "",
     });
     setViewOrder(null);
   };
@@ -506,6 +518,28 @@ export default function OrdersPage() {
     setEditDetailsForm((prev) => {
       if (!prev) return prev;
       return { ...prev, items: prev.items.filter((_, i) => i !== index) };
+    });
+  };
+
+  const addBlankItem = () => {
+    setEditDetailsForm((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        items: [
+          ...prev.items,
+          {
+            productId: "",
+            title: "",
+            size: "",
+            color: null,
+            quantity: 1,
+            price: 0,
+            originalPrice: 0,
+            image: "",
+          },
+        ],
+      };
     });
   };
 
@@ -548,16 +582,16 @@ export default function OrdersPage() {
   };
 
   const editDetailsSubtotal =
-    editDetailsForm?.items.reduce(
-      (sum, i) => sum + i.price * i.quantity,
-      0,
-    ) ?? 0;
-  const editDetailsRaw = editDetailsOrder?._raw;
-  const editDetailsTotal = editDetailsRaw
-    ? editDetailsSubtotal +
-    editDetailsRaw.pricing.shipping -
-    editDetailsRaw.pricing.discount -
-    editDetailsRaw.pricing.bundleSavings
+    editDetailsForm?.items.reduce((sum, i) => sum + i.price * i.quantity, 0) ??
+    0;
+  const editDetailsTotal = editDetailsForm
+    ? Math.max(
+        0,
+        editDetailsSubtotal +
+          (editDetailsForm.shipping ?? 0) -
+          (editDetailsForm.discount ?? 0) -
+          (editDetailsForm.bundleSavings ?? 0),
+      )
     : 0;
 
   const saveEditDetails = async () => {
@@ -584,19 +618,25 @@ export default function OrdersPage() {
           size: item.size,
           color: item.color ?? null,
           quantity: item.quantity,
+          price: item.price,
+          originalPrice: item.originalPrice,
+          image: item.image || "",
         })),
+        pricing: {
+          shipping: editDetailsForm.shipping,
+          discount: editDetailsForm.discount,
+          bundleSavings: editDetailsForm.bundleSavings,
+        },
+        notes: editDetailsForm.notes,
       };
-      await api.patch(
-        `/admin/edit-order/${editDetailsOrder.orderId}`,
-        payload,
-      );
+      await api.patch(`/admin/edit-order/${editDetailsOrder.orderId}`, payload);
       await fetchOrders(pagination.page);
       setEditDetailsOrder(null);
       setEditDetailsForm(null);
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message ?? "Failed to update order";
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? "Failed to update order";
       setSaveDetailsError(msg);
     } finally {
       setSaveDetailsLoading(false);
@@ -732,14 +772,22 @@ export default function OrdersPage() {
               >
                 <button
                   className="admin-btn admin-btn-ghost"
-                  style={{ width: "100%", justifyContent: "flex-start", borderRadius: 0 }}
+                  style={{
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    borderRadius: 0,
+                  }}
                   onClick={() => handleExport("csv")}
                 >
                   Export as CSV
                 </button>
                 <button
                   className="admin-btn admin-btn-ghost"
-                  style={{ width: "100%", justifyContent: "flex-start", borderRadius: 0 }}
+                  style={{
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    borderRadius: 0,
+                  }}
                   onClick={() => handleExport("excel")}
                 >
                   Export as Excel
@@ -864,7 +912,8 @@ export default function OrdersPage() {
                         <div style={{ fontWeight: 600 }}>{item.title}</div>
                         <div style={{ color: "#888" }}>
                           {item.size}
-                          {item.color ? ` · ${item.color}` : ""} · Qty: {item.quantity}
+                          {item.color ? ` · ${item.color}` : ""} · Qty:{" "}
+                          {item.quantity}
                         </div>
                       </div>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>
@@ -1074,9 +1123,7 @@ export default function OrdersPage() {
                 <input
                   className="admin-form-input"
                   value={editDetailsForm.fullName}
-                  onChange={(e) =>
-                    updateEditField("fullName", e.target.value)
-                  }
+                  onChange={(e) => updateEditField("fullName", e.target.value)}
                 />
               </div>
               <div className="admin-form-group">
@@ -1085,9 +1132,7 @@ export default function OrdersPage() {
                   type="datetime-local"
                   className="admin-form-input"
                   value={editDetailsForm.orderDate}
-                  onChange={(e) =>
-                    updateEditField("orderDate", e.target.value)
-                  }
+                  onChange={(e) => updateEditField("orderDate", e.target.value)}
                 />
               </div>
               <div className="admin-form-group">
@@ -1121,7 +1166,9 @@ export default function OrdersPage() {
                 />
               </div>
               <div className="admin-form-group admin-form-grid-full">
-                <label className="admin-form-label">Apartment, suite, etc</label>
+                <label className="admin-form-label">
+                  Apartment, suite, etc
+                </label>
                 <input
                   className="admin-form-input"
                   value={editDetailsForm.line2}
@@ -1147,12 +1194,14 @@ export default function OrdersPage() {
               <div className="admin-form-group">
                 <label className="admin-form-label">Postal Code</label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   className="admin-form-input"
                   value={editDetailsForm.postalCode}
-                  onChange={(e) =>
-                    updateEditField("postalCode", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^0-9]/g, "");
+                    updateEditField("postalCode", v);
+                  }}
                 />
               </div>
               <div className="admin-form-group">
@@ -1184,137 +1233,236 @@ export default function OrdersPage() {
               >
                 {editDetailsForm.items.map((item, index) => (
                   <div
-                    key={item.productId}
+                    key={`item-${index}`}
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 100px 80px 90px 32px",
-                      gap: 10,
-                      alignItems: "end",
+                      border: "1px solid #e8e8e8",
+                      borderRadius: 8,
+                      padding: "12px 12px 8px",
+                      background: "#fafaf8",
+                      marginBottom: 6,
                     }}
                   >
+                    {/* Row 1: Title + Size + Color + Delete */}
                     <div
-                      className="admin-form-group"
-                      style={{ position: "relative" }}
-                    >
-                      <label className="admin-form-label">Title</label>
-                      <input
-                        className="admin-form-input"
-                        autoComplete="off"
-                        value={item.title}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          updateEditItem(index, "title", value);
-                          fetchTitleSuggestions(value, index);
-                        }}
-                        onFocus={() => {
-                          if (item.title) fetchTitleSuggestions(item.title, index);
-                        }}
-                        onBlur={() =>
-                          setTimeout(() => setActiveSuggestionIndex(null), 150)
-                        }
-                      />
-                      {activeSuggestionIndex === index &&
-                        titleSuggestions.length > 0 && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "100%",
-                              left: 0,
-                              right: 0,
-                              zIndex: 20,
-                              background: "var(--admin-surface, #fff)",
-                              border: "1px solid #e2e2e2",
-                              borderRadius: 6,
-                              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                              marginTop: 4,
-                              maxHeight: 220,
-                              overflowY: "auto",
-                            }}
-                          >
-                            {titleSuggestions.map((s) => (
-                              <div
-                                key={s._id}
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  selectTitleSuggestion(index, s);
-                                }}
-                                style={{
-                                  padding: "8px 10px",
-                                  fontSize: 13,
-                                  cursor: "pointer",
-                                }}
-                                onMouseEnter={(e) =>
-                                (e.currentTarget.style.background =
-                                  "#f5f5f5")
-                                }
-                                onMouseLeave={(e) =>
-                                (e.currentTarget.style.background =
-                                  "transparent")
-                                }
-                              >
-                                {s.title}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                    </div>
-                    <div className="admin-form-group">
-                      <label className="admin-form-label">Size</label>
-                      <input
-                        className="admin-form-input"
-                        value={item.size}
-                        onChange={(e) =>
-                          updateEditItem(index, "size", e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="admin-form-group">
-                      <label className="admin-form-label">Color</label>
-                      <input
-                        className="admin-form-input"
-                        value={item.color ?? ""}
-                        placeholder="—"
-                        onChange={(e) =>
-                          updateEditItem(index, "color", e.target.value || null)
-                        }
-                      />
-                    </div>
-                    <div className="admin-form-group">
-                      <label className="admin-form-label">Qty</label>
-                      <input
-                        type="number"
-                        min={1}
-                        className="admin-form-input"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateEditItem(
-                            index,
-                            "quantity",
-                            Math.max(1, Number(e.target.value) || 1),
-                          )
-                        }
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      className="admin-btn admin-btn-ghost"
-                      onClick={() => removeEditItem(index)}
-                      disabled={editDetailsForm.items.length <= 1}
-                      title={
-                        editDetailsForm.items.length <= 1
-                          ? "An order must have at least one item"
-                          : "Remove item"
-                      }
                       style={{
-                        padding: 6,
-                        marginBottom: 1,
-                        color: "#e53e3e",
+                        display: "grid",
+                        gridTemplateColumns: "1fr 100px 90px 32px",
+                        gap: 8,
+                        alignItems: "end",
+                        marginBottom: 8,
                       }}
                     >
-                      <Trash2 size={15} />
-                    </button>
+                      <div
+                        className="admin-form-group"
+                        style={{ position: "relative", margin: 0 }}
+                      >
+                        <label className="admin-form-label">Title</label>
+                        <input
+                          className="admin-form-input"
+                          autoComplete="off"
+                          value={item.title}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            updateEditItem(index, "title", value);
+                            fetchTitleSuggestions(value, index);
+                          }}
+                          onFocus={() => {
+                            if (item.title)
+                              fetchTitleSuggestions(item.title, index);
+                          }}
+                          onBlur={() =>
+                            setTimeout(
+                              () => setActiveSuggestionIndex(null),
+                              150,
+                            )
+                          }
+                        />
+                        {activeSuggestionIndex === index &&
+                          titleSuggestions.length > 0 && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                left: 0,
+                                right: 0,
+                                zIndex: 20,
+                                background: "var(--admin-surface, #fff)",
+                                border: "1px solid #e2e2e2",
+                                borderRadius: 6,
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                                marginTop: 4,
+                                maxHeight: 220,
+                                overflowY: "auto",
+                              }}
+                            >
+                              {titleSuggestions.map((s) => (
+                                <div
+                                  key={s._id}
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    selectTitleSuggestion(index, s);
+                                  }}
+                                  style={{
+                                    padding: "8px 10px",
+                                    fontSize: 13,
+                                    cursor: "pointer",
+                                  }}
+                                  onMouseEnter={(e) =>
+                                    (e.currentTarget.style.background =
+                                      "#f5f5f5")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    (e.currentTarget.style.background =
+                                      "transparent")
+                                  }
+                                >
+                                  {s.title}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                      </div>
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label className="admin-form-label">Size</label>
+                        <input
+                          className="admin-form-input"
+                          value={item.size}
+                          onChange={(e) =>
+                            updateEditItem(index, "size", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label className="admin-form-label">Color</label>
+                        <input
+                          className="admin-form-input"
+                          value={item.color ?? ""}
+                          placeholder="—"
+                          onChange={(e) =>
+                            updateEditItem(
+                              index,
+                              "color",
+                              e.target.value || null,
+                            )
+                          }
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-ghost"
+                        onClick={() => removeEditItem(index)}
+                        disabled={editDetailsForm.items.length <= 1}
+                        title={
+                          editDetailsForm.items.length <= 1
+                            ? "An order must have at least one item"
+                            : "Remove item"
+                        }
+                        style={{ padding: 6, marginTop: 18, color: "#e53e3e" }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+
+                    {/* Row 2: Qty + Price + Original Price + Subtotal */}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "80px 1fr 1fr 1fr",
+                        gap: 8,
+                        alignItems: "end",
+                      }}
+                    >
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label className="admin-form-label">Qty</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          className="admin-form-input"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const v = e.target.value.replace(/[^0-9]/g, "");
+                            updateEditItem(
+                              index,
+                              "quantity",
+                              Math.max(1, Number(v) || 1),
+                            );
+                          }}
+                        />
+                      </div>
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label className="admin-form-label">Price (PKR)</label>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          className="admin-form-input"
+                          value={item.price}
+                          onChange={(e) => {
+                            const v = e.target.value.replace(/[^0-9.]/g, "");
+                            updateEditItem(
+                              index,
+                              "price",
+                              Math.max(0, Number(v) || 0),
+                            );
+                          }}
+                        />
+                      </div>
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label className="admin-form-label">
+                          Orig. Price (PKR)
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          className="admin-form-input"
+                          value={item.originalPrice}
+                          onChange={(e) => {
+                            const v = e.target.value.replace(/[^0-9.]/g, "");
+                            updateEditItem(
+                              index,
+                              "originalPrice",
+                              Math.max(0, Number(v) || 0),
+                            );
+                          }}
+                        />
+                      </div>
+                      <div className="admin-form-group" style={{ margin: 0 }}>
+                        <label
+                          className="admin-form-label"
+                          style={{ color: "#888" }}
+                        >
+                          Subtotal
+                        </label>
+                        <div
+                          className="admin-form-input"
+                          style={{
+                            background: "#f0f0e8",
+                            color: "#555",
+                            cursor: "default",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          {fmt(item.price * item.quantity)}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
+
+                {/* Add Product Button */}
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-ghost"
+                  onClick={addBlankItem}
+                  style={{
+                    marginTop: 4,
+                    width: "100%",
+                    justifyContent: "center",
+                    border: "1px dashed #ccc",
+                  }}
+                >
+                  <Plus size={14} /> Add Product
+                </button>
               </div>
             </div>
 
@@ -1323,10 +1471,166 @@ export default function OrdersPage() {
               style={{ margin: "18px 0" }}
             />
 
-            <p className="admin-form-hint">
-              Subtotal and total update automatically based on quantity —
-              price per item is not directly editable.
-            </p>
+            {/* Pricing Section */}
+            <div style={{ marginBottom: 12 }}>
+              <label
+                className="admin-form-label"
+                style={{
+                  marginBottom: 10,
+                  display: "block",
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+              >
+                Pricing &amp; Charges
+              </label>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <div className="admin-form-group" style={{ margin: 0 }}>
+                  <label className="admin-form-label">Shipping (PKR)</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className="admin-form-input"
+                    value={editDetailsForm.shipping}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9.]/g, "");
+                      updateEditField("shipping", Math.max(0, Number(v) || 0));
+                    }}
+                  />
+                </div>
+                <div className="admin-form-group" style={{ margin: 0 }}>
+                  <label className="admin-form-label">Discount (PKR)</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className="admin-form-input"
+                    value={editDetailsForm.discount}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9.]/g, "");
+                      updateEditField("discount", Math.max(0, Number(v) || 0));
+                    }}
+                  />
+                </div>
+                <div className="admin-form-group" style={{ margin: 0 }}>
+                  <label className="admin-form-label">
+                    Bundle Savings (PKR)
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className="admin-form-input"
+                    value={editDetailsForm.bundleSavings}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9.]/g, "");
+                      updateEditField(
+                        "bundleSavings",
+                        Math.max(0, Number(v) || 0),
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Coupon / Notes */}
+              <div className="admin-form-group" style={{ margin: 0 }}>
+                <label className="admin-form-label">Coupon Code / Notes</label>
+                <input
+                  className="admin-form-input"
+                  placeholder="e.g. PROMO10, reward coupon, special instructions…"
+                  value={editDetailsForm.notes}
+                  onChange={(e) => updateEditField("notes", e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Live Order Summary */}
+            <div
+              style={{
+                background: "#f8f7f4",
+                border: "1px solid #e8e8e4",
+                borderRadius: 8,
+                padding: "12px 16px",
+                marginBottom: 4,
+                fontSize: 13,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 4,
+                }}
+              >
+                <span style={{ color: "#666" }}>Subtotal</span>
+                <strong>{fmt(editDetailsSubtotal)}</strong>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 4,
+                }}
+              >
+                <span style={{ color: "#666" }}>Shipping</span>
+                <strong>+{fmt(editDetailsForm.shipping)}</strong>
+              </div>
+              {editDetailsForm.discount > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <span style={{ color: "var(--brandgreen, #2e7d32)" }}>
+                    Discount
+                  </span>
+                  <strong style={{ color: "var(--brandgreen, #2e7d32)" }}>
+                    -{fmt(editDetailsForm.discount)}
+                  </strong>
+                </div>
+              )}
+              {editDetailsForm.bundleSavings > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <span style={{ color: "var(--brandgreen, #2e7d32)" }}>
+                    Bundle Savings
+                  </span>
+                  <strong style={{ color: "var(--brandgreen, #2e7d32)" }}>
+                    -{fmt(editDetailsForm.bundleSavings)}
+                  </strong>
+                </div>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 6,
+                  paddingTop: 6,
+                  borderTop: "1px solid #ddd",
+                }}
+              >
+                <span style={{ fontWeight: 700 }}>Total</span>
+                <strong
+                  style={{ fontSize: 15, color: "var(--brandgreen, #2e7d32)" }}
+                >
+                  {fmt(editDetailsTotal)}
+                </strong>
+              </div>
+            </div>
+
             {saveDetailsError && (
               <p
                 style={{

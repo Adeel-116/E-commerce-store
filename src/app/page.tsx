@@ -26,7 +26,7 @@ export default function Home() {
       <NavbarController />
       <HomeHero />
       <HomePerksMarquee />
-      {/* <CategorySection /> */}
+      <CategorySection />
       <Banner />
       <SummerBanner />
       <ProductGrid />

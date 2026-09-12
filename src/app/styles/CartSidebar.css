@@ -673,3 +673,100 @@
   color: var(--brandcream);
   letter-spacing: 0.5px;
 }
+
+/* Refined cart drawer and per-line update feedback */
+.cart-sidebar {
+  background: #f8f6f1;
+  box-shadow: -18px 0 60px rgba(24, 20, 14, 0.2);
+}
+
+.cart-sidebar-header,
+.cart-sidebar-footer {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+}
+
+.cart-sidebar-header {
+  border-bottom-color: rgba(118, 92, 52, 0.16);
+}
+
+.cart-sidebar-items {
+  gap: 10px;
+}
+
+.cart-sidebar-item {
+  padding: 12px;
+  border: 1px solid rgba(118, 92, 52, 0.12);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(36, 29, 20, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-sidebar-item:last-child {
+  border-bottom: 1px solid rgba(118, 92, 52, 0.12);
+}
+
+.cart-sidebar-item.is-updating {
+  border-color: rgba(118, 92, 52, 0.3);
+  box-shadow: 0 7px 22px rgba(36, 29, 20, 0.1);
+}
+
+.cart-sidebar-img-wrap {
+  position: relative;
+  background: #f1eee7;
+}
+
+.csb-image-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.74);
+  color: #765c34;
+  backdrop-filter: blur(2px);
+}
+
+.csb-image-loader svg {
+  animation: csb-spin 0.75s linear infinite;
+}
+
+@keyframes csb-spin {
+  to { transform: rotate(360deg); }
+}
+
+.csb-quantity-box {
+  border-radius: 999px;
+  border-color: rgba(118, 92, 52, 0.25);
+  overflow: hidden;
+}
+
+.csb-quantity-box button {
+  height: 100%;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.csb-quantity-box button:hover:not(:disabled) {
+  background: #f1ede4;
+}
+
+.csb-quantity-box button:disabled,
+.csb-remove-btn:disabled {
+  cursor: wait;
+  opacity: 0.45;
+}
+
+.cart-sidebar-footer {
+  border-top-color: rgba(118, 92, 52, 0.16);
+  box-shadow: 0 -10px 28px rgba(36, 29, 20, 0.06);
+}
+
+@media (max-width: 539px) {
+  .cart-sidebar-items { padding: 10px; }
+  .cart-sidebar-item { grid-template-columns: 64px minmax(0, 1fr); }
+  .cart-sidebar-item-price-group { grid-column: 2; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csb-image-loader svg { animation-duration: 1.5s; }
+}

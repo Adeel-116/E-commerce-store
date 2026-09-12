@@ -3,18 +3,38 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
-import { CheckCircle, Gift, Lock } from "lucide-react";
+import { CheckCircle, Gift, LoaderCircle, Lock } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import "../../app/styles/Cart.css";
 import { ChevronDown } from "lucide-react";
 import { getNextBundleSuggestions } from "../lib/cartBundles";
+import NavbarController from "./NavbarController";
 
 const Cart = () => {
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [instructions, setInstructions] = useState("");
+  const [updatingLine, setUpdatingLine] = useState<string | null>(null);
 
   const { cartItems, pricing, bundles, increaseQuantity, decreaseQuantity, removeItem, clearCart } =
     useCart();
+
+  const getLineKey = (item: (typeof cartItems)[number]) =>
+    `${item.id}-${item.size}-${item.color ?? ""}-${item.stitching ?? ""}`;
+
+  const updateQuantity = async (
+    item: (typeof cartItems)[number],
+    direction: "increase" | "decrease",
+  ) => {
+    const key = getLineKey(item);
+    if (updatingLine === key) return;
+    setUpdatingLine(key);
+    try {
+      const update = direction === "increase" ? increaseQuantity : decreaseQuantity;
+      await update(item.id, item.size, item.color, item.stitching);
+    } finally {
+      setUpdatingLine((current) => current === key ? null : current);
+    }
+  };
 
   const fallbackSubtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
   const originalSubtotal = pricing?.subtotal ?? fallbackSubtotal;
@@ -27,6 +47,8 @@ const Cart = () => {
   const appliedDiscounts = pricing?.appliedDiscounts ?? [];
 
   return (
+    <>
+    <NavbarController />
     <section className="cart-page">
       <div className="cart-container">
         <h1 className="cart-title">My cart</h1>
@@ -78,8 +100,11 @@ const Cart = () => {
                 <span>Total</span>
               </div>
 
-              {cartItems.map((item) => (
-                <div className="cart-row" key={`${item.id}-${item.size}-${item.color ?? ''}`}>
+              {cartItems.map((item) => {
+                const itemKey = getLineKey(item);
+                const isUpdating = updatingLine === itemKey;
+                return (
+                <div className={`cart-row${isUpdating ? " is-updating" : ""}`} key={itemKey} aria-busy={isUpdating}>
                   <div className="product-image-wrap">
                     <img
                       src={item.productImage}
@@ -87,6 +112,11 @@ const Cart = () => {
                       title={item.productName}
                       className="product-image"
                     />
+                    {isUpdating && (
+                      <span className="cart-image-loader" aria-label="Updating quantity">
+                        <LoaderCircle size={28} aria-hidden="true" />
+                      </span>
+                    )}
                   </div>
 
                   <div className="product-info">
@@ -118,7 +148,8 @@ const Cart = () => {
                     <div className="quantity-box">
                       <button
                         type="button"
-                        onClick={() => decreaseQuantity(item.id, item.size, item.color)}
+                        onClick={() => void updateQuantity(item, "decrease")}
+                        disabled={isUpdating}
                       >
                         −
                       </button>
@@ -127,7 +158,8 @@ const Cart = () => {
 
                       <button
                         type="button"
-                        onClick={() => increaseQuantity(item.id, item.size, item.color)}
+                        onClick={() => void updateQuantity(item, "increase")}
+                        disabled={isUpdating}
                       >
                         +
                       </button>
@@ -136,7 +168,8 @@ const Cart = () => {
                     <button
                       type="button"
                       className="remove-btn"
-                      onClick={() => removeItem(item.id, item.size, item.color)}
+                      onClick={() => removeItem(item.id, item.size, item.color, item.stitching)}
+                      disabled={isUpdating}
                     >
                       Remove
                     </button>
@@ -146,7 +179,7 @@ const Cart = () => {
                     PKR {item.lineSubtotal.toFixed(2)}
                   </p>
                 </div>
-              ))}
+              );})}
             </div>
 
             {/* make this sticky */}
@@ -254,6 +287,7 @@ const Cart = () => {
         )}
       </div>
     </section>
+    </>
   );
 };
 

@@ -2,8 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Tag, AlertCircle, MapPin } from "lucide-react";
+import { Tag, AlertCircle, MapPin, Banknote, Building2, ShieldCheck, MessageCircle } from "lucide-react";
 import "../../app/styles/Checkout.css";
+import "../../app/styles/CheckoutPremium.css";
+import "../../app/styles/CheckoutReceipt.css";
+import "../../app/styles/CheckoutReadable.css";
+import "../../app/styles/CheckoutAccounts.css";
+import "../../app/styles/CheckoutAccountOverrides.css";
+import "../../app/styles/CheckoutPaymentClarity.css";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/axios";
@@ -26,6 +32,7 @@ import NavbarController from "./NavbarController";
 import LoadingRing from "./LoadingRing";
 
 const COUNTRY_OPTIONS = ["Pakistan"];
+const PAYMENT_WHATSAPP = "923483935003";
 
 interface SavedAddress {
   firstName: string;
@@ -62,6 +69,9 @@ export default function Checkout() {
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState(COUNTRY_OPTIONS[0]);
   const [phone, setPhone] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "bank_transfer">("cod");
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const [shareNote, setShareNote] = useState("");
 
   const [savedAddress, setSavedAddress] = useState<SavedAddress | null>(null);
   const [addressesLoading, setAddressesLoading] = useState(false);
@@ -228,6 +238,63 @@ export default function Checkout() {
       .finally(() => setAddressesLoading(false));
   }, [user]);
 
+  // Keep one server-side checkout snapshot per guest/user. The debounce avoids
+  // a request on every keystroke while still preserving contact details when
+  // the customer leaves without placing the order.
+  useEffect(() => {
+    const host = window.location.hostname;
+    if (
+      process.env.NODE_ENV !== "production" ||
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      cartLoading ||
+      cartItems.length === 0 ||
+      isProcessing
+    ) return;
+    const timer = window.setTimeout(() => {
+      api.post("/checkout/track", {
+        firstName,
+        lastName,
+        email: isGuest ? email : accountEmail || user?.email || "",
+        phone,
+        line1,
+        line2,
+        city,
+        state: stateField,
+        postalCode,
+        country,
+      }).catch(() => {
+        // Tracking must never interrupt the customer's checkout experience.
+      });
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [
+    cartLoading, cartItems, isProcessing, firstName, lastName, email,
+    accountEmail, user, isGuest, phone, line1, line2, city, stateField,
+    postalCode, country,
+  ]);
+
+  const sharePaymentProof = async () => {
+    if (!paymentProof) {
+      setErrorMsg("Please choose your payment screenshot first.");
+      return;
+    }
+    const message = `Assalam-o-Alaikum, I have paid PKR ${total.toFixed(0)} for my Zarya Style order. Please verify my receipt.`;
+    try {
+      if (navigator.canShare?.({ files: [paymentProof] })) {
+        await navigator.share({ title: "Zarya Style payment receipt", text: message, files: [paymentProof] });
+        setShareNote("Receipt shared. You can now place your order.");
+        setErrorMsg("");
+        return;
+      }
+    } catch (error) {
+      if ((error as DOMException).name === "AbortError") return;
+    }
+    window.open(`https://wa.me/${PAYMENT_WHATSAPP}?text=${encodeURIComponent(message + " I will attach the screenshot here.")}`, "_blank", "noopener,noreferrer");
+    setShareNote("WhatsApp opened — attach the selected screenshot in the chat, then place your order.");
+    setErrorMsg("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -255,7 +322,7 @@ export default function Checkout() {
     gaAddPaymentInfo({
       items: checkoutContents,
       value: total,
-      paymentType: "cod",
+      paymentType: paymentMethod,
     });
     metaIdentify({
       email: shippingAddress.email,
@@ -268,6 +335,7 @@ export default function Checkout() {
         shippingAddress,
         ...(isGuest ? { guestEmail: email } : {}),
         ...(coupon ? { couponCode: coupon.code } : {}),
+        paymentMethod,
       });
 
       gaPurchase({
@@ -510,10 +578,34 @@ export default function Checkout() {
           {/* Payment method */}
           <div className="co-section">
             <h2 className="co-heading">Payment</h2>
-            <div className="co-payment-option">
-              <span className="co-payment-option-dot" />
-              <span>Cash on Delivery</span>
+            <p className="co-payment-note">All transactions are secure. Choose a payment method below.</p>
+            <div className="co-payment-methods">
+              <label className={`co-payment-card${paymentMethod === "cod" ? " active" : ""}`}>
+                <input type="radio" name="paymentMethod" checked={paymentMethod === "cod"} onChange={() => { setPaymentMethod("cod"); setErrorMsg(""); }} />
+                <span className="co-payment-radio"/><Banknote size={20}/>
+                <span className="co-payment-copy"><strong>Cash on Delivery</strong><small>Pay when your parcel arrives</small></span>
+              </label>
+              <label className={`co-payment-card${paymentMethod === "bank_transfer" ? " active" : ""}`}>
+                <input type="radio" name="paymentMethod" checked={paymentMethod === "bank_transfer"} onChange={() => { setPaymentMethod("bank_transfer"); setErrorMsg(""); }} />
+                <span className="co-payment-radio"/><Building2 size={20}/>
+                <span className="co-payment-copy"><strong>Bank Transfer / Raast</strong><small>Payment is verified before dispatch</small></span>
+              </label>
             </div>
+            {paymentMethod === "bank_transfer" && <div className="co-bank-details">
+              <span className="co-demo-label">Temporary demo details — replace before launch</span>
+              <h3 className="co-account-title">Bank Transfer</h3>
+              <div className="co-bank-row"><span>Bank name</span><strong>Bank AL Habib Limited</strong></div>
+              <div className="co-bank-row"><span>Account title</span><strong>MUHAMMAD SHAKEEL</strong></div>
+              <div className="co-bank-row"><span>Account number</span><strong>11620048007878014</strong></div>
+              <h3 className="co-account-title co-easypaisa-title">Easypaisa</h3>
+              <div className="co-bank-row"><span>Account name</span><strong>Muhammad Shakeel</strong></div>
+              <div className="co-bank-row"><span>Mobile number</span><strong>0348 3935003</strong></div>
+              <p className="co-payment-instruction"><strong>Payment screenshot WhatsApp par share karne ke liye neeche button par click karein.</strong> Chat open hone ke baad screenshot attach karke send kar dein.</p>
+              <div className="co-share-actions">
+                <a href={`https://wa.me/${PAYMENT_WHATSAPP}?text=${encodeURIComponent("Assalam-o-Alaikum, I want to share my Zarya Style payment receipt.")}`} target="_blank" rel="noreferrer"><MessageCircle size={17}/> WhatsApp +92 348 3935003</a>
+              </div>
+              <p className="co-transaction-note"><ShieldCheck size={15}/> Screenshot share karne ke baad order place karein. Verification dispatch se pehle complete hogi.</p>
+            </div>}
           </div>
 
           {errorMsg && (
@@ -524,7 +616,7 @@ export default function Checkout() {
           )}
 
           <button type="submit" className="co-pay-btn" disabled={isProcessing}>
-            {isProcessing ? "Placing order…" : "Place Order (Cash on Delivery)"}
+            {isProcessing ? "Placing order…" : paymentMethod === "cod" ? "Place order — Cash on Delivery" : "Submit order for verification"}
           </button>
 
           <div className="co-footer-links">

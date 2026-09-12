@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Manrope, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   variable: "--font-playfair",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
 });
 
 import "./globals.css";
@@ -20,6 +25,9 @@ const GA_MEASUREMENT_ID =
 
 const META_PIXEL_ID =
   process.env.NODE_ENV === "production" ? "2049359839276860" : undefined;
+
+const GTM_ID =
+  process.env.NODE_ENV === "production" ? "GTM-5V6LJLTR" : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -113,15 +121,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-PK" className={playfairDisplay.variable}>
+    <html lang="en-PK" className={`${manrope.variable} ${playfairDisplay.variable}`}>
       <head>
-        <Script id="gtm" strategy="afterInteractive">
+        {GTM_ID && <Script id="gtm" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-5V6LJLTR');`}
-        </Script>
+          })(window,document,'script','dataLayer','${GTM_ID}');`}
+        </Script>}
         {GA_MEASUREMENT_ID && (
           <>
             <Script
@@ -152,14 +160,14 @@ export default function RootLayout({
         )}
       </head>
       <body suppressHydrationWarning>
-        <noscript>
+        {GTM_ID && <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-5V6LJLTR"
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
           />
-        </noscript>
+        </noscript>}
         {META_PIXEL_ID && (
           <noscript>
             <img

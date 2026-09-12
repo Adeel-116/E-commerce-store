@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "medium" !important;
 }
 
 .sr-only {
@@ -72,6 +71,8 @@ a {
 
 body {
   padding-top: var(--offer-marquee-height, 36px);
+  font-family: var(--font-manrope), Arial, sans-serif;
+  color: var(--charcoal);
 }
 
 /* Custom scrollbar */
@@ -102,30 +103,15 @@ h2,
 h3,
 h4,
 h5,
-h6,
-p,
-span,
-button {
-  font-family: medium !important;
+h6 {
+  font-family: var(--font-playfair), Georgia, serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-a,
-ul,
-li,
-strong,
+button,
 input,
-select {
-  font-family: "medium" !important;
-  word-spacing: 0.9px;
-  letter-spacing: 0.7px;
+select,
+textarea {
+  font: inherit;
 }
 
 .main-btn-dark {

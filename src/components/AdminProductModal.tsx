@@ -32,6 +32,7 @@ type RawProduct = {
   title: string;
   description: string;
   images: string[];
+  measurementImage?: string;
   price: number;
   comparePrice: number | null;
   category: string[];
@@ -54,12 +55,9 @@ export type ProductSaveData = {
   status: string;
 };
 
-const categoryOptions = ["western", "top-jeans", "fashion", "maxi"];
-const categoryLabels: Record<string, string> = {
-  western: "Western Fashion",
-  "top-jeans": "Top & Jeans",
-  fashion: "Pakistani Fashion",
-  maxi: "Maxi",
+type CategoryOption = {
+  name: string;
+  slug: string;
 };
 const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -73,6 +71,7 @@ type FormValues = {
   sizes: string[];
   category: string[];
   colors: ColorVariant[];
+  measurementImage: string;
   isNew: boolean;
   isBestSeller: boolean;
   showInYouMayAlsoLike: boolean;
@@ -92,6 +91,7 @@ const emptyForm = (): FormValues => ({
   sizes: [],
   category: [],
   colors: [],
+  measurementImage: "",
   isNew: false,
   isBestSeller: false,
   showInYouMayAlsoLike: false,
@@ -119,6 +119,15 @@ export default function AdminProductModal({
   const [isFetching, setIsFetching] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([
+    { name: "Western Fashion", slug: "western" },
+    { name: "Top & Jeans", slug: "top-jeans" },
+    { name: "Pakistani Fashion", slug: "fashion" },
+    { name: "Maxi", slug: "maxi" },
+  ]);
+  const categoryLabels = Object.fromEntries(
+    categoryOptions.map((category) => [category.slug, category.name]),
+  );
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
   const [newColorName, setNewColorName] = useState("");
   const [newColorHex, setNewColorHex] = useState("#1c1c1c");
@@ -127,7 +136,23 @@ export default function AdminProductModal({
   );
   const activeColorUploadIndex = useRef<number | null>(null);
   const colorFileInputRef = useRef<HTMLInputElement>(null);
+  const measurementFileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingMeasurement, setUploadingMeasurement] = useState(false);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    api.get("/admin/categories", { signal: controller.signal })
+      .then(({ data }) => {
+        if (data?.success && Array.isArray(data.data)) {
+          setCategoryOptions(data.data.map((category: { name: string; slug: string }) => ({
+            name: category.name,
+            slug: category.slug,
+          })));
+        }
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (
@@ -202,6 +227,7 @@ export default function AdminProductModal({
           sizes: Array.isArray(p.sizes) ? p.sizes : [],
           category: Array.isArray(p.category) ? p.category : [],
           colors: seededColors,
+          measurementImage: p.measurementImage ?? "",
           isNew: !!p.isNew,
           isBestSeller: !!p.isBestSeller,
           showInYouMayAlsoLike: !!p.showInYouMayAlsoLike,
@@ -303,6 +329,29 @@ export default function AdminProductModal({
     });
   };
 
+  const handleMeasurementFileSelected = async (file?: File) => {
+    if (!file) return;
+    setUploadingMeasurement(true);
+    setApiError(null);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await api.post("/admin/upload-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (!res.data?.success || !res.data?.url) throw new Error("Upload failed");
+      setField("measurementImage", res.data.url);
+    } catch (err) {
+      setApiError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || err.message
+          : "Failed to upload measurement image",
+      );
+    } finally {
+      setUploadingMeasurement(false);
+      if (measurementFileInputRef.current) measurementFileInputRef.current.value = "";
+    }
+  };
   const handleSave = async () => {
     if (!form.title.trim()) {
       setApiError("Product title is required.");
@@ -317,6 +366,7 @@ export default function AdminProductModal({
         // Kept for compatibility with anything still reading the plain
         // `images` field — always mirrors the first variation's photos.
         images: form.colors[0]?.images ?? [],
+        measurementImage: form.measurementImage || "",
         price: Number(form.price) || 0,
         comparePrice: form.comparePrice ? Number(form.comparePrice) : null,
         category: Array.isArray(form.category) ? form.category : [],
@@ -393,7 +443,7 @@ export default function AdminProductModal({
           <button
             className="admin-btn admin-btn-primary"
             onClick={handleSave}
-            disabled={isLoading || isFetching || uploadingColorIndex !== null}
+            disabled={isLoading || isFetching || uploadingColorIndex !== null || uploadingMeasurement}
           >
             {isLoading ? (
               <>
@@ -510,7 +560,7 @@ export default function AdminProductModal({
 
               {categoryDropdownOpen && (
                 <div className="admin-dropdown-menu">
-                  {categoryOptions.map((cat) => {
+                  {categoryOptions.map(({ slug: cat }) => {
                     const isSelected = form.category.includes(cat);
                     return (
                       <label
@@ -608,6 +658,26 @@ export default function AdminProductModal({
             )}
           </div>
 
+          <div className="admin-form-group admin-form-grid-full">
+            <div className="admin-measurement-upload">
+              <label className="admin-form-label">Measurement / Size Guide Image <span>(Optional)</span></label>
+              <input ref={measurementFileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(event) => handleMeasurementFileSelected(event.target.files?.[0])} />
+              {form.measurementImage ? (
+                <div className="admin-measurement-preview">
+                  <img src={form.measurementImage} alt="Measurement size guide" />
+                  <div>
+                    <button type="button" className="admin-btn admin-btn-ghost" onClick={() => measurementFileInputRef.current?.click()} disabled={uploadingMeasurement}><Upload size={14} /> Replace</button>
+                    <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setField("measurementImage", "")} disabled={uploadingMeasurement}><X size={14} /> Remove</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" className="admin-measurement-picker" onClick={() => measurementFileInputRef.current?.click()} disabled={uploadingMeasurement}>
+                  {uploadingMeasurement ? <Loader2 size={17} className="admin-spin" /> : <Upload size={17} />}
+                  {uploadingMeasurement ? "Uploading…" : "Upload measurement image"}
+                </button>
+              )}
+            </div>
+          </div>
           <div className="admin-form-group admin-form-grid-full">
             <label className="admin-form-label">
               Photos{" "}

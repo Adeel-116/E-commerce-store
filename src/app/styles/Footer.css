@@ -159,7 +159,7 @@
 }
 
 .newsletter-feedback-error {
-  color: #c0392b;
+  color: #d34b3d;
 }
 
 /* ═══════════════════════════════════════════
@@ -310,6 +310,33 @@
   color: var(--gold-soft);
   opacity: 1;
   transform: translateX(4px);
+}
+
+.footer-links .footer-whatsapp-button {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 38px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #082d16;
+  opacity: 1;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.footer-whatsapp-button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.footer-links .footer-whatsapp-button:hover {
+  background: #20bd5a;
+  color: #061f10;
+  transform: translateY(-1px);
 }
 
 /* "Our Promise" callout box — replaces the old unused Rewards column */

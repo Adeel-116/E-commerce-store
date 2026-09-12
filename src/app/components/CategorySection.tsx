@@ -2,71 +2,33 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Keyboard, Pagination } from "swiper/modules";
+import Image from "next/image";
+import Link from "next/link";
 import "swiper/css";
 import "swiper/css/pagination";
 import "../styles/CategorySection.css";
-import Image from "next/image";
-import Link from "next/link";
+import { type StoreCategory, useCategories } from "../hooks/useCategories";
 
-interface Category {
-  title: string;
-  image: string;
-  href: string;
-}
-
-const categories: Category[] = [
-  {
-    title: "Western Fashion",
-    image: "/category-western.avif",
-    href: "/shop?category=western",
-  },
-  {
-    title: "Top & Jeans",
-    image: "/category-top-jeans.avif",
-    href: "/shop?category=top-jeans",
-  },
-  {
-    title: "Pakistani Fashion",
-    image: "/category-fashion.avif",
-    href: "/shop?category=fashion",
-  },
-  {
-    title: "Maxi",
-    image: "/category-maxi.avif",
-    href: "/shop?category=maxi",
-  },
-];
-
-function CategoryCard({ category }: { category: Category }) {
+function CategoryCard({ category }: { category: StoreCategory }) {
   return (
-    <Link href={category.href} className="category-card">
+    <Link href={"/shop?category=" + encodeURIComponent(category.slug)} className="category-card">
       <Image
-        src={category.image}
-        alt={category.title}
-        title={category.title}
+        src={category.image.url}
+        alt={category.name}
+        title={category.name}
         fill
-        sizes="(max-width: 768px) 90vw, (max-width: 1024px) 45vw, 25vw"
+        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 45vw, 25vw"
         objectPosition="top center"
         className="category-card-image"
       />
-      <span className="category-card-badge">{category.title}</span>
+      <span className="category-card-badge">{category.name}</span>
     </Link>
   );
 }
 
-function CategoryGrid() {
-  return (
-    <div className="category-grid">
-      {categories.map((category) => (
-        <div className="category-grid-item" key={category.title}>
-          <CategoryCard category={category} />
-        </div>
-      ))}
-    </div>
-  );
-}
+export default function CategorySection() {
+  const { categories } = useCategories();
 
-function CategorySection() {
   return (
     <section className="category-section">
       <div className="category-section-header">
@@ -74,7 +36,13 @@ function CategorySection() {
         <h2 className="category-section-title" id="category-title">Our Categories</h2>
         <span className="category-section-divider" />
       </div>
-      <CategoryGrid />
+      <div className="category-grid">
+        {categories.map((category) => (
+          <div className="category-grid-item" key={category.slug}>
+            <CategoryCard category={category} />
+          </div>
+        ))}
+      </div>
       <Swiper
         modules={[A11y, Keyboard, Pagination]}
         keyboard={{ enabled: true }}
@@ -83,14 +51,14 @@ function CategorySection() {
         pagination={{ el: ".category-pagination", clickable: true }}
         breakpoints={{
           320: { slidesPerView: 1.15, spaceBetween: 14 },
-          768: { slidesPerView: 4, spaceBetween: 16 },
-          1024: { slidesPerView: 4, spaceBetween: 16, allowTouchMove: false },
-          1440: { slidesPerView: 4, spaceBetween: 16, allowTouchMove: false },
+          768: { slidesPerView: 3, spaceBetween: 16 },
+          1024: { slidesPerView: 4, spaceBetween: 16 },
+          1440: { slidesPerView: 4, spaceBetween: 16 },
         }}
         className="category-swiper"
       >
         {categories.map((category) => (
-          <SwiperSlide key={category.title}>
+          <SwiperSlide key={category.slug}>
             <CategoryCard category={category} />
           </SwiperSlide>
         ))}
@@ -99,5 +67,3 @@ function CategorySection() {
     </section>
   );
 }
-
-export default CategorySection;

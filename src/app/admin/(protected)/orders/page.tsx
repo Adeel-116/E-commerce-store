@@ -54,7 +54,7 @@ type ApiOrder = {
     country: string;
     phone: string;
   };
-  payment: { method: string; status: string; paidAt?: string };
+  payment: { method: string; status: string; paidAt?: string; transactionId?: string };
   status: string;
   lastEmailSent?: boolean;
   specialInstructions?: string;
@@ -1020,6 +1020,12 @@ export default function OrdersPage() {
                   {raw.payment.method?.toUpperCase()}
                 </span>
               </div>
+              {raw.payment.transactionId && <div className="admin-modal-detail-item">
+                <span className="admin-modal-detail-label">Transaction ID</span>
+                <span className="admin-modal-detail-value" style={{fontFamily:"monospace",fontWeight:700}}>
+                  {raw.payment.transactionId}
+                </span>
+              </div>}
               <div className="admin-modal-detail-item">
                 <span className="admin-modal-detail-label">Payment</span>
                 <span

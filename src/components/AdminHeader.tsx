@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 import { useAdminSidebar } from '@/context/AdminSidebarContext';
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
+  '/admin/banners': { title: 'Banners', subtitle: 'Manage desktop and mobile homepage banners' },
   '/admin': { title: 'Dashboard', subtitle: 'Overview of your store performance' },
   '/admin/orders': { title: 'Order Management', subtitle: 'Track and manage all customer orders' },
   '/admin/products': { title: 'Product Management', subtitle: 'Manage your product catalogue' },
+  '/admin/categories': { title: 'Categories', subtitle: 'Manage storefront category names and images' },
   '/admin/bundles': { title: 'Bundles', subtitle: 'Manage quantity-based bundle pricing' },
   '/admin/discounts': { title: 'Discounts', subtitle: 'Create and manage promotional codes' },
   '/admin/customers': { title: 'Customers', subtitle: 'View customer order history' },

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import "../styles/ProductGrid.css";
 import { useWishlist } from "../context/WishlistContext";
@@ -7,6 +7,8 @@ import { useCart } from "../context/CartContext";
 import api from "../lib/axios";
 import { ProductGridSkeleton } from "./Skeleton";
 import ProductImageSwiper from "./ProductImageSwiper";
+import QuickAddModal from "./QuickAddModal";
+import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
 import {
   useProductCardImages,
   isRealColor,
@@ -26,6 +28,7 @@ export type GridProduct = {
   slug: string;
   description: string;
   images: string[];
+  measurementImage?: string;
   price: number;
   comparePrice: number | null;
   category: string[];
@@ -52,6 +55,9 @@ export function ProductCard({
 }) {
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart, openCart } = useCart();
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [hoverImageIndex, setHoverImageIndex] = useState<number | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const {
     displayImages,
     activeColorName,
@@ -61,9 +67,21 @@ export function ProductCard({
   } = useProductCardImages(product.images, product.colors ?? []);
 
   const wishlisted = isWishlisted(product._id);
-  const firstSize = product.sizes?.[0];
   const visibleColors = (product.colors ?? []).filter(isRealColor);
-  const firstColor = visibleColors[0]?.name ?? null;
+  const closeQuickAdd = useCallback(() => setQuickAddOpen(false), []);
+  const startImageHover = () => {
+    if (displayImages.length < 2) return;
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setHoverImageIndex(1), 180);
+  };
+  const endImageHover = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+    setHoverImageIndex(null);
+  };
+  useEffect(() => () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+  }, []);
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -81,16 +99,21 @@ export function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!firstSize || !product.stock) return;
+    if (!product.stock) return;
+    setQuickAddOpen(true);
+  };
+
+  const confirmQuickAdd = (size: string, color: string | null, image?: string) => {
     addToCart({
       id: product._id,
       productName: product.title,
       brand: "",
       price: product.price,
-      size: firstSize,
-      color: firstColor,
-      productImage: displayImages[0] ?? product.images[0],
+      size,
+      color,
+      productImage: image ?? displayImages[0] ?? product.images[0],
     });
+    setQuickAddOpen(false);
     openCart();
   };
 
@@ -107,17 +130,22 @@ export function ProductCard({
   };
 
   return (
+    <>
     <Link
       href={`/shop/${product.slug}`}
       className={`cg-card${!product.stock ? " cg-card-outofstock" : ""}`}
       onClick={handleCardClick}
       onDragStart={(e) => e.preventDefault()}
     >
-      <div className="cg-card-image-container">
+      <div
+        className="cg-card-image-container"
+        onMouseEnter={startImageHover}
+        onMouseLeave={endImageHover}
+      >
         <ProductImageSwiper
           images={displayImages}
           alt={product.title}
-          activeIndex={activeImageIndex}
+          activeIndex={hoverImageIndex ?? activeImageIndex}
           onIndexChange={onIndexChange}
         />
 
@@ -164,7 +192,7 @@ export function ProductCard({
         <button
           className="cg-card-quick-add"
           onClick={handleAddToCart}
-          disabled={!firstSize || !product.stock}
+          disabled={!product.stock}
         >
           <svg
             width="15"
@@ -180,7 +208,7 @@ export function ProductCard({
             <circle cx="20" cy="21" r="1" />
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
           </svg>
-          {product.stock && firstSize ? "Add to Cart" : "Unavailable"}
+          {product.stock ? "Quick Add" : "Unavailable"}
         </button>
       </div>
 
@@ -188,11 +216,11 @@ export function ProductCard({
         <h3 className="cg-card-heading">{product.title}</h3>
         <div className="cg-card-price-row">
           <span className="cg-card-price">
-            Rs.{product.price.toLocaleString()}
+            Rs. {product.price.toLocaleString()}
           </span>
           {product.comparePrice && product.comparePrice > product.price && (
             <span className="cg-card-price-original">
-              Rs.{product.comparePrice.toLocaleString()}
+              Rs. {product.comparePrice.toLocaleString()}
             </span>
           )}
         </div>
@@ -226,26 +254,23 @@ export function ProductCard({
           </div>
         )}
 
-        {product.sizes?.length > 0 && (
-          <div className="cg-card-size-pills">
-            {product.sizes.map((size) => (
-              <span key={size} className="cg-card-size-pill">
-                {size}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     </Link>
+    {quickAddOpen && <QuickAddModal product={product} image={displayImages[activeImageIndex]} onClose={closeQuickAdd} onConfirm={confirmQuickAdd} />}
+    </>
   );
 }
 
 const ProductGrid = ({
   title = "Best Sellers",
   limit = 8,
+  collection = "best-sellers",
+  subtitle = "Handpicked favourites our customers keep coming back for.",
 }: {
   title?: string;
   limit?: number;
+  collection?: "best-sellers" | "new-arrivals";
+  subtitle?: string;
 }) => {
   const [products, setProducts] = useState<GridProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -256,12 +281,24 @@ const ProductGrid = ({
     (async () => {
       setLoading(true);
       try {
-        const { data } = await api.get("/universalFilter", {
-          params: { status: "active", isBestSeller: "true", limit },
-        });
+        const params = {
+            status: "active",
+            ...(collection === "new-arrivals"
+              ? { isNew: "true" }
+              : { isBestSeller: "true" }),
+            limit,
+          };
+        const data = await getCachedProductResponse(
+          `home-products:${collection}:${limit}`,
+          async () => (await api.get("/universalFilter", { params })).data,
+        );
         if (!cancelled) {
-          const list: GridProduct[] = data?.data ?? [];
+          const list: GridProduct[] = (data?.data ?? []).filter(
+            (product: GridProduct) =>
+              collection !== "new-arrivals" || product.isNew,
+          );
           setProducts(list);
+          warmProductImages(list);
           if (list.length > 0) {
             gaViewItemList({
               listName: title,
@@ -284,7 +321,7 @@ const ProductGrid = ({
     return () => {
       cancelled = true;
     };
-  }, [limit, title]);
+  }, [limit, title, collection]);
 
   return (
     <div className="cg-section">
@@ -296,7 +333,7 @@ const ProductGrid = ({
         </div>
         <h2 className="cg-section-title">{title}</h2>
         <p className="cg-section-subtitle">
-          Handpicked favourites our customers keep coming back for.
+          {subtitle}
         </p>
       </div>
 

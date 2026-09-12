@@ -487,3 +487,45 @@
     height: 25px;
   }
 }
+/* Final compact Watch and Buy controls */
+.vs-arrow-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: rgba(255, 255, 255, .88);
+  border-color: rgba(28, 28, 28, .14);
+  box-shadow: 0 3px 12px rgba(20, 18, 15, .12);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.vs-arrow-button svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.7;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .vs-arrow-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .vs-arrow-button svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .vs-arrow-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .vs-arrow-button svg {
+    width: 14px;
+    height: 14px;
+  }
+}

@@ -1,0 +1,20 @@
+.admin-banners { max-width: 1200px; margin: 0 auto; }
+.admin-banners h1 { font-size: 28px; margin-bottom: 8px; }
+.admin-banners h2 { font-size: 19px; margin-bottom: 12px; }
+.admin-banners p { margin: 10px 0 20px; color: #596477; }
+.admin-banners .banner-panel { background: #fff; border: 1px solid #e1e5eb; padding: 24px; border-radius: 12px; margin-top: 24px; }
+.admin-banners fieldset { border: 0; padding: 0; min-width: 0; }
+.banner-fields { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 16px; }
+.admin-banners label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.admin-banners input { padding: 10px; border: 1px solid #cbd1da; border-radius: 6px; width: 100%; min-width: 0; }
+.banner-images { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.banner-images img { width: 100%; height: 200px; object-fit: contain; background: #f3f4f6; border-radius: 6px; }
+.banner-images figure { margin: 0; min-width: 0; }
+.banner-images figcaption { margin-top: 8px; color: #596477; font-size: 13px; }
+.banner-actions { display: flex; gap: 12px; margin-top: 20px; }
+.banner-actions button { border: 1px solid #cbd1da; border-radius: 6px; padding: 10px 18px; background: #fff; cursor: pointer; }
+.banner-actions button:first-child { background: #17243b; color: #fff; }
+.banner-actions button:disabled { opacity: .5; cursor: wait; }
+.admin-banners .banner-error { color: #b42318; }
+.admin-banners .banner-notice { color: #067647; }
+@media (max-width: 640px) { .banner-fields, .banner-images { grid-template-columns: 1fr; } .admin-banners .banner-panel { padding: 16px; } }

@@ -33,6 +33,7 @@ type ApiDiscount = {
   code?: string;
   productIds?: (string | { _id: string; title: string })[];
   usageLimit?: number | null;
+  customerEmails?: string[];
   usedCount: number;
   isActive: boolean;
   endDate?: string | null;
@@ -164,6 +165,7 @@ type FormState = {
   valueType: DiscountValueType;
   value: string;
   productIds: string[];
+  customerEmails: string;
   usageLimit: string;
   endDate: string;
   status: 'active' | 'inactive';
@@ -177,6 +179,7 @@ const emptyForm = (): FormState => ({
   valueType: 'percentage',
   value: '',
   productIds: [],
+  customerEmails: '',
   usageLimit: '',
   endDate: '',
   status: 'active',
@@ -235,7 +238,7 @@ export default function DiscountsPage() {
   }, []);
 
   useEffect(() => {
-    if (modalMode !== null && form.kind === 'product' && allProducts.length === 0) {
+    if (modalMode !== null && (form.kind === 'product' || form.kind === 'coupon') && allProducts.length === 0) {
       fetchAllProducts();
     }
   }, [modalMode, form.kind, allProducts.length, fetchAllProducts]);
@@ -276,6 +279,7 @@ export default function DiscountsPage() {
         typeof p === 'object' ? p._id : p
       ),
       usageLimit: raw.usageLimit ? String(raw.usageLimit) : '',
+      customerEmails: (raw.customerEmails ?? []).join(', '),
       endDate: raw.endDate ? raw.endDate.slice(0, 10) : '',
       status: raw.isActive ? 'active' : 'inactive',
     });
@@ -302,7 +306,7 @@ export default function DiscountsPage() {
         isActive: form.status === 'active',
         ...(form.usageLimit ? { usageLimit: Number(form.usageLimit) } : {}),
         ...(form.endDate ? { endDate: form.endDate } : {}),
-        ...(form.kind === 'coupon' ? { code: form.code, couponType: form.couponType } : {}),
+        ...(form.kind === 'coupon' ? { code: form.code, couponType: form.couponType, productIds: form.productIds, customerEmails: form.customerEmails.split(/[\n,]+/).map(e => e.trim()).filter(Boolean) } : {}),
         ...(form.kind === 'product' ? { productIds: form.productIds } : {}),
       };
 
@@ -486,7 +490,21 @@ export default function DiscountsPage() {
           )}
 
           {/* Product picker */}
-          {form.kind === 'product' && (
+          {form.kind === 'coupon' && <div className="admin-form-group admin-form-grid-full">
+            <label className="admin-form-label">Specific Customer Emails <span style={{fontWeight:400,color:'#888'}}>(optional)</span></label>
+            <textarea
+              className="admin-form-input"
+              style={{minHeight:82,paddingTop:10,resize:'vertical'}}
+              value={form.customerEmails}
+              onChange={(e) => field('customerEmails', e.target.value)}
+              placeholder="customer@example.com&#10;another@example.com"
+            />
+            <span className="admin-form-hint">
+              Leave empty for all customers. Separate multiple emails with commas or new lines.
+            </span>
+          </div>}
+
+          {(form.kind === 'product' || form.kind === 'coupon') && (
             <div className="admin-form-group admin-form-grid-full">
               <label className="admin-form-label">
                 Select Products

@@ -463,9 +463,9 @@
   color: #ffffff;
   letter-spacing: 0.3px;
   white-space: nowrap;
-  background: #d21f1f;
+  background: #d34b3d;
   padding: 7px 12px;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   font-size: 14px;
   font-weight: 800;
 }
@@ -640,8 +640,8 @@
 }
 
 .checkout-btn--primary:hover {
-  background: #b83a2d;
-  border-color: #b83a2d;
+  background: #d34b3d;
+  border-color: #d34b3d;
   color: #fff;
   transform: translateY(-1px);
 }
@@ -656,6 +656,45 @@
   background: var(--muted);
   color: var(--off-white);
   transform: none;
+}
+
+.shop-inner-whatsapp-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  margin-top: 10px;
+  padding: 0 22px;
+  border: 1px solid #1f9d55;
+  border-radius: 999px;
+  background: #fff;
+  color: #187b43;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.shop-inner-whatsapp-order svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.shop-inner-whatsapp-order:hover {
+  background: #1f9d55;
+  color: #fff;
+}
+
+.shop-inner-whatsapp-order:disabled {
+  border-color: var(--muted);
+  color: var(--muted);
+  background: transparent;
+  cursor: not-allowed;
+  opacity: .7;
 }
 
 /* Guaranteed Safe Checkout strip */
@@ -1269,3 +1308,5 @@
     gap: 10px;
   }
 }
+
+.shop-inner-size-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.shop-inner-size-guide-btn{padding:0;border:0;border-bottom:1px solid currentColor;background:transparent;color:#6f5630;font:600 12px/1.4 var(--font-manrope),sans-serif;cursor:pointer}.size-guide-modal{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:24px;background:rgba(10,10,9,.78);backdrop-filter:blur(5px)}.size-guide-modal__panel{position:relative;width:min(760px,100%);max-height:calc(100dvh - 48px);display:flex;align-items:center;justify-content:center;padding:48px 22px 22px;background:#fff;box-shadow:0 24px 90px rgba(0,0,0,.38)}.size-guide-modal__panel img{display:block;max-width:100%;max-height:calc(100dvh - 118px);width:auto;height:auto;object-fit:contain}.size-guide-modal__close{position:absolute;top:10px;right:10px;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:50%;background:#1c1c1c;color:#fff;cursor:pointer}@media(max-width:600px){.size-guide-modal{padding:12px}.size-guide-modal__panel{max-height:calc(100dvh - 24px);padding:48px 12px 12px}.size-guide-modal__panel img{max-height:calc(100dvh - 84px)}.shop-inner-size-guide-btn{font-size:11px}}

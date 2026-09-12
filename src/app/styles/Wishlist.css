@@ -1,389 +1,513 @@
 /* ── Wishlist Page ─────────────────────────────────────── */
 
 .wl-page {
-  width: 100%;
-  min-height: 100vh;
-  background: var(--bg);
-  font-family: inherit;
-  color: var(--brandblack);
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: inherit;
+    color: var(--brandblack);
 }
 
+
 /* Hero  — base (mobile) */
+
 .wl-hero {
-  background: var(--charcoal);
-  padding: 36px 16px 32px;
-  text-align: center;
+    background: var(--charcoal);
+    padding: 36px 16px 32px;
+    text-align: center;
 }
 
 .wl-breadcrumb {
-  margin: 0 0 14px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 242, 0.55);
-  text-transform: uppercase;
+    margin: 0 0 14px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 242, 0.55);
+    text-transform: uppercase;
 }
 
 .wl-breadcrumb a {
-  margin: 0 0 14px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 242, 0.55);
-  text-transform: uppercase;
-  transition: color 0.2s ease;
+    margin: 0 0 14px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 242, 0.55);
+    text-transform: uppercase;
+    transition: color 0.2s ease;
 }
 
 .wl-breadcrumb a:hover {
-  color: var(--gold-accent);
+    color: var(--gold-accent);
 }
 
 .wl-title {
-  margin: 0 0 10px;
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--brandcream);
-  letter-spacing: 0.02em;
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--brandcream);
+    letter-spacing: 0.02em;
 }
 
 .wl-subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: rgba(255, 255, 242, 0.65);
-  letter-spacing: 0.04em;
+    margin: 0;
+    font-size: 13px;
+    color: rgba(255, 255, 242, 0.65);
+    letter-spacing: 0.04em;
 }
+
 
 /* Body  — base (mobile) */
+
 .wl-body {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 28px 16px 56px;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 28px 16px 56px;
 }
 
+
 /* Empty State */
+
 .wl-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-  gap: 14px;
-  background: var(--off-white);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 2px 14px rgba(28, 28, 28, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 14px;
+    background: var(--off-white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 2px 14px rgba(28, 28, 28, 0.05);
 }
 
 .wl-empty-icon {
-  width: 88px;
-  height: 88px;
-  padding: 20px;
-  border-radius: 50%;
-  background: var(--sand-beige);
-  border: 1px solid var(--gold-accent);
-  color: var(--charcoal);
-  box-sizing: border-box;
+    width: 88px;
+    height: 88px;
+    padding: 20px;
+    border-radius: 50%;
+    background: var(--sand-beige);
+    border: 1px solid var(--gold-accent);
+    color: var(--charcoal);
+    box-sizing: border-box;
 }
 
 .wl-empty-icon svg {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .wl-empty h2 {
-  margin: 4px 0 0;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--charcoal);
+    margin: 4px 0 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--charcoal);
 }
 
 .wl-empty p {
-  margin: 0;
-  max-width: 340px;
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--muted);
+    margin: 0;
+    max-width: 340px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
 }
 
 .wl-shop-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  background: var(--charcoal);
-  color: var(--off-white);
-  padding: 13px 30px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    background: var(--charcoal);
+    color: var(--off-white);
+    padding: 13px 30px;
+    /* border-radius: 8px; */
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
 }
 
 .wl-shop-btn:hover {
-  background: var(--gold-accent);
-  color: var(--charcoal);
-  transform: translateY(-1px);
+    background: var(--gold-accent);
+    color: var(--charcoal);
+    transform: translateY(-1px);
 }
+
 
 /* Grid  — base (mobile, 1 column) */
+
 .wl-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
 }
 
+
 /* Card */
+
 .wl-card {
-  position: relative;
-  min-width: 0;
-  background: var(--off-white);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 10px rgba(28, 28, 28, 0.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+    position: relative;
+    min-width: 0;
+    background: var(--off-white);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(28, 28, 28, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .wl-card:hover {
-  box-shadow: 0 16px 32px rgba(28, 28, 28, 0.14);
-  transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(28, 28, 28, 0.14);
+    transform: translateY(-4px);
 }
 
+
 /* Card image */
+
 .wl-card-image-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: var(--sand-beige);
-  overflow: hidden;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--sand-beige);
+    overflow: hidden;
 }
 
 .wl-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.4s ease;
-  scale: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+    scale: 1;
 }
 
 .wl-card:hover .wl-card-image {
-  transform: scale(1.04);
+    transform: scale(1.04);
 }
 
+
 /* Remove (heart) button */
+
 .wl-remove-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--off-white);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--charcoal);
-  box-shadow: 0 1px 6px rgba(28, 28, 28, 0.18);
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-  z-index: 2;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--off-white);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--charcoal);
+    box-shadow: 0 1px 6px rgba(28, 28, 28, 0.18);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    z-index: 2;
 }
 
 .wl-remove-btn svg {
-  width: 16px;
-  height: 16px;
+    width: 16px;
+    height: 16px;
 }
 
 .wl-remove-btn:hover {
-  transform: scale(1.12);
-  background: var(--charcoal);
-  color: var(--off-white);
+    transform: scale(1.12);
+    background: var(--charcoal);
+    color: var(--off-white);
 }
 
+
 /* Card body */
+
 .wl-card-body {
-  padding: 14px 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
 }
 
 .wl-card-heading-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .wl-card-name {
-  margin: 0;
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.5;
-  color: var(--charcoal);
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--charcoal);
 }
 
 .wl-unavailable-badge {
-  flex-shrink: 0;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--muted);
-  background: var(--bg-soft);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  padding: 3px 8px;
-  white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg-soft);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 3px 8px;
+    white-space: nowrap;
 }
 
 .wl-card-desc {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .wl-card-pricing {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
 }
 
 .wl-card-sale {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--charcoal);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
 }
 
 .wl-add-cart-btn {
-  margin-top: auto;
-  width: 100%;
-  height: 40px;
-  background: var(--charcoal);
-  color: var(--off-white);
-  border: none;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.22s ease, color 0.22s ease;
+    margin-top: auto;
+    width: 100%;
+    height: 40px;
+    background: var(--charcoal);
+    color: var(--off-white);
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.22s ease, color 0.22s ease;
 }
 
 .wl-add-cart-btn:hover {
-  background: var(--gold-accent);
-  color: var(--charcoal);
+    background: var(--gold-accent);
+    color: var(--charcoal);
 }
 
 .wl-add-cart-btn:disabled {
-  background: var(--bg-soft);
-  color: var(--muted);
-  cursor: not-allowed;
-  border: 1px dashed var(--line-strong);
+    background: var(--bg-soft);
+    color: var(--muted);
+    cursor: not-allowed;
+    border: 1px dashed var(--line-strong);
 }
 
 .wl-add-cart-btn:disabled:hover {
-  background: var(--bg-soft);
-  color: var(--muted);
+    background: var(--bg-soft);
+    color: var(--muted);
 }
 
+
 /* Footer */
+
 .wl-footer {
-  margin-top: 44px;
-  display: flex;
-  justify-content: center;
+    margin-top: 44px;
+    display: flex;
+    justify-content: center;
 }
 
 .wl-continue-link {
-  font-size: 13px;
-  color: var(--charcoal);
-  text-decoration: none;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+    font-size: 13px;
+    color: var(--charcoal);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
 }
 
 .wl-continue-link:hover {
-  border-color: var(--charcoal);
+    border-color: var(--charcoal);
 }
+
 
 /* ─────────────────────────────────────────────
    RESPONSIVE BREAKPOINTS
 ───────────────────────────────────────────── */
 
+
 /* 540px — large mobile */
+
 @media (min-width: 540px) {
-  .wl-hero          { padding: 44px 24px 36px; }
-  .wl-title         { font-size: 30px; }
-  .wl-subtitle      { font-size: 14px; }
-  .wl-body          { padding: 36px 20px 64px; }
-  .wl-grid          { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .wl-card-body     { padding: 16px 14px 18px; }
-  .wl-add-cart-btn  { height: 42px; font-size: 12px; }
-  .wl-empty h2      { font-size: 24px; }
-  .wl-footer        { margin-top: 48px; }
+    .wl-hero {
+        padding: 44px 24px 36px;
+    }
+    .wl-title {
+        font-size: 30px;
+    }
+    .wl-subtitle {
+        font-size: 14px;
+    }
+    .wl-body {
+        padding: 36px 20px 64px;
+    }
+    .wl-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    .wl-card-body {
+        padding: 16px 14px 18px;
+    }
+    .wl-add-cart-btn {
+        height: 42px;
+        font-size: 12px;
+    }
+    .wl-empty h2 {
+        font-size: 24px;
+    }
+    .wl-footer {
+        margin-top: 48px;
+    }
 }
+
 
 /* 768px — tablet */
+
 @media (min-width: 768px) {
-  .wl-hero          { padding: 50px 40px 42px; }
-  .wl-title         { font-size: 34px; }
-  .wl-body          { padding: 44px 32px 70px; }
-  .wl-grid          { grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .wl-card-body     { padding: 16px 16px 18px; }
-  .wl-empty         { padding: 72px 20px; }
-  .wl-empty-icon    { width: 96px; height: 96px; padding: 22px; }
-  .wl-empty h2      { font-size: 25px; }
-  .wl-shop-btn      { padding: 14px 32px; font-size: 12px; }
-  .wl-footer        { margin-top: 50px; }
-  .wl-continue-link { font-size: 14px; }
+    .wl-hero {
+        padding: 50px 40px 42px;
+    }
+    .wl-title {
+        font-size: 34px;
+    }
+    .wl-body {
+        padding: 44px 32px 70px;
+    }
+    .wl-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .wl-card-body {
+        padding: 16px 16px 18px;
+    }
+    .wl-empty {
+        padding: 72px 20px;
+    }
+    .wl-empty-icon {
+        width: 96px;
+        height: 96px;
+        padding: 22px;
+    }
+    .wl-empty h2 {
+        font-size: 25px;
+    }
+    .wl-shop-btn {
+        padding: 14px 32px;
+        font-size: 12px;
+    }
+    .wl-footer {
+        margin-top: 50px;
+    }
+    .wl-continue-link {
+        font-size: 14px;
+    }
 }
+
 
 /* 992px — laptop */
+
 @media (min-width: 992px) {
-  .wl-hero          { padding: 56px 60px 46px; }
-  .wl-title         { font-size: 38px; }
-  .wl-body          { padding: 50px 40px 76px; }
-  .wl-grid          { grid-template-columns: repeat(4, 1fr); gap: 22px; }
-  .wl-card-body     { padding: 17px 16px 19px; }
-  .wl-add-cart-btn  { height: 42px; }
-  .wl-empty         { padding: 78px 20px; }
-  .wl-footer        { margin-top: 52px; }
+    .wl-hero {
+        padding: 56px 60px 46px;
+    }
+    .wl-title {
+        font-size: 38px;
+    }
+    .wl-body {
+        padding: 50px 40px 76px;
+    }
+    .wl-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+    }
+    .wl-card-body {
+        padding: 17px 16px 19px;
+    }
+    .wl-add-cart-btn {
+        height: 42px;
+    }
+    .wl-empty {
+        padding: 78px 20px;
+    }
+    .wl-footer {
+        margin-top: 52px;
+    }
 }
+
 
 /* 1200px — desktop */
+
 @media (min-width: 1200px) {
-  .wl-hero          { padding: 60px 120px 50px; }
-  .wl-title         { font-size: 40px; }
-  .wl-body          { padding: 54px 40px 78px; }
-  .wl-grid          { gap: 24px; }
-  .wl-card-body     { padding: 18px 16px 20px; }
-  .wl-add-cart-btn  { height: 42px; font-size: 12px; }
-  .wl-empty h2      { font-size: 26px; }
-  .wl-shop-btn      { padding: 15px 34px; font-size: 13px; }
+    .wl-hero {
+        padding: 60px 120px 50px;
+    }
+    .wl-title {
+        font-size: 40px;
+    }
+    .wl-body {
+        padding: 54px 40px 78px;
+    }
+    .wl-grid {
+        gap: 24px;
+    }
+    .wl-card-body {
+        padding: 18px 16px 20px;
+    }
+    .wl-add-cart-btn {
+        height: 42px;
+        font-size: 12px;
+    }
+    .wl-empty h2 {
+        font-size: 26px;
+    }
+    .wl-shop-btn {
+        padding: 15px 34px;
+        font-size: 13px;
+    }
 }
 
+
 /* 1470px — large desktop */
+
 @media (min-width: 1470px) {
-  .wl-hero          { padding: 64px 200px 52px; }
-  .wl-title         { font-size: 42px; }
-  .wl-body          { padding: 56px 40px 80px; }
-  .wl-empty-icon    { width: 100px; height: 100px; padding: 24px; }
-  .wl-empty         { padding: 80px 20px; }
-  .wl-footer        { margin-top: 52px; }
+    .wl-hero {
+        padding: 64px 200px 52px;
+    }
+    .wl-title {
+        font-size: 42px;
+    }
+    .wl-body {
+        padding: 56px 40px 80px;
+    }
+    .wl-empty-icon {
+        width: 100px;
+        height: 100px;
+        padding: 24px;
+    }
+    .wl-empty {
+        padding: 80px 20px;
+    }
+    .wl-footer {
+        margin-top: 52px;
+    }
 }

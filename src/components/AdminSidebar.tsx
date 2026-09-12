@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
+  ImageIcon,
   ShoppingBag,
   Package,
   Tag,
@@ -15,6 +16,9 @@ import {
   Boxes,
   MessageSquare,
   Mail,
+  ShoppingCart,
+  BarChart3,
+  Shapes,
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/AdminAuthContext";
@@ -42,10 +46,23 @@ const navItems = [
   {
     section: "Management",
     items: [
+      { href: "/admin/banners", label: "Banners", icon: ImageIcon, exact: false },
       {
         href: "/admin/orders",
         label: "Orders",
         icon: ShoppingBag,
+        exact: false,
+      },
+      {
+        href: "/admin/analytics",
+        label: "Visitor Analytics",
+        icon: BarChart3,
+        exact: false,
+      },
+      {
+        href: "/admin/abandoned-checkouts",
+        label: "Abandoned Checkouts",
+        icon: ShoppingCart,
         exact: false,
       },
       {
@@ -54,8 +71,10 @@ const navItems = [
         icon: Package,
         exact: false,
       },
+      { href: "/admin/categories", label: "Categories", icon: Shapes, exact: false },
       { href: "/admin/bundles", label: "Bundles", icon: Boxes, exact: false },
       { href: "/admin/discounts", label: "Discounts", icon: Tag, exact: false },
+      { href: "/admin/reviews", label: "Reviews", icon: MessageSquare, exact: false },
       {
         href: "/admin/contact-us",
         label: "Contact Us",

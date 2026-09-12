@@ -14,6 +14,8 @@ import SubscribePopup from "./SubscribePopup";
 import RecentSalePopup from "./RecentSalePopup";
 import OfferMarquee from "./OfferMarquee";
 import RouteLoadingOverlay from "./RouteLoadingOverlay";
+import AnalyticsTracker from "./AnalyticsTracker";
+import ReviewsModal from "./ReviewsModal";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,6 +27,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <AnalyticsTracker />
       <RouteLoadingOverlay />
       <OfferMarquee />
       <AuthProvider>
@@ -39,6 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </FilterProvider>
       </AuthProvider>
       <Footer />
+      <ReviewsModal />
       <WhatsAppFloat />
       <SubscribePopup />
       {/* <RecentSalePopup /> */}

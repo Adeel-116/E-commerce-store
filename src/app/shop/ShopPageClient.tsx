@@ -6,10 +6,11 @@ import "../styles/ShopPage.css";
 import NavbarController from "../components/NavbarController";
 import VideoSlider from "../components/VideoSlider";
 import api from "../lib/axios";
-import { ShopGridSkeleton } from "../components/Skeleton";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
+import LoadingRing from "../components/LoadingRing";
 import { CATEGORY_LABELS, CATEGORIES, type ShopProduct } from "./constants";
 import { gaViewItemList } from "../lib/gaEvents";
+import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
 
 const PAGE_SIZE = 9;
 // Fixed, generous bounds for the price slider — avoids extra round-trips just
@@ -131,11 +132,16 @@ function ShopPageContent() {
           params.sort = sort;
         }
 
-        const { data } = await api.get("/universalFilter", { params });
+        const cacheKey = `shop-products:${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString()}`;
+        const data = await getCachedProductResponse(
+          cacheKey,
+          async () => (await api.get("/universalFilter", { params })).data,
+        );
         if (cancelled) return;
 
         const list: ShopProduct[] = data?.data ?? [];
         setProducts(list);
+        warmProductImages(list);
         setTotal(data?.total ?? 0);
         setTotalPages(data?.totalPages ?? 1);
         if (list.length > 0) {
@@ -358,6 +364,18 @@ function ShopPageContent() {
     </>
   );
 
+  if (loading) {
+    return (
+      <main className="shop-loading-screen" role="status" aria-live="polite">
+        <div className="rlo-stack">
+          <p className="rlo-eyebrow">Zarya Style</p>
+          <LoadingRing active />
+          <p className="rlo-text">Fetching the collection</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className="shop-page">
       <NavbarController />
@@ -451,9 +469,7 @@ function ShopPageContent() {
 
           {/* Grid */}
           <div className="shop-page-grid-container">
-            {loading ? (
-              <ShopGridSkeleton count={PAGE_SIZE} />
-            ) : products.length === 0 ? (
+            {products.length === 0 ? (
               <div className="shop-page__empty">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -26,8 +26,13 @@ export default function Home() {
       <NavbarController />
       <HomeHero />
       <HomePerksMarquee />
+       <ProductGrid
+        title="New Arrivals"
+        collection="new-arrivals"
+        subtitle="Discover the latest additions to our collection."
+      />
       <CategorySection />
-      <Banner />
+      {/* <Banner /> */}
       <SummerBanner />
       <ProductGrid />
       <AboutUsReviews />

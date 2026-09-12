@@ -1,17 +1,18 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "../styles/navbar2.css";
+import "../styles/NavbarCompact.css";
 import { BsBag } from "react-icons/bs";
 import { FiUser, FiHeart } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
-import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense, useState } from "react";
-import { useActiveCategories } from "../hooks/useActiveCategories";
-import { CATEGORY_LABELS, CATEGORIES } from "../shop/constants";
+import gsap from "gsap";
+import { useCategories } from "../hooks/useCategories";
+import { getCachedImageBlob } from "../lib/imageBlobCache";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -21,7 +22,6 @@ function getInitials(name: string): string {
 
 const Navbar2Inner = () => {
   const { user } = useAuth();
-  const router = useRouter();
   const { cartItems, openCart } = useCart();
   const { wishlistItems } = useWishlist();
   const cartCount = cartItems.length;
@@ -30,10 +30,11 @@ const Navbar2Inner = () => {
   const searchParams = useSearchParams();
   const activeCategory =
     pathname === "/shop" ? searchParams.get("category") : null;
-  const activeCategories = useActiveCategories();
-  const visibleCategories = activeCategories
-    ? CATEGORIES.filter((category) => activeCategories.includes(category))
-    : CATEGORIES;
+  const { categories } = useCategories();
+  const visibleCategories = categories.map((category) => category.slug);
+  const categoryLabels = Object.fromEntries(
+    categories.map((category) => [category.slug, category.name]),
+  );
   const isProfilePage = pathname === "/profile";
   const isCheckoutPage = pathname === "/checkout";
   // Only the home page has a full-bleed dark hero behind the nav — every
@@ -41,9 +42,17 @@ const Navbar2Inner = () => {
   // unreadable against their light content.
   const isHomePage = pathname === "/";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [previewCategorySlug, setPreviewCategorySlug] = useState("");
+  const [previewHeading, setPreviewHeading] = useState("");
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
+  const hasOpenedMenu = useRef(false);
   const isSolid = scrolled || isCheckoutPage || !isHomePage;
+  const previewCategory =
+    categories.find((category) => category.slug === previewCategorySlug) ??
+    categories[0];
+
 
   useEffect(() => setMounted(true), []);
 
@@ -78,6 +87,95 @@ const Navbar2Inner = () => {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    const drawer = document.querySelector<HTMLElement>(".navbar2-drawer");
+    const overlay = document.querySelector<HTMLElement>(".navbar2-overlay");
+    if (!drawer || !overlay) return;
+
+    const links = drawer.querySelectorAll(".navbar2-drawer-links a");
+    const headerItems = drawer.querySelectorAll(".navbar2-drawer-header > *");
+    const footerItems = drawer.querySelectorAll(".navbar2-drawer-footer > *");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    gsap.killTweensOf([drawer, overlay, links, headerItems, footerItems]);
+
+    if (menuOpen) {
+      hasOpenedMenu.current = true;
+      gsap.timeline()
+        .set(drawer, { xPercent: 0, clipPath: "inset(0 0 0 100%)", visibility: "visible", pointerEvents: "auto" })
+        .set(overlay, { visibility: "visible", pointerEvents: "auto" })
+        .to(drawer, { clipPath: "inset(0 0 0 0%)", duration: reduceMotion ? 0 : 0.68, ease: "power4.inOut" })
+        .to(overlay, { autoAlpha: 1, duration: reduceMotion ? 0 : 0.25 }, 0)
+        .fromTo(headerItems, { y: -18, autoAlpha: 0 }, {
+          y: 0, autoAlpha: 1, duration: reduceMotion ? 0 : 0.45,
+          stagger: 0.06, ease: "power3.out",
+        }, reduceMotion ? 0 : 0.4)
+        .fromTo(links, { yPercent: 70, x: 0, autoAlpha: 0 }, {
+          yPercent: 0, x: 0, autoAlpha: 1, duration: reduceMotion ? 0 : 0.68,
+          stagger: 0.07, ease: "power3.out",
+        }, reduceMotion ? 0 : 0.46)
+        .fromTo(footerItems, { y: 20, autoAlpha: 0 }, {
+          y: 0, autoAlpha: 1, duration: reduceMotion ? 0 : 0.45,
+          stagger: 0.05, ease: "power3.out",
+        }, reduceMotion ? 0 : 0.68);
+    } else if (hasOpenedMenu.current) {
+      gsap.timeline()
+        .to([links, headerItems, footerItems], {
+          x: 18, autoAlpha: 0, duration: reduceMotion ? 0 : 0.18,
+          stagger: 0.015, ease: "power2.in",
+        })
+        .to(drawer, {
+          clipPath: "inset(0 0 0 100%)", duration: reduceMotion ? 0 : 0.58,
+          ease: "power4.inOut",
+        }, reduceMotion ? 0 : 0.08)
+        .to(overlay, { autoAlpha: 0, duration: reduceMotion ? 0 : 0.35 }, reduceMotion ? 0 : 0.08)
+        .set([drawer, overlay], { visibility: "hidden", pointerEvents: "none" });
+    } else {
+      gsap.set(overlay, { autoAlpha: 0, visibility: "hidden" });
+      gsap.set(drawer, { xPercent: 0, clipPath: "inset(0 0 0 100%)", visibility: "hidden", pointerEvents: "none" });
+    }
+
+    return () => {
+      gsap.killTweensOf([drawer, overlay, links, headerItems, footerItems]);
+    };
+  }, [menuOpen]);
+  useEffect(() => {
+    if (!previewCategory?.image.url) {
+      setPreviewImageUrl("");
+      return;
+    }
+
+    let disposed = false;
+    let objectUrl = "";
+    const sourceUrl = previewCategory.image.url;
+    setPreviewImageUrl(sourceUrl);
+
+    getCachedImageBlob(sourceUrl)
+      .then((blob) => {
+        if (disposed) return;
+        objectUrl = URL.createObjectURL(blob);
+        setPreviewImageUrl(objectUrl);
+      })
+      .catch(() => {
+        if (!disposed) setPreviewImageUrl(sourceUrl);
+      });
+
+    return () => {
+      disposed = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [previewCategory?.image.url]);
+  useEffect(() => {
+    if (!menuOpen || !previewCategory) return;
+    const image = document.querySelector(".navbar2-drawer-preview-image");
+    if (!image) return;
+    gsap.killTweensOf(image);
+    gsap.fromTo(
+      image,
+      { autoAlpha: 0.35, scale: 1.055 },
+      { autoAlpha: 1, scale: 1, duration: 0.65, ease: "power3.out" },
+    );
+  }, [menuOpen, previewCategory, previewCategorySlug]);
   const closeDrawer = () => {
     setMenuOpen(false);
   };
@@ -91,20 +189,14 @@ const Navbar2Inner = () => {
       // one, so tapping the already-active category in the mobile drawer
       // used to just preventDefault() and do nothing. Force a real reload
       // instead so it always refreshes the page/content, as on any other tap.
-      onClick: active
-        ? (e: React.MouseEvent) => {
-            e.preventDefault();
-            closeDrawer();
-            window.location.href = `/shop?category=${category}`;
-          }
-        : closeDrawer,
+      onClick: closeDrawer,
     };
   };
 
   return (
     <>
       <nav
-        className={`navbar2 ${isProfilePage ? "navbar2-profile" : ""} ${isSolid ? "navbar2--solid" : ""}`}
+        className={`navbar2 ${isProfilePage ? "navbar2-profile" : ""} ${isSolid ? "navbar2--solid" : ""} ${scrolled ? "navbar2--scrolled" : ""}`}
       >
         <div className="navbar2-content">
           {/* left — logo */}
@@ -129,7 +221,7 @@ const Navbar2Inner = () => {
                 href={`/shop?category=${category}`}
                 {...categoryLinkProps(category)}
               >
-                {CATEGORY_LABELS[category]}
+                {categoryLabels[category] ?? category}
               </Link>
             ))}
           </div>
@@ -156,9 +248,9 @@ const Navbar2Inner = () => {
             </div>
 
             {/* profile — desktop only, hidden on mobile (lives in drawer) */}
-            <div
+            <Link
               className={`navbar2-profile-btn navbar2-profile-desktop ${initials ? "navbar2-profile-btn--avatar" : ""}`}
-              onClick={() => router.push(initials ? "/profile" : "/login")}
+              href={initials ? "/profile" : "/login"}
               title={initials ? user?.name : "Login"}
             >
               {initials ? (
@@ -166,7 +258,7 @@ const Navbar2Inner = () => {
               ) : (
                 <FiUser />
               )}
-            </div>
+            </Link>
 
             {/* hamburger — mobile only */}
             <button
@@ -192,71 +284,58 @@ const Navbar2Inner = () => {
       <div
         className={`navbar2-drawer ${menuOpen ? "navbar2-drawer--open" : ""}`}
       >
-        {/* Profile section */}
-        <div
-          className="navbar2-drawer-profile"
-          onClick={() => {
-            router.push(initials ? "/profile" : "/login");
-            closeDrawer();
-          }}
-        >
-          <div
-            className={`navbar2-drawer-avatar ${initials ? "navbar2-drawer-avatar--filled" : ""}`}
-          >
-            {initials ? <span>{initials}</span> : <FiUser size={20} />}
-          </div>
-          <div className="navbar2-drawer-profile-info">
-            {initials ? (
-              <>
-                <p className="navbar2-drawer-profile-name">
-                  {user?.name?.split(" ")[0]}
-                </p>
-                <p className="navbar2-drawer-profile-sub">View Profile →</p>
-              </>
-            ) : (
-              <>
-                <p className="navbar2-drawer-profile-name">Welcome</p>
-                <p className="navbar2-drawer-profile-sub">Login / Register →</p>
-              </>
-            )}
-          </div>
-          <button
-            className="navbar2-drawer-close"
-            onClick={(e) => {
-              e.stopPropagation();
-              closeDrawer();
-            }}
-            aria-label="Close menu"
-          >
-            ✕
+        <div className="navbar2-drawer-header">
+
+          <button className="navbar2-drawer-close" onClick={closeDrawer} aria-label="Close menu">
+            <span>Close</span>
+            <i aria-hidden="true" />
           </button>
         </div>
-
         {/* Nav links */}
         <nav className="navbar2-drawer-links">
-          <Link href={"/"} onClick={closeDrawer}>
+          <Link className={`navbar2-desktop-page-link${pathname === "/" ? " navbar2-drawer-link--active" : ""}`} href="/" onMouseEnter={() => setPreviewHeading("Home")} onClick={closeDrawer}>
             Home
           </Link>
           {visibleCategories.map((category) => (
             <Link
               key={category}
               href={`/shop?category=${category}`}
+              onMouseEnter={() => {
+                setPreviewCategorySlug(category);
+                setPreviewHeading(categoryLabels[category] ?? category);
+              }}
               {...categoryLinkProps(category)}
             >
-              {CATEGORY_LABELS[category]}
+              {categoryLabels[category] ?? category}
             </Link>
           ))}
-          {!initials && (
-            <>
-              <Link href={"/login"} onClick={closeDrawer}>
-                Login
-              </Link>
-              <Link href={"/register"} onClick={closeDrawer}>
-                Register
-              </Link>
-            </>
-          )}
-        </nav>
+          <Link className={`navbar2-desktop-page-link${pathname === "/about-us" ? " navbar2-drawer-link--active" : ""}`} href="/about-us" onMouseEnter={() => setPreviewHeading("About Us")} onClick={closeDrawer}>
+            About Us
+          </Link>
+          <Link className={`navbar2-desktop-page-link${pathname === "/contact-us" ? " navbar2-drawer-link--active" : ""}`} href="/contact-us" onMouseEnter={() => setPreviewHeading("Contact Us")} onClick={closeDrawer}>
+            Contact Us
+          </Link></nav>
+        <div className="navbar2-drawer-footer">
+          <Link className="navbar2-drawer-cta" href="/contact-us" onMouseEnter={() => setPreviewHeading("Contact Us")} onClick={closeDrawer}>
+            Contact us
+          </Link>
+        </div>
+        {previewCategory && (
+          <div className="navbar2-drawer-visual" aria-hidden="true">
+            <img
+              key={previewCategory.slug}
+              className="navbar2-drawer-preview-image"
+              src={previewImageUrl || previewCategory.image.url}
+              alt=""
+            />
+            <div className="navbar2-drawer-visual-shade" />
+            <div className="navbar2-drawer-visual-meta">
+              <span>Explore category</span>
+              <strong>{previewHeading || previewCategory.name}</strong>
+              <small>{String(categories.findIndex((item) => item.slug === previewCategory.slug) + 1).padStart(2, "0")} / {String(categories.length).padStart(2, "0")}</small>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

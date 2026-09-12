@@ -44,6 +44,13 @@ export default function RouteLoadingOverlay() {
   }, [hide]);
 
   useEffect(() => {
+    const pendingPath = sessionStorage.getItem("zarya:full-navigation");
+    if (!pendingPath) return;
+    sessionStorage.removeItem("zarya:full-navigation");
+    showUntilNavigates(pendingPath);
+  }, [showUntilNavigates]);
+
+  useEffect(() => {
     const clickHandler = (event: MouseEvent) => {
       // Note: don't bail on event.defaultPrevented here — Next.js's <Link>
       // always calls preventDefault() on the native click before performing
@@ -55,9 +62,14 @@ export default function RouteLoadingOverlay() {
       // Only product cards (Best Sellers on the homepage + the Shop page
       // grid both render the same ProductCard, marked with .cg-card)
       // should trigger this — not every link on the site.
-      const card = (event.target as HTMLElement)?.closest("a.cg-card") as HTMLAnchorElement | null;
-      if (!card) return;
-      if (card.target && card.target !== "_self") return;
+      const link = (event.target as HTMLElement)?.closest(
+        "a.cg-card, .navbar2 a, .navbar2-drawer a, .csb-btn-row a",
+      ) as HTMLAnchorElement | null;
+      if (!link) return;
+      if (link.target && link.target !== "_self") return;
+      const isHeaderLink = !!link.closest(".navbar2, .navbar2-drawer");
+      const isCartAction = !!link.closest(".csb-btn-row");
+      const requiresFullReload = isHeaderLink || isCartAction;
 
       // The card's own controls (image arrows, wishlist, quick-add, color
       // swatches) call stopPropagation() to swallow the click before it
@@ -71,16 +83,22 @@ export default function RouteLoadingOverlay() {
 
       let url: URL;
       try {
-        url = new URL(card.href, window.location.href);
+        url = new URL(link.href, window.location.href);
       } catch {
         return;
       }
 
       if (url.origin !== window.location.origin) return;
 
-      if (url.pathname === pathname) return;
+      if (!requiresFullReload && url.pathname === pathname) return;
 
       showUntilNavigates(url.pathname);
+
+      if (requiresFullReload) {
+        event.preventDefault();
+        sessionStorage.setItem("zarya:full-navigation", url.pathname);
+        window.setTimeout(() => window.location.assign(url.href), 60);
+      }
     };
 
     document.addEventListener("click", clickHandler);
@@ -114,6 +132,7 @@ export default function RouteLoadingOverlay() {
       aria-live="polite"
     >
       <div className="rlo-stack">
+        <p className="rlo-eyebrow">Zarya Style</p>
         <LoadingRing active={visible} />
         <p className="rlo-text">Loading…</p>
       </div>

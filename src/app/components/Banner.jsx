@@ -2,26 +2,22 @@
 
 import "../styles/Banner.css";
 
-const Banner = () => {
+function StaticBanner({ id, src, alt }) {
   return (
-    <>
-      <section className="promo-banner" id="offer">
-        <img src="/banner2.avif" alt="Store seasonal promotion" title="Store seasonal promotion" />
-      </section>
-    </>
-  );
-};
-
-export const SummerBanner = () => {
-  return (
-    <section className="promo-banner" id="summer-collection">
-      <img
-        src="/summer-banner.avif"
-        alt="Summer Collection"
-        title="Summer Collection"
-      />
+    <section className="promo-banner" id={id}>
+      <img src={src} alt={alt} title={alt} />
     </section>
   );
-};
+}
 
+const Banner = () => (
+  <StaticBanner id="offer" src="/banner2.avif" alt="Store seasonal promotion" />
+);
+export const SummerBanner = () => (
+  <StaticBanner
+    id="summer-collection"
+    src="/summer-banner.avif"
+    alt="Summer Collection"
+  />
+);
 export default Banner;

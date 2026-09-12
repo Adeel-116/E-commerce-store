@@ -34,7 +34,9 @@
 /* ── Page shell ───────────────────────────────────────── */
 .cart-page {
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
+  padding-top: 132px;
+  box-sizing: border-box;
   overflow: hidden;
   background: var(--bg);
   font-family: inherit;
@@ -291,6 +293,20 @@
 .quantity-box button:hover {
   background: var(--bg-soft);
 }
+
+@media (max-width: 767px) {
+  .cart-page {
+    padding-top: 108px;
+  }
+}
+
+.quantity-box button:disabled,
+.remove-btn:disabled { cursor: wait; opacity: 0.45; }
+.product-image-wrap { position: relative; overflow: hidden; }
+.cart-image-loader { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(255,255,255,.74); color: #765c34; backdrop-filter: blur(2px); }
+.cart-image-loader svg { animation: cart-image-spin .75s linear infinite; }
+.cart-row.is-updating { border-color: rgba(118,92,52,.28); box-shadow: 0 8px 24px rgba(36,29,20,.07); }
+@keyframes cart-image-spin { to { transform: rotate(360deg); } }
 
 .quantity-box span {
   text-align: center;

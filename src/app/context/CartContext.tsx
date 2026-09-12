@@ -102,13 +102,13 @@ type CartContextType = {
     size?: string,
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
-  ) => void;
+  ) => Promise<void>;
   decreaseQuantity: (
     id: string,
     size?: string,
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
-  ) => void;
+  ) => Promise<void>;
   changeSize: (
     id: string,
     size: string,
@@ -470,7 +470,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
   ) => {
-    void runQuantityChange(id, size, color, stitching, 1);
+    return runQuantityChange(id, size, color, stitching, 1);
   };
 
   const decreaseQuantity = (
@@ -479,7 +479,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
   ) => {
-    void runQuantityChange(id, size, color, stitching, -1);
+    return runQuantityChange(id, size, color, stitching, -1);
   };
 
   const changeSize = (

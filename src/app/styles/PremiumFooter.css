@@ -1,0 +1,379 @@
+.footer {
+    display: none
+}
+
+.premium-footer {
+    overflow: hidden;
+    padding: 0 clamp(28px, 6.2vw, 118px) 30px;
+    background: #151410;
+    color: #f8f4ec;
+    font-family: var(--font-manrope), Arial, sans-serif
+}
+
+.pf-newsletter-lead {
+    max-width: 1480px;
+    margin: auto;
+    padding: clamp(76px, 7vw, 112px) 0;
+    display: grid;
+    grid-template-columns: 1.08fr .92fr;
+    align-items: center;
+    gap: clamp(70px, 9vw, 160px)
+}
+
+.pf-newsletter-lead span {
+    display: block;
+    color: #d0a44e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.4px;
+    text-transform: uppercase
+}
+
+.pf-newsletter-lead h2 {
+    max-width: 720px;
+    margin: 17px 0 16px;
+    color: #fff;
+    font-size: clamp(42px, 4vw, 66px);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -.025em
+}
+
+.pf-newsletter-lead p {
+    margin: 0;
+    color: #c3bdb2;
+    font-size: 16px;
+    line-height: 1.7
+}
+
+.pf-newsletter-lead form {
+    width: 100%
+}
+
+.pf-email-field {
+    display: flex;
+    align-items: stretch;
+    min-height: 60px;
+    border: 1px solid #615d54;
+    background: rgba(255, 255, 255, .025)
+}
+
+.pf-email-field:focus-within {
+    border-color: #d0a44e
+}
+
+.pf-email-field input {
+    flex: 1;
+    min-width: 0;
+    padding: 0 20px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 15px
+}
+
+.pf-email-field input::placeholder {
+    color: #8f8a80
+}
+
+.pf-email-field button {
+    min-width: 142px;
+    padding: 0 23px;
+    background: #f8f4ec;
+    color: #171612;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: .2s
+}
+
+.pf-email-field button:hover {
+    background: #d0a44e
+}
+
+.pf-email-field button:disabled {
+    opacity: .65
+}
+
+.pf-newsletter-lead small {
+    display: block;
+    margin-top: 11px;
+    color: #8fc7a1;
+    font-size: 12px
+}
+
+.pf-newsletter-lead small.is-error {
+    color: #d34b3d
+}
+
+.pf-rule {
+    max-width: 1690px;
+    margin: auto;
+    border-top: 1px solid #39362f
+}
+
+.pf-grid {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding-top: clamp(64px, 6vw, 90px);
+    display: grid;
+    grid-template-columns: minmax(330px, 1.65fr) repeat(3, minmax(175px, 1fr));
+    gap: clamp(48px, 6vw, 105px)
+}
+
+.pf-intro {
+    max-width: 480px
+}
+
+.pf-logo {
+    display: inline-block;
+    margin-bottom: 27px;
+    color: #fff;
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 39px;
+    line-height: 1
+}
+
+.pf-logo em {
+    color: #d0a44e;
+    font-weight: 500
+}
+
+.pf-intro p {
+    margin: 0 0 32px;
+    color: #b9b3a9;
+    font-size: 16px;
+    line-height: 1.75
+}
+
+.pf-contact-button {
+    width: max-content;
+    min-width: 168px;
+    min-height: 50px;
+    padding: 0 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    border: 1px solid #aaa59c;
+    /* border-radius: 999px; */
+    color: #fff;
+    font-size: 15px;
+    transition: .2s
+}
+
+.pf-contact-button:hover {
+    background: #f8f4ec;
+    color: #171612
+}
+
+.pf-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13px
+}
+
+.pf-column h3 {
+    margin: 2px 0 17px;
+    color: #fff;
+    font-family: var(--font-manrope), Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 750;
+    letter-spacing: .07em;
+    text-transform: uppercase
+}
+
+.pf-column>a {
+    position: relative;
+    color: #bbb5ab;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: color .2s
+}
+
+.pf-column>a:hover {
+    color: #fff
+}
+
+.pf-column>a:not([href^='mailto']):not([href^='https://wa.me']):hover {
+    transform: translateX(3px)
+}
+
+.pf-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px 20px;
+    margin-top: 13px
+}
+
+.pf-socials a {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #6d685f;
+    padding-bottom: 3px
+}
+
+.pf-wordmark {
+    max-width: 1690px;
+    margin: clamp(100px, 10vw, 165px) auto 27px
+}
+
+.pf-wordmark svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible
+}
+
+.pf-wordmark text {
+    font-family: var(--font-manrope), Arial, sans-serif;
+    font-size: 205px;
+    font-weight: 800;
+    letter-spacing: -10px
+}
+
+.pf-wordmark-video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    filter: saturate(.88) contrast(1.08)
+}
+
+.pf-bottom {
+    max-width: 1480px;
+    margin: auto;
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #39362f
+}
+
+.pf-bottom p,
+.pf-bottom button {
+    margin: 0;
+    background: transparent;
+    color: #aaa49a;
+    font-size: 12px;
+    letter-spacing: .045em
+}
+
+.pf-bottom button {
+    color: #d8d3ca;
+    cursor: pointer;
+    text-transform: uppercase
+}
+
+.pf-bottom button:hover {
+    color: #d0a44e
+}
+
+@media(max-width:1100px) {
+    .pf-newsletter-lead {
+        gap: 60px
+    }
+    .pf-grid {
+        grid-template-columns: 1.4fr 1fr 1fr;
+        gap: 55px
+    }
+    .pf-grid>.pf-column:last-child {
+        grid-column: 2/-1
+    }
+    .pf-wordmark {
+        font-size: 10.5vw
+    }
+}
+
+@media(max-width:760px) {
+    .premium-footer {
+        padding-inline: 24px
+    }
+    .pf-newsletter-lead {
+        padding: 64px 0;
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 38px
+    }
+    .pf-newsletter-lead h2 {
+        font-size: clamp(36px, 10vw, 48px)
+    }
+    .pf-newsletter-lead p {
+        font-size: 14px
+    }
+    .pf-newsletter-lead form {
+        max-width: 600px
+    }
+    .pf-grid {
+        padding-top: 58px;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px 28px
+    }
+    .pf-intro,
+    .pf-grid>.pf-column:last-child {
+        grid-column: 1/-1
+    }
+    .pf-intro {
+        max-width: none
+    }
+    .pf-column h3 {
+        font-size: 13px
+    }
+    .pf-column>a {
+        font-size: 14px
+    }
+    .pf-wordmark {
+        margin-top: 85px;
+        font-size: 17vw
+    }
+    .pf-bottom {
+        align-items: flex-end;
+        gap: 25px
+    }
+    .pf-bottom p {
+        max-width: 210px;
+        line-height: 1.6
+    }
+}
+
+@media(max-width:480px) {
+    .pf-email-field {
+        min-height: 56px
+    }
+    .pf-email-field input {
+        padding-inline: 14px;
+        font-size: 13px
+    }
+    .pf-email-field button {
+        min-width: 108px;
+        padding-inline: 13px;
+        font-size: 10px
+    }
+    .pf-logo {
+        font-size: 35px
+    }
+    .pf-intro p {
+        font-size: 14px
+    }
+    .pf-grid {
+        gap: 43px 20px
+    }
+    .pf-contact-button {
+        font-size: 13px
+    }
+    .pf-wordmark {
+        font-size: 16.5vw
+    }
+    .pf-bottom p,
+    .pf-bottom button {
+        font-size: 10px
+    }
+}

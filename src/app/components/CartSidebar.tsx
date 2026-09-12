@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FaShoppingCart } from "react-icons/fa";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, LoaderCircle } from "lucide-react";
 import gsap from "gsap";
 import { useCart } from "../context/CartContext";
 import "../styles/CartSidebar.css";
@@ -21,6 +21,25 @@ const CartSidebar = () => {
     removeItem,
     clearCart,
   } = useCart();
+  const [updatingLine, setUpdatingLine] = useState<string | null>(null);
+
+  const getLineKey = (item: (typeof cartItems)[number]) =>
+    `${item.id}-${item.size}-${item.color ?? ""}-${item.stitching ?? ""}`;
+
+  const updateQuantity = async (
+    item: (typeof cartItems)[number],
+    direction: "increase" | "decrease",
+  ) => {
+    const key = getLineKey(item);
+    if (updatingLine === key) return;
+    setUpdatingLine(key);
+    try {
+      const update = direction === "increase" ? increaseQuantity : decreaseQuantity;
+      await update(item.id, item.size, item.color, item.stitching);
+    } finally {
+      setUpdatingLine((current) => current === key ? null : current);
+    }
+  };
 
   const fallbackSubtotal = cartItems.reduce(
     (acc, item) => acc + item.lineSubtotal,
@@ -111,6 +130,8 @@ const CartSidebar = () => {
               data-lenis-prevent-touch="true"
             >
               {cartItems.map((item) => {
+                const itemKey = getLineKey(item);
+                const isUpdating = updatingLine === itemKey;
                 const originalLineTotal = item.unitPrice * item.quantity;
                 const hasDiscount = !!item.activeDiscount;
                 const discountAmount = item.activeDiscount
@@ -126,8 +147,9 @@ const CartSidebar = () => {
 
                 return (
                   <div
-                    className="cart-sidebar-item"
-                    key={`${item.id}-${item.size}-${item.color ?? ""}-${item.stitching ?? ""}`}
+                    className={`cart-sidebar-item${isUpdating ? " is-updating" : ""}`}
+                    key={itemKey}
+                    aria-busy={isUpdating}
                   >
                     <div className="cart-sidebar-img-wrap">
                       <img
@@ -136,6 +158,11 @@ const CartSidebar = () => {
                         title={item.productName}
                         className="cart-sidebar-img"
                       />
+                      {isUpdating && (
+                        <span className="csb-image-loader" aria-label="Updating quantity">
+                          <LoaderCircle size={24} aria-hidden="true" />
+                        </span>
+                      )}
                     </div>
 
                     <div className="cart-sidebar-info">
@@ -159,28 +186,16 @@ const CartSidebar = () => {
                         <div className="csb-quantity-box">
                           <button
                             type="button"
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.id,
-                                item.size,
-                                item.color,
-                                item.stitching,
-                              )
-                            }
+                            onClick={() => void updateQuantity(item, "decrease")}
+                            disabled={isUpdating}
                           >
                             −
                           </button>
                           <span>{item.quantity}</span>
                           <button
                             type="button"
-                            onClick={() =>
-                              increaseQuantity(
-                                item.id,
-                                item.size,
-                                item.color,
-                                item.stitching,
-                              )
-                            }
+                            onClick={() => void updateQuantity(item, "increase")}
+                            disabled={isUpdating}
                           >
                             +
                           </button>
@@ -188,6 +203,7 @@ const CartSidebar = () => {
                         <button
                           type="button"
                           className="csb-remove-btn"
+                          disabled={isUpdating}
                           onClick={() =>
                             removeItem(
                               item.id,
@@ -288,6 +304,18 @@ const CartSidebar = () => {
                 <h2>Total</h2>
                 <strong>PKR: {total.toFixed(2)}</strong>
               </div>
+
+              {/* <p className="csb-tax-text">
+                Taxes and shipping calculated at checkout
+              </p>
+
+              <p className="csb-tax-text">
+                Taxes and shipping calculated at checkout
+              </p>
+
+              <p className="csb-tax-text">
+                Taxes and shipping calculated at checkout
+              </p> */}
 
               {totalSavings > 0 && (
                 <>

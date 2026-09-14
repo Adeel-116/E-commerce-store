@@ -1,14 +1,15 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 import "../styles/ShopPage.css";
 import NavbarController from "../components/NavbarController";
 import VideoSlider from "../components/VideoSlider";
 import api from "../lib/axios";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import LoadingRing from "../components/LoadingRing";
-import { CATEGORY_LABELS, CATEGORIES, type ShopProduct } from "./constants";
+import { CATEGORY_LABELS, type ShopProduct } from "./constants";
 import { gaViewItemList } from "../lib/gaEvents";
 import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
 
@@ -18,6 +19,8 @@ const PAGE_SIZE = 9;
 // nudge rather than a precise histogram.
 const PRICE_MIN = 0;
 const PRICE_MAX = 10000;
+
+type ProductSuggestion = { _id: string; title: string; slug?: string };
 
 function getPaginationRange(
   current: number,
@@ -43,21 +46,27 @@ function getPaginationRange(
 }
 
 function ShopPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    categoryParam && CATEGORIES.includes(categoryParam)
-      ? categoryParam
-      : undefined,
+    categoryParam || undefined,
   );
   const [inStock, setInStock] = useState(false);
   const [outOfStock, setOutOfStock] = useState(false);
+  const [stitching, setStitching] = useState<"" | "stitched" | "unstitched">("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [suggestions, setSuggestions] = useState<ProductSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const [sort, setSort] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [openSections, setOpenSections] = useState({
     availability: true,
+    stitching: true,
     price: true,
   });
 
@@ -72,6 +81,37 @@ function ShopPageContent() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length < 2) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const { data } = await api.get("/getTitleSuggestion", {
+          params: { search: trimmed, limit: 6 },
+          signal: controller.signal,
+        });
+        const list = data?.success ? (data.data ?? []) : [];
+        setSuggestions(list);
+        setShowSuggestions(list.length > 0);
+      } catch {
+        if (!controller.signal.aborted) {
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
+      }
+    }, 300);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const close = (event: MouseEvent) => {
+      if (!searchRef.current?.contains(event.target as Node)) setShowSuggestions(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
   // Fetch in-stock / out-of-stock counts for the current category — cheap
   // (limit=1, only the `total` field is used) and keeps the sidebar counts
   // accurate without pulling the whole catalog client-side.
@@ -82,6 +122,7 @@ function ShopPageContent() {
       try {
         const base: Record<string, string> = { status: "active" };
         if (selectedCategory) base.category = selectedCategory;
+        if (stitching) base.stitching = stitching;
 
         const [inRes, outRes] = await Promise.all([
           api.get("/universalFilter", {
@@ -105,7 +146,7 @@ function ShopPageContent() {
     return () => {
       cancelled = true;
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, stitching]);
 
   // Main product fetch — server-side filtering/pagination.
   useEffect(() => {
@@ -121,6 +162,8 @@ function ShopPageContent() {
         };
 
         if (selectedCategory) params.category = selectedCategory;
+        if (stitching) params.stitching = stitching;
+        if (appliedSearch) params.title = appliedSearch;
         if (inStock !== outOfStock) params.stock = inStock ? "true" : "false";
         if (priceRange.min > PRICE_MIN) params.minPrice = priceRange.min;
         if (priceRange.max < PRICE_MAX) params.maxPrice = priceRange.max;
@@ -173,6 +216,8 @@ function ShopPageContent() {
     };
   }, [
     selectedCategory,
+    stitching,
+    appliedSearch,
     inStock,
     outOfStock,
     sort,
@@ -182,8 +227,8 @@ function ShopPageContent() {
   ]);
 
   const pageTitle = selectedCategory
-    ? CATEGORY_LABELS[selectedCategory]
-    : "Shop";
+    ? CATEGORY_LABELS[selectedCategory] ?? selectedCategory
+    : "Shop All";
 
   const handleInStockChange = (checked: boolean) => {
     setInStock(checked);
@@ -213,6 +258,9 @@ function ShopPageContent() {
     setSelectedCategory(undefined);
     setInStock(false);
     setOutOfStock(false);
+    setStitching("");
+    setSearchQuery("");
+    setAppliedSearch("");
     setSort("");
     setCurrentPage(1);
     setPriceRange({ min: PRICE_MIN, max: PRICE_MAX });
@@ -257,6 +305,57 @@ function ShopPageContent() {
           </div>
         )}
       </div>
+
+      {/* Stitching */}
+      {!selectedCategory && (
+        <div
+          className={`shop-page__sidebar-section${
+            variant === "sidebar" ? " shop-page__sidebar-section--filter" : ""
+          }`}
+        >
+          <button
+            type="button"
+            className="shop-page__sidebar-title-row"
+            onClick={() => toggleSection("stitching")}
+          >
+            <h3 className="shop-page__sidebar-title">Stitching</h3>
+            <span className="shop-page__sidebar-toggle">
+              {openSections.stitching ? "−" : "+"}
+            </span>
+          </button>
+          {openSections.stitching && (
+            <div className="shop-page__sidebar-section-body">
+              <label className="shop-page__checkbox-label">
+                <input
+                  type="radio"
+                  name={`stitching-${variant}`}
+                  checked={stitching === "stitched"}
+                  onChange={() => { setStitching("stitched"); setCurrentPage(1); }}
+                />
+                <span>Stitched</span>
+              </label>
+              <label className="shop-page__checkbox-label">
+                <input
+                  type="radio"
+                  name={`stitching-${variant}`}
+                  checked={stitching === "unstitched"}
+                  onChange={() => { setStitching("unstitched"); setCurrentPage(1); }}
+                />
+                <span>Unstitched</span>
+              </label>
+              {stitching && (
+                <button
+                  type="button"
+                  className="shop-page__stitching-clear"
+                  onClick={() => { setStitching(""); setCurrentPage(1); }}
+                >
+                  Show both
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Price */}
       <div
@@ -364,6 +463,12 @@ function ShopPageContent() {
     </>
   );
 
+  const submitSearch = () => {
+    setAppliedSearch(searchQuery.trim());
+    setShowSuggestions(false);
+    setCurrentPage(1);
+  };
+
   if (loading) {
     return (
       <main className="shop-loading-screen" role="status" aria-live="polite">
@@ -386,6 +491,45 @@ function ShopPageContent() {
           <Link href="/">Home</Link> / {pageTitle}
         </p>
         <h1 className="shop-page__title">{pageTitle}</h1>
+        <div className="shop-page__search" ref={searchRef}>
+          <Search size={18} aria-hidden="true" />
+          <input
+            type="search"
+            value={searchQuery}
+            placeholder="Search products..."
+            aria-label="Search products"
+            autoComplete="off"
+            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+              if (event.target.value.trim().length < 2) {
+                setSuggestions([]);
+                setShowSuggestions(false);
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") submitSearch();
+              if (event.key === "Escape") setShowSuggestions(false);
+            }}
+          />
+          <button type="button" onClick={submitSearch}>Search</button>
+          {showSuggestions && (
+            <div className="shop-page__suggestions" role="listbox">
+              {suggestions.map((suggestion) => (
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected="false"
+                  key={suggestion._id}
+                  onClick={() => router.push(`/shop/${suggestion.slug ?? suggestion._id}`)}
+                >
+                  <Search size={14} aria-hidden="true" />
+                  <span>{suggestion.title}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <p className="shop-page__delivery-note">
           Rs 140 standard shipping across Pakistan · Delivered in 4–6 days
         </p>

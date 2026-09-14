@@ -8,7 +8,7 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import axios from "axios";
+import api from "../lib/axios";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/universalFilter`;
 const STORAGE_KEY = "monk_filters";
@@ -111,7 +111,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       const qs = buildQueryString(activeFilters);
       const url = qs ? `${BASE_URL}?${qs}` : BASE_URL;
 
-      const { data } = await axios.get(url);
+      const { data } = await api.get(url);
 
       setProducts(data?.data ?? []);
       setTotal(data?.total ?? 0);

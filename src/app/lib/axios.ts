@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getGuestId, saveGuestId } from "./guestId";
+import { optimizeCloudinaryData } from "@/lib/cloudinary";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
@@ -21,6 +22,7 @@ api.interceptors.response.use((response) => {
   if (newGuestId) {
     saveGuestId(newGuestId);
   }
+  response.data = optimizeCloudinaryData(response.data);
   return response;
 });
 

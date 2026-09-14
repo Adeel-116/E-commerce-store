@@ -215,6 +215,13 @@ const Navbar2Inner = () => {
           {/* center — links (desktop only) */}
           <div className="navbar2-links">
             <Link href={"/"}>Home</Link>
+            <Link
+              href="/shop"
+              className={pathname === "/shop" && !activeCategory ? "navbar2-drawer-link--active" : ""}
+              aria-current={pathname === "/shop" && !activeCategory ? "page" : undefined}
+            >
+              Shop All
+            </Link>
             {visibleCategories.map((category) => (
               <Link
                 key={category}
@@ -295,6 +302,9 @@ const Navbar2Inner = () => {
         <nav className="navbar2-drawer-links">
           <Link className={`navbar2-desktop-page-link${pathname === "/" ? " navbar2-drawer-link--active" : ""}`} href="/" onMouseEnter={() => setPreviewHeading("Home")} onClick={closeDrawer}>
             Home
+          </Link>
+          <Link className={`navbar2-desktop-page-link${pathname === "/shop" && !activeCategory ? " navbar2-drawer-link--active" : ""}`} href="/shop" onMouseEnter={() => setPreviewHeading("Shop All")} onClick={closeDrawer}>
+            Shop All
           </Link>
           {visibleCategories.map((category) => (
             <Link

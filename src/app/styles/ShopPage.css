@@ -222,12 +222,97 @@
     margin-bottom: 0;
 }
 
-.shop-page__checkbox-label input[type="checkbox"] {
+.shop-page__checkbox-label input[type="checkbox"],
+.shop-page__checkbox-label input[type="radio"] {
     accent-color: var(--gold-accent);
     width: 13.5px;
     height: 13.5px;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.shop-page__stitching-clear {
+    align-self: flex-start;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    padding: 1px 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.shop-page__stitching-clear:hover {
+    color: var(--charcoal);
+}
+
+.shop-page__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(520px, calc(100% - 32px));
+    margin: 18px auto 4px;
+    border: 1px solid var(--shop-color-border);
+    background: var(--off-white);
+}
+
+.shop-page__search > svg {
+    flex-shrink: 0;
+    margin-left: 15px;
+    color: var(--muted);
+}
+
+.shop-page__search input {
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    outline: 0;
+    padding: 13px 12px;
+    background: transparent;
+    color: var(--charcoal);
+    font: inherit;
+}
+
+.shop-page__search > button {
+    align-self: stretch;
+    border: 0;
+    padding: 0 20px;
+    background: var(--charcoal);
+    color: var(--off-white);
+    cursor: pointer;
+}
+
+.shop-page__suggestions {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    border: 1px solid var(--shop-color-border);
+    background: var(--off-white);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
+    text-align: left;
+}
+
+.shop-page__suggestions button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--shop-color-border);
+    padding: 12px 15px;
+    background: transparent;
+    color: var(--charcoal);
+    cursor: pointer;
+    text-align: left;
+}
+
+.shop-page__suggestions button:last-child { border-bottom: 0; }
+.shop-page__suggestions button:hover { background: rgba(0, 0, 0, 0.04); }
+
+@media (max-width: 480px) {
+    .shop-page__search > button { padding: 0 14px; }
 }
 
 /* =============================================

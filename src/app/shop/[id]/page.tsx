@@ -3,6 +3,7 @@ import ProductDetailClient from "./ProductDetailClient";
 import { SITE_NAME, absoluteUrl } from "../../lib/seo";
 import { productJsonLd, breadcrumbJsonLd } from "../../lib/jsonld";
 import { CATEGORY_LABELS } from "../constants";
+import { optimizeCloudinaryData } from "@/lib/cloudinary";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -48,7 +49,9 @@ async function fetchProduct(slug: string): Promise<FetchedProduct | null> {
     );
     if (!res.ok) return null;
     const data = await res.json();
-    return data?.success && data.data ? (data.data as FetchedProduct) : null;
+    return data?.success && data.data
+      ? optimizeCloudinaryData(data.data as FetchedProduct)
+      : null;
   } catch {
     return null;
   }

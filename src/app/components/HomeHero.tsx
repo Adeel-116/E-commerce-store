@@ -6,9 +6,14 @@ import "../styles/home-hero.css";
 import gsap from "gsap";
 import api from "../lib/axios";
 
-type HeroSlide = { id: string | number; title: string; img: string; mobileImg: string; href: string; delay?: number; promo?: boolean; subtitle?: string; bg?: string };
-type ApiBanner = { _id: string; title: string; href: string; desktop: { url: string }; mobile: { url: string } };
+type HeroSlide = { id: string | number; title: string; img: string; mobileImg: string; href: string; delay?: number; promo?: boolean; subtitle?: string; bg?: string; textless?: boolean };
+type ApiBanner = { _id: string; title: string; href: string; textless?: boolean; desktop: { url: string }; mobile: { url: string } };
 const defaultSlides: HeroSlide[] = [
+  {
+    id: "floral-editorial", title: "Floral Editorial", href: "/shop?category=fashion", textless: true,
+    img: "https://res.cloudinary.com/kop736vp/image/upload/v1789768804/banners/floral-editorial-desktop.png",
+    mobileImg: "https://res.cloudinary.com/kop736vp/image/upload/v1789768854/banners/floral-editorial-mobile.png",
+  },
   // {
   //   id: 0,
   //   title: "Sale — Flat 20% Off",
@@ -76,6 +81,7 @@ const HomeHero = () => {
       setHeroSlides(data.data.map((banner) => ({
         id: banner._id, title: banner.title, href: banner.href,
         img: banner.desktop.url, mobileImg: banner.mobile.url, promo: true,
+        textless: banner.textless ?? ["Floral Editorial", "Blue Floral Maxi"].includes(banner.title),
       })));
     }).catch(() => { /* Keep the default banners if the API is unavailable. */ });
     return () => controller.abort();
@@ -185,8 +191,8 @@ const HomeHero = () => {
       <h1 className="sr-only">Zarya Style — Premium Everyday & Occasion Wear in Pakistan</h1>
       <div className="hero-swiper" onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}>
         {heroSlides.map((slide, index) => (
-          <div key={slide.id} data-index={index} className={"hero-slide" + (index === activeIndex ? " hero-slide-active" : "")} aria-hidden={index !== activeIndex}>
-            <div className="hero-split-copy">
+          <div key={slide.id} data-index={index} className={"hero-slide" + (index === activeIndex ? " hero-slide-active" : "") + (slide.textless ? " hero-slide--textless" : "")} aria-hidden={index !== activeIndex}>
+            {!slide.textless && <div className="hero-split-copy">
               <div className="hero-copy-top hero-copy-reveal"><span>Collection</span><span>{String(index + 1).padStart(2, "0")}</span></div>
               <div className="hero-copy-main">
                 <p className="hero-copy-eyebrow hero-copy-reveal">Zarya Style / New Edit</p>
@@ -195,12 +201,12 @@ const HomeHero = () => {
                 <Link href={slide.href} className="hero-copy-cta hero-copy-reveal">Explore collection <ArrowUpRight size={18} strokeWidth={1.6} /></Link>
               </div>
               <div className="hero-copy-bottom hero-copy-reveal"><span>Designed for your story</span><span>Pakistan · 2026</span></div>
-            </div>
+            </div>}
             <div className="hero-split-media">
               <picture><source media="(max-width: 767px)" srcSet={slide.mobileImg} /><img src={slide.img} alt={slide.title} title={slide.title} className="hero-slide-img" ref={(element) => { imgRefs.current[index] = element; }} fetchPriority={index === 0 ? "high" : "auto"} draggable={false} /></picture>
-              <div className="hero-media-shade" />
+              {!slide.textless && <div className="hero-media-shade" />}
               {/* <div className="hero-media-top"><span>Premium womenswear</span><span>Zarya Style</span></div> */}
-              <div className="hero-media-caption"><span>{String(index + 1).padStart(2, "0")}</span><p>{slide.title}</p></div>
+              {!slide.textless && <div className="hero-media-caption"><span>{String(index + 1).padStart(2, "0")}</span><p>{slide.title}</p></div>}
             </div>
           </div>
         ))}

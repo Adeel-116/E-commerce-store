@@ -130,20 +130,18 @@
 
 .pf-logo {
     display: inline-block;
-    margin-bottom: 27px;
-    color: #fff;
-    font-family: var(--font-playfair), Georgia, serif;
-    font-size: 39px;
-    line-height: 1
+    /* margin-bottom: 27px */
 }
 
-.pf-logo em {
-    color: #d0a44e;
-    font-weight: 500
+.pf-logo img {
+    display: block;
+    width: auto;
+    height: 100px;
+    max-width: 100%
 }
 
 .pf-intro p {
-    margin: 0 0 32px;
+    margin: 0 0 26px;
     color: #b9b3a9;
     font-size: 16px;
     line-height: 1.75
@@ -357,8 +355,8 @@
         padding-inline: 13px;
         font-size: 10px
     }
-    .pf-logo {
-        font-size: 35px
+    .pf-logo img {
+        height: 70px
     }
     .pf-intro p {
         font-size: 14px

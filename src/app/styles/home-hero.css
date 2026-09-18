@@ -406,3 +406,7 @@
         display: none;
     }
 }
+/* Editorial artwork fills the viewport without a copy panel or gradient. */
+.hero-slide--textless{display:block}
+.hero-slide--textless .hero-split-media{position:absolute;inset:0}
+.hero-slide--textless .hero-slide-img{object-position:center center}

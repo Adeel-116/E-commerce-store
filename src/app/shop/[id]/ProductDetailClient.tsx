@@ -34,6 +34,7 @@ import {
 import { gaViewItem } from "@/app/lib/gaEvents";
 import { metaViewContent } from "@/app/lib/metaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
+import SizeGuideContent, { type MeasurementChart } from "@/app/components/SizeGuideContent";
 
 type ColorVariant = {
   name: string;
@@ -49,7 +50,9 @@ type Product = {
   description: string;
   images: string[];
   measurementImage?: string;
+  measurementCharts?: MeasurementChart[];
   price: number;
+  sizePrices?: Record<string, number>;
   comparePrice: number | null;
   category: string[];
   sizes: string[];
@@ -74,7 +77,7 @@ function getDiscountPercent(product: Product): number | null {
     : null;
 }
 
-// Deterministic per-product "social proof" numbers — derived from the
+// Deterministic per-product "social proof" numbers â€” derived from the
 // product id so they're stable across server/client render (no hydration
 // mismatch) and don't reshuffle on every re-render, but still vary product
 // to product instead of showing one hardcoded number everywhere.
@@ -146,7 +149,7 @@ export default function ProductDetailClient({
   const { isWishlisted, toggleWishlist } = useWishlist();
   const router = useRouter();
 
-  // Illustrative shipping timeline dates, computed from "today" — set only
+  // Illustrative shipping timeline dates, computed from "today" â€” set only
   // after mount (not during render) so the server-rendered markup and the
   // client's first render match; the page is served/cached at different
   // moments than any one visitor's "today", so computing this during render
@@ -167,11 +170,11 @@ export default function ProductDetailClient({
     setTimelineDates({
       ordered: fmt(addDays(0)),
       shipped: fmt(addDays(2)),
-      delivered: `${fmt(addDays(5))} → ${fmt(addDays(8))}`,
+      delivered: `${fmt(addDays(5))} â†’ ${fmt(addDays(8))}`,
     });
   }, []);
 
-  // The server already fetched this product for metadata/SEO — reuse it for
+  // The server already fetched this product for metadata/SEO â€” reuse it for
   // the first render instead of re-fetching client-side, which used to leave
   // the page on a skeleton for an extra full round-trip on every visit.
   useEffect(() => {
@@ -250,13 +253,24 @@ export default function ProductDetailClient({
     if (!product) return;
     let cancelled = false;
 
+    setSimilarProducts([]);
     (async () => {
       try {
-        const { data } = await api.get("/getSimilarProducts", {
-          params: { excludeId: product._id, limit: 4 },
-        });
+        const isKidsCollection = product.category?.includes("kids-collection");
+        const { data } = isKidsCollection
+          ? await api.get("/universalFilter", {
+              params: { category: "kids-collection", status: "active", limit: 5 },
+            })
+          : await api.get("/getSimilarProducts", {
+              params: { excludeId: product._id, limit: 4 },
+            });
         if (cancelled) return;
-        setSimilarProducts(data?.data ?? []);
+        const recommendations: Product[] = data?.data ?? [];
+        setSimilarProducts(
+          isKidsCollection
+            ? recommendations.filter((item) => item._id !== product._id).slice(0, 4)
+            : recommendations,
+        );
       } catch {
         if (!cancelled) setSimilarProducts([]);
       }
@@ -289,23 +303,25 @@ export default function ProductDetailClient({
   const soldCount = seededRange(product._id, 8, 46);
   const viewingCount = seededRange(product._id + "v", 6, 28);
   const wishlisted = isWishlisted(product._id);
+  const isWesternFashion = product.category?.includes("western") ?? false;
   const allColors = product.colors ?? [];
   // Only variations with a real name get a swatch and a "select a color"
-  // requirement — a lone unnamed group is just extra photos.
-  const productColors = allColors.filter(isRealColor);
+  // requirement â€” a lone unnamed group is just extra photos.
+  const productColors = isWesternFashion ? [] : allColors.filter(isRealColor);
   const hasSizes = product.sizes.length > 0;
   const hasColors = productColors.length > 0;
   const canAddToCart =
     product.stock &&
     (!hasSizes || !!selectedSize) &&
     (!hasColors || !!selectedColor) &&
-    (!(product.isStitched && product.isUnstitched) || !!selectedStitching);
+    (isWesternFashion || !(product.isStitched && product.isUnstitched) || !!selectedStitching);
 
   const currentPrice =
-    selectedStitching === "stitched" &&
+    product.sizePrices?.[selectedSize ?? ""] ?? (
+    !isWesternFashion && selectedStitching === "stitched" &&
     typeof product.stitchedPrice === "number"
       ? product.stitchedPrice
-      : product.price;
+      : product.price);
 
   // Default view is the first variation's photos (falling back to the
   // product's own images); picking a color switches to that color's photos.
@@ -322,7 +338,7 @@ export default function ProductDetailClient({
 
   // Thumbnail strip shows every color variation's photos together (not just
   // the active color's) so shoppers can preview any color without switching
-  // first — clicking a thumbnail from another color jumps both the main
+  // first â€” clicking a thumbnail from another color jumps both the main
   // image and the color selection to match.
   const thumbSource =
     allColors.length > 0
@@ -368,10 +384,10 @@ export default function ProductDetailClient({
     openCart();
   };
 
-  // "Quick Checkout" used to be a plain link straight to /checkout — if this
+  // "Quick Checkout" used to be a plain link straight to /checkout â€” if this
   // product was never added to the cart first, checkout would load with an
   // empty cart (subtotal/total showing 0). It needs to add the item first,
-  // same as the Add to Cart button, then navigate — just without popping the
+  // same as the Add to Cart button, then navigate â€” just without popping the
   // cart sidebar open, since we're leaving the page anyway.
   const handleQuickCheckout = () => {
     if (!canAddToCart) return;
@@ -431,7 +447,7 @@ export default function ProductDetailClient({
           </div>
           <div className="shop-inner-bundle-banner-text">
             <p>
-              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5–8
+              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5â€“8
               days.
             </p>
           </div>
@@ -531,11 +547,11 @@ export default function ProductDetailClient({
             />
           )}
 
-          {sizeGuideOpen && product.measurementImage && (
+          {sizeGuideOpen && (product.measurementImage || product.measurementCharts?.length) && (
             <div className="size-guide-modal" role="dialog" aria-modal="true" aria-label={`${product.title} size guide`} onClick={() => setSizeGuideOpen(false)}>
               <div className="size-guide-modal__panel" onClick={(event) => event.stopPropagation()}>
                 <button type="button" className="size-guide-modal__close" onClick={() => setSizeGuideOpen(false)} aria-label="Close size guide"><X size={24} /></button>
-                <img src={product.measurementImage} alt={`${product.title} measurement and size guide`} />
+                <SizeGuideContent title={product.title} image={product.measurementImage} charts={product.measurementCharts} />
               </div>
             </div>
           )}
@@ -580,8 +596,8 @@ export default function ProductDetailClient({
               </div>
 
               {/* Stitching selector */}
-              {(product.isStitched || product.isUnstitched) && (
-                <div className="shop-inner-size-selector">
+              {!isWesternFashion && (product.isStitched || product.isUnstitched) && (
+                <div className="shop-inner-size-selector shop-inner-type-selector">
                   <span
                     className="shop-inner-size-label"
                     style={{ display: "flex", alignItems: "center", gap: 8 }}
@@ -603,7 +619,7 @@ export default function ProductDetailClient({
                             borderRadius: "4px",
                           }}
                         >
-                          ✨ Want to buy stitched? Click here!
+                          âœ¨ Want to buy stitched? Click here!
                         </span>
                       )}
                   </span>
@@ -664,7 +680,7 @@ export default function ProductDetailClient({
                 <div className="shop-inner-size-selector">
                   <div className="shop-inner-size-heading">
                     <span className="shop-inner-size-label">Select Size</span>
-                    {product.measurementImage && (
+                    {(product.measurementImage || product.measurementCharts?.length) && (
                       <button type="button" className="shop-inner-size-guide-btn" onClick={() => setSizeGuideOpen(true)}>Size Guide</button>
                     )}
                   </div>
@@ -693,7 +709,7 @@ export default function ProductDetailClient({
               <div className="shop-inner-info-row">
                 <Truck size={17} />
                 <span>
-                  Estimated delivery time: <strong>5–8 days</strong>
+                  Estimated delivery time: <strong>5â€“8 days</strong>
                 </span>
               </div>
               <div className="shop-inner-info-divider" />
@@ -774,7 +790,7 @@ export default function ProductDetailClient({
               <span>Guaranteed Safe Checkout</span>
             </div>
 
-            {/* Illustrative shipping timeline — not tied to a real order, just
+            {/* Illustrative shipping timeline â€” not tied to a real order, just
                 sets delivery-speed expectations before purchase. */}
             <div className="order-timeline">
               <div className="order-timeline-step">
@@ -790,7 +806,7 @@ export default function ProductDetailClient({
                   <Truck />
                 </div>
                 <strong>Shipped</strong>
-                <span>{timelineDates?.shipped ?? "Within 1–2 days"}</span>
+                <span>{timelineDates?.shipped ?? "Within 1â€“2 days"}</span>
               </div>
               <div className="order-timeline-line" />
               <div className="order-timeline-step">
@@ -798,7 +814,7 @@ export default function ProductDetailClient({
                   <PackageCheck />
                 </div>
                 <strong>Delivered</strong>
-                <span>{timelineDates?.delivered ?? "In 5–8 days"}</span>
+                <span>{timelineDates?.delivered ?? "In 5â€“8 days"}</span>
               </div>
             </div>
 
@@ -868,8 +884,8 @@ export default function ProductDetailClient({
                 <div className="accordion-content">
                   <div className="accordion-inner">
                     <ul>
-                      <li>Orders are dispatched within 1–2 business days.</li>
-                      <li>Estimated delivery time is 5–8 business days.</li>
+                      <li>Orders are dispatched within 1â€“2 business days.</li>
+                      <li>Estimated delivery time is 5â€“8 business days.</li>
                       <li>
                         Rs 140 standard shipping on all orders, nationwide.
                       </li>

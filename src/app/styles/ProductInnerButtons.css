@@ -1,2 +1,51 @@
 /* Match the storefront's flat Shopify-inspired control language. */
-.shop-inner-size-pill{border-radius:0}.shop-inner-qty-control{border-radius:0;padding-inline:4px}.qty-btn{border-radius:0}.add-to-cart-btn,.checkout-btn,.shop-inner-whatsapp-order{border-radius:0}.add-to-cart-btn,.checkout-btn,.shop-inner-whatsapp-order{min-height:54px;letter-spacing:.06em;text-transform:uppercase}.add-to-cart-btn:hover,.checkout-btn:hover,.shop-inner-whatsapp-order:hover{transform:none}.shop-inner-info-box{border-radius:0}.discount-label{border-radius:0}@media(max-width:600px){.add-to-cart-btn,.checkout-btn,.shop-inner-whatsapp-order{min-height:50px;font-size:12px}}
+
+.shop-inner-size-pill {
+    border-radius: 0
+}
+
+.shop-inner-qty-control {
+    border-radius: 0;
+    padding-inline: 4px
+}
+
+.qty-btn {
+    border-radius: 0
+}
+
+.add-to-cart-btn,
+.checkout-btn,
+.shop-inner-whatsapp-order {
+    border-radius: 0
+}
+
+.add-to-cart-btn,
+.checkout-btn,
+.shop-inner-whatsapp-order {
+    min-height: 54px;
+    letter-spacing: .06em;
+    text-transform: uppercase
+}
+
+.add-to-cart-btn:hover,
+.checkout-btn:hover,
+.shop-inner-whatsapp-order:hover {
+    transform: none
+}
+
+.shop-inner-info-box {
+    border-radius: 0
+}
+
+.discount-label {
+    border-radius: 0
+}
+
+@media(max-width:600px) {
+    .add-to-cart-btn,
+    .checkout-btn,
+    .shop-inner-whatsapp-order {
+        min-height: 50px;
+        font-size: 12px
+    }
+}

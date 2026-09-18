@@ -8,6 +8,7 @@ import api from "../lib/axios";
 import { ProductGridSkeleton } from "./Skeleton";
 import ProductImageSwiper from "./ProductImageSwiper";
 import QuickAddModal from "./QuickAddModal";
+import type { MeasurementChart } from "./SizeGuideContent";
 import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
 import {
   useProductCardImages,
@@ -29,7 +30,9 @@ export type GridProduct = {
   description: string;
   images: string[];
   measurementImage?: string;
+  measurementCharts?: MeasurementChart[];
   price: number;
+  sizePrices?: Record<string, number>;
   comparePrice: number | null;
   category: string[];
   sizes: string[];
@@ -67,7 +70,7 @@ export function ProductCard({
   } = useProductCardImages(product.images, product.colors ?? []);
 
   const wishlisted = isWishlisted(product._id);
-  const visibleColors = (product.colors ?? []).filter(isRealColor);
+  const visibleColors = product.category?.includes("western") ? [] : (product.colors ?? []).filter(isRealColor);
   const closeQuickAdd = useCallback(() => setQuickAddOpen(false), []);
   const startImageHover = () => {
     if (displayImages.length < 2) return;
@@ -108,7 +111,7 @@ export function ProductCard({
       id: product._id,
       productName: product.title,
       brand: "",
-      price: product.price,
+      price: product.sizePrices?.[size] ?? product.price,
       size,
       color,
       productImage: image ?? displayImages[0] ?? product.images[0],

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,11 +14,11 @@ import { gaViewItemList } from "../lib/gaEvents";
 import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
 
 const PAGE_SIZE = 9;
-// Fixed, generous bounds for the price slider — avoids extra round-trips just
+// Fixed, generous bounds for the price slider â€” avoids extra round-trips just
 // to compute exact min/max from the catalog; the slider stays a sensible UX
 // nudge rather than a precise histogram.
 const PRICE_MIN = 0;
-const PRICE_MAX = 10000;
+const PRICE_MAX = 100000;
 
 type ProductSuggestion = { _id: string; title: string; slug?: string };
 
@@ -112,7 +112,7 @@ function ShopPageContent() {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // Fetch in-stock / out-of-stock counts for the current category — cheap
+  // Fetch in-stock / out-of-stock counts for the current category â€” cheap
   // (limit=1, only the `total` field is used) and keeps the sidebar counts
   // accurate without pulling the whole catalog client-side.
   useEffect(() => {
@@ -148,7 +148,7 @@ function ShopPageContent() {
     };
   }, [selectedCategory, stitching]);
 
-  // Main product fetch — server-side filtering/pagination.
+  // Main product fetch â€” server-side filtering/pagination.
   useEffect(() => {
     let cancelled = false;
 
@@ -175,7 +175,7 @@ function ShopPageContent() {
           params.sort = sort;
         }
 
-        const cacheKey = `shop-products:${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString()}`;
+        const cacheKey = `shop-products:v2:${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString()}`;
         const data = await getCachedProductResponse(
           cacheKey,
           async () => (await api.get("/universalFilter", { params })).data,
@@ -281,7 +281,7 @@ function ShopPageContent() {
         >
           <h3 className="shop-page__sidebar-title">Availability</h3>
           <span className="shop-page__sidebar-toggle">
-            {openSections.availability ? "−" : "+"}
+            {openSections.availability ? "âˆ’" : "+"}
           </span>
         </button>
         {openSections.availability && (
@@ -320,7 +320,7 @@ function ShopPageContent() {
           >
             <h3 className="shop-page__sidebar-title">Stitching</h3>
             <span className="shop-page__sidebar-toggle">
-              {openSections.stitching ? "−" : "+"}
+              {openSections.stitching ? "âˆ’" : "+"}
             </span>
           </button>
           {openSections.stitching && (
@@ -370,7 +370,7 @@ function ShopPageContent() {
         >
           <h3 className="shop-page__sidebar-title">Price</h3>
           <span className="shop-page__sidebar-toggle">
-            {openSections.price ? "−" : "+"}
+            {openSections.price ? "âˆ’" : "+"}
           </span>
         </button>
         {openSections.price && (
@@ -385,12 +385,12 @@ function ShopPageContent() {
                 onChange={(e) => {
                   setPriceRange((prev) => ({
                     ...prev,
-                    min: Number(e.target.value),
+                    min: Math.max(PRICE_MIN, Math.min(Number(e.target.value), prev.max)),
                   }));
                   setCurrentPage(1);
                 }}
               />
-              <span className="shop-page__price-dash">—</span>
+              <span className="shop-page__price-dash">â€”</span>
               <input
                 type="number"
                 className="shop-page__price-input"
@@ -400,7 +400,7 @@ function ShopPageContent() {
                 onChange={(e) => {
                   setPriceRange((prev) => ({
                     ...prev,
-                    max: Number(e.target.value),
+                    max: Math.min(PRICE_MAX, Math.max(Number(e.target.value), prev.min)),
                   }));
                   setCurrentPage(1);
                 }}
@@ -452,7 +452,7 @@ function ShopPageContent() {
               <span className="shop-page__price-label-val">
                 Rs.{priceRange.min.toLocaleString()}
               </span>
-              {" — "}
+              {" â€” "}
               <span className="shop-page__price-label-val">
                 Rs.{priceRange.max.toLocaleString()}
               </span>
@@ -531,7 +531,7 @@ function ShopPageContent() {
           )}
         </div>
         <p className="shop-page__delivery-note">
-          Rs 140 standard shipping across Pakistan · Delivered in 4–6 days
+          Rs 140 standard shipping across Pakistan Â· Delivered in 4â€“6 days
         </p>
       </div>
 
@@ -571,7 +571,7 @@ function ShopPageContent() {
               onClick={() => setShowFilterModal(false)}
               aria-label="Close filters"
             >
-              ×
+              Ã—
             </button>
           </div>
           <div className="shop-filter-modal-body">
@@ -708,3 +708,4 @@ export default function ShopPageClient() {
     </Suspense>
   );
 }
+

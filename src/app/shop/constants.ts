@@ -1,4 +1,4 @@
-export type ShopColorVariant = {
+﻿export type ShopColorVariant = {
   name: string;
   hex: string;
   images: string[];
@@ -32,6 +32,8 @@ export const CATEGORY_LABELS: Record<string, string> = {
   fashion: "Pakistani Fashion",
   "top-jeans": "Top & Jeans",
   western: "Western Fashion",
+  "kids-collection": "Kids Collection",
 };
 
 export const CATEGORIES = Object.keys(CATEGORY_LABELS);
+

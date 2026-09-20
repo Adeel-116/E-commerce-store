@@ -3,7 +3,7 @@
     right: 0;
     top: 52%;
     z-index: 90;
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 17px 11px;

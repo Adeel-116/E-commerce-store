@@ -1227,3 +1227,6 @@
     right: 7px;
   }
 }
+
+/* Keep card actions above Swiper's gesture layer. */
+.cg-card-quick-add { pointer-events: auto; touch-action: manipulation; z-index: 20; }

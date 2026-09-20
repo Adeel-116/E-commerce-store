@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "../styles/ProductGrid.css";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
@@ -56,6 +56,7 @@ export function ProductCard({
   product: GridProduct;
   listName?: string;
 }) {
+  const router = useRouter();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart, openCart } = useCart();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -99,15 +100,15 @@ export function ProductCard({
     });
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleAddToCart = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (!product.stock) return;
     setQuickAddOpen(true);
   };
 
   const confirmQuickAdd = (size: string, color: string | null, image?: string) => {
-    addToCart({
+    void addToCart({
       id: product._id,
       productName: product.title,
       brand: "",
@@ -115,6 +116,8 @@ export function ProductCard({
       size,
       color,
       productImage: image ?? displayImages[0] ?? product.images[0],
+    }).catch(() => {
+      // CartContext restores the server cart and logs the API error.
     });
     setQuickAddOpen(false);
     openCart();
@@ -130,15 +133,20 @@ export function ProductCard({
       },
       listName,
     });
+    router.push(`/shop/${product.slug}`);
   };
 
   return (
     <>
-    <Link
-      href={`/shop/${product.slug}`}
+    <article
       className={`cg-card${!product.stock ? " cg-card-outofstock" : ""}`}
+      role="link"
+      tabIndex={0}
       onClick={handleCardClick}
-      onDragStart={(e) => e.preventDefault()}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") handleCardClick();
+      }}
+      onDragStart={(event) => event.preventDefault()}
     >
       <div
         className="cg-card-image-container"
@@ -193,6 +201,7 @@ export function ProductCard({
         </button>
 
         <button
+          type="button"
           className="cg-card-quick-add"
           onClick={handleAddToCart}
           disabled={!product.stock}
@@ -258,7 +267,7 @@ export function ProductCard({
         )}
 
       </div>
-    </Link>
+    </article>
     {quickAddOpen && <QuickAddModal product={product} image={displayImages[activeImageIndex]} onClose={closeQuickAdd} onConfirm={confirmQuickAdd} />}
     </>
   );

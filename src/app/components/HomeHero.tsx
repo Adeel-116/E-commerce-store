@@ -94,13 +94,15 @@ const HomeHero = () => {
     const copy = document.querySelectorAll(
       '.hero-slide[data-index="' + index + '"] .hero-copy-reveal',
     );
-    gsap.killTweensOf(copy);
     gsap.fromTo(img, { scale: 1.1 }, { scale: 1, duration: 1.5, ease: "power3.out" });
-    gsap.fromTo(
-      copy,
-      { y: 42, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.08, ease: "power3.out" },
-    );
+    if (copy.length > 0) {
+      gsap.killTweensOf(copy);
+      gsap.fromTo(
+        copy,
+        { y: 42, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.08, ease: "power3.out" },
+      );
+    }
   };
 
   // Preload every slide image before the slider starts rotating, so a

@@ -18,7 +18,7 @@ function CategoryCard({ category }: { category: StoreCategory }) {
         title={category.name}
         fill
         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 45vw, 25vw"
-        objectPosition="top center"
+        style={{ objectPosition: "top center" }}
         className="category-card-image"
       />
       <span className="category-card-badge">{category.name}</span>

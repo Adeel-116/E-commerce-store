@@ -90,13 +90,13 @@ type CartContextType = {
       CartItem,
       "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"
     > & { quantity?: number },
-  ) => void;
+  ) => Promise<void>;
   removeItem: (
     id: string,
     size?: string,
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
-  ) => void;
+  ) => Promise<void>;
   increaseQuantity: (
     id: string,
     size?: string,
@@ -223,27 +223,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // allowed to apply its result.
   const refetchTicket = useRef(0);
 
-  const refetchCart = () => {
+  const refetchCart = async (): Promise<void> => {
     const ticket = ++refetchTicket.current;
-    api
-      .get("/cart")
-      .then((res) => {
-        if (ticket !== refetchTicket.current) return;
-        const { items, pricing } = mapCartResponse(res.data.cart);
-        setCartItems(items);
-        setPricing(pricing);
-        setPricingStale(false);
-      })
-      .catch((err) => {
-        if (ticket !== refetchTicket.current) return;
-        console.error(
-          "Refetch cart failed:",
-          err?.response?.data?.message ?? err.message,
-        );
-        setPricingStale(false);
-      });
+    try {
+      const res = await api.get("/cart");
+      if (ticket !== refetchTicket.current) return;
+      const { items, pricing } = mapCartResponse(res.data.cart);
+      setCartItems(items);
+      setPricing(pricing);
+      setPricingStale(false);
+    } catch (err: any) {
+      if (ticket !== refetchTicket.current) return;
+      console.error(
+        "Refetch cart failed:",
+        err?.response?.data?.message ?? err.message,
+      );
+      setPricingStale(false);
+    }
   };
-
   useEffect(() => {
     const loadBundles = async () => {
       const storedBundles = getStoredBundles();
@@ -271,7 +268,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const addToCart = (
+  const addToCart = async (
     item: Omit<
       CartItem,
       "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"
@@ -325,66 +322,64 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       value: unitPrice * quantity,
     });
 
-    api
-      .post("/cart/add", {
+    try {
+      await api.post("/cart/add", {
         productId: item.id,
         size: item.size,
         color: item.color ?? null,
         stitching: item.stitching ?? null,
         quantity,
-      })
-      .then(() => refetchCart())
-      .catch((err) => {
-        console.error(
-          "Add to cart failed:",
-          err?.response?.data?.message ?? err.message,
-        );
-        refetchCart();
       });
+      await refetchCart();
+    } catch (err: any) {
+      console.error(
+        "Add to cart failed:",
+        err?.response?.data?.message ?? err.message,
+      );
+      await refetchCart();
+      throw err;
+    }
   };
 
-  const removeItem = (
+  const removeItem = async (
     id: string,
     size?: string,
     color?: string | null,
     stitching?: "stitched" | "unstitched" | null,
   ): Promise<void> => {
-    const item = cartItems.find((i) =>
-      matchesLine(i, id, size, color, stitching),
+    const item = cartItems.find((cartItem) =>
+      matchesLine(cartItem, id, size, color, stitching),
     );
-    setCartItems((prev) =>
-      prev.filter((i) => !matchesLine(i, id, size, color, stitching)),
-    );
-    setPricingStale(true);
-    if (item) {
-      gaRemoveFromCart({
-        item_id: item.id,
-        item_name: item.productName,
-        item_variant: item.color ?? undefined,
-        price: item.unitPrice,
-        quantity: item.quantity,
-        value: item.unitPrice * item.quantity,
-      });
-    }
-    return api
-      .delete("/cart/remove", {
+
+    try {
+      await api.delete("/cart/remove", {
         params: {
           productId: id,
           size,
           color: color ?? undefined,
           stitching: stitching ?? undefined,
         },
-      })
-      .then(() => refetchCart())
-      .catch((err) => {
-        console.error(
-          "Remove from cart failed:",
-          err?.response?.data?.message ?? err.message,
-        );
-        refetchCart();
       });
+      setPricingStale(true);
+      if (item) {
+        gaRemoveFromCart({
+          item_id: item.id,
+          item_name: item.productName,
+          item_variant: item.color ?? undefined,
+          price: item.unitPrice,
+          quantity: item.quantity,
+          value: item.unitPrice * item.quantity,
+        });
+      }
+      await refetchCart();
+    } catch (err: any) {
+      console.error(
+        "Remove from cart failed:",
+        err?.response?.data?.message ?? err.message,
+      );
+      throw err;
+    }
   };
-
   // Per-line in-flight guard: while a quantity PATCH for a given line is
   // pending, a second click on the same stepper queues behind it instead of
   // firing a second overlapping PATCH+refetch — that overlap was the source

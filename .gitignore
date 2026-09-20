@@ -11,6 +11,11 @@
 !.yarn/versions
 
 
+/backend
+/.tmp-chrome-quickadd
+/.tmp-edge-quickadd
+
+
 /E-commerce-backend
 
 # testing

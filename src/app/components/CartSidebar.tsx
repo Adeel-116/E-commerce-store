@@ -41,6 +41,16 @@ const CartSidebar = () => {
     }
   };
 
+  const removeLine = async (item: (typeof cartItems)[number]) => {
+    const key = getLineKey(item);
+    if (updatingLine === key) return;
+    setUpdatingLine(key);
+    try {
+      await removeItem(item.id, item.size, item.color, item.stitching);
+    } finally {
+      setUpdatingLine((current) => current === key ? null : current);
+    }
+  };
   const fallbackSubtotal = cartItems.reduce(
     (acc, item) => acc + item.lineSubtotal,
     0,
@@ -159,7 +169,7 @@ const CartSidebar = () => {
                         className="cart-sidebar-img"
                       />
                       {isUpdating && (
-                        <span className="csb-image-loader" aria-label="Updating quantity">
+                        <span className="csb-image-loader" aria-label={isUpdating ? "Updating cart item" : undefined}>
                           <LoaderCircle size={24} aria-hidden="true" />
                         </span>
                       )}
@@ -204,16 +214,9 @@ const CartSidebar = () => {
                           type="button"
                           className="csb-remove-btn"
                           disabled={isUpdating}
-                          onClick={() =>
-                            removeItem(
-                              item.id,
-                              item.size,
-                              item.color,
-                              item.stitching,
-                            )
-                          }
+                          onClick={() => void removeLine(item)}
                         >
-                          Remove
+                          {isUpdating ? "Removing…" : "Remove"}
                         </button>
                       </div>
                     </div>

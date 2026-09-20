@@ -408,21 +408,25 @@ export default function ProductDetailClient({
   // empty cart (subtotal/total showing 0). It needs to add the item first,
   // same as the Add to Cart button, then navigate â€” just without popping the
   // cart sidebar open, since we're leaving the page anyway.
-  const handleQuickCheckout = () => {
+  const handleQuickCheckout = async () => {
     if (!canAddToCart) return;
-    addToCart({
-      id: product._id,
-      productName: product.title,
-      brand: "",
-      price: currentPrice,
-      size: selectedSize ?? "",
-      color: selectedColor,
-      stitching: selectedStitching,
-      quantity,
-      productImage: galleryImages[0] ?? product.images[0],
-    });
-    closeCart();
-    router.push("/checkout");
+    try {
+      await addToCart({
+        id: product._id,
+        productName: product.title,
+        brand: "",
+        price: currentPrice,
+        size: selectedSize ?? "",
+        color: selectedColor,
+        stitching: selectedStitching,
+        quantity,
+        productImage: galleryImages[0] ?? product.images[0],
+      });
+      closeCart();
+      router.push("/checkout");
+    } catch {
+      // Stay on the product page when the cart API rejects the item.
+    }
   };
 
   const handleWhatsAppOrder = () => {

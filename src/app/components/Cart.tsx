@@ -36,6 +36,16 @@ const Cart = () => {
     }
   };
 
+  const removeLine = async (item: (typeof cartItems)[number]) => {
+    const key = getLineKey(item);
+    if (updatingLine === key) return;
+    setUpdatingLine(key);
+    try {
+      await removeItem(item.id, item.size, item.color, item.stitching);
+    } finally {
+      setUpdatingLine((current) => current === key ? null : current);
+    }
+  };
   const fallbackSubtotal = cartItems.reduce((acc, item) => acc + item.lineSubtotal, 0);
   const originalSubtotal = pricing?.subtotal ?? fallbackSubtotal;
   const subtotal = pricing?.total ?? fallbackSubtotal;
@@ -113,7 +123,7 @@ const Cart = () => {
                       className="product-image"
                     />
                     {isUpdating && (
-                      <span className="cart-image-loader" aria-label="Updating quantity">
+                      <span className="cart-image-loader" aria-label={isUpdating ? "Updating cart item" : undefined}>
                         <LoaderCircle size={28} aria-hidden="true" />
                       </span>
                     )}
@@ -168,10 +178,10 @@ const Cart = () => {
                     <button
                       type="button"
                       className="remove-btn"
-                      onClick={() => removeItem(item.id, item.size, item.color, item.stitching)}
+                      onClick={() => void removeLine(item)}
                       disabled={isUpdating}
                     >
-                      Remove
+                      {isUpdating ? "Removing…" : "Remove"}
                     </button>
                   </div>
 

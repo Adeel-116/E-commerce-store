@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
@@ -145,6 +145,25 @@ export default function ProductDetailClient({
   const [openAccordion, setOpenAccordion] = useState<string | null>(
     "description",
   );
+  const handleAccordionToggle = (
+    section: "description" | "shipping" | "returns",
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
+    const header = event.currentTarget;
+    const headerTop = header.getBoundingClientRect().top;
+    const shouldOpen = openAccordion !== section;
+
+    setOpenAccordion(shouldOpen ? section : null);
+    if (shouldOpen) {
+      window.setTimeout(() => {
+        const newHeaderTop = header.getBoundingClientRect().top;
+        window.scrollBy({
+          top: newHeaderTop - headerTop,
+          behavior: "smooth",
+        });
+      }, 460);
+    }
+  };
   const { addToCart, openCart, closeCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const router = useRouter();
@@ -619,7 +638,7 @@ export default function ProductDetailClient({
                             borderRadius: "4px",
                           }}
                         >
-                          âœ¨ Want to buy stitched? Click here!
+                          ✨ Want to buy stitched? Click here!
                         </span>
                       )}
                   </span>
@@ -839,11 +858,7 @@ export default function ProductDetailClient({
                 <button
                   type="button"
                   className="accordion-header"
-                  onClick={() =>
-                    setOpenAccordion((prev) =>
-                      prev === "description" ? null : "description",
-                    )
-                  }
+                  onClick={(event) => handleAccordionToggle("description", event)}
                 >
                   <span>Description</span>
                   <Plus size={16} className="accordion-icon" />
@@ -864,11 +879,7 @@ export default function ProductDetailClient({
                 <button
                   type="button"
                   className="accordion-header"
-                  onClick={() =>
-                    setOpenAccordion((prev) =>
-                      prev === "shipping" ? null : "shipping",
-                    )
-                  }
+                  onClick={(event) => handleAccordionToggle("shipping", event)}
                 >
                   <span>Shipping and Returns</span>
                   <Plus size={16} className="accordion-icon" />
@@ -893,11 +904,7 @@ export default function ProductDetailClient({
                 <button
                   type="button"
                   className="accordion-header"
-                  onClick={() =>
-                    setOpenAccordion((prev) =>
-                      prev === "returns" ? null : "returns",
-                    )
-                  }
+                  onClick={(event) => handleAccordionToggle("returns", event)}
                 >
                   <span>Return Policies</span>
                   <Plus size={16} className="accordion-icon" />

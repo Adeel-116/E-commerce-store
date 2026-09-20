@@ -56,6 +56,10 @@ export default function QuickAddModal({
 
   return createPortal(
     <div
+
+         data-lenis-prevent="true"
+                    data-lenis-prevent-wheel="true"
+                    data-lenis-prevent-touch="true"
       className="qa-backdrop"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >

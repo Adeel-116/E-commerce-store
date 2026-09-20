@@ -64,6 +64,14 @@ export default function QuickAddModal({
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
+
+      data-lenis-prevent="true"
+                    data-lenis-prevent-wheel="true"
+                    data-lenis-prevent-touch="true"
+                    
+
+
+                    
         className="qa-panel"
         role="dialog"
         aria-modal="true"

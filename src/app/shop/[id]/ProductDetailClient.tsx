@@ -170,7 +170,7 @@ export default function ProductDetailClient({
     setTimelineDates({
       ordered: fmt(addDays(0)),
       shipped: fmt(addDays(2)),
-      delivered: `${fmt(addDays(5))} â†’ ${fmt(addDays(8))}`,
+      delivered: `${fmt(addDays(5))} → ${fmt(addDays(8))}`,
     });
   }, []);
 
@@ -447,7 +447,7 @@ export default function ProductDetailClient({
           </div>
           <div className="shop-inner-bundle-banner-text">
             <p>
-              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5â€“8
+              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5–8
               days.
             </p>
           </div>
@@ -709,18 +709,10 @@ export default function ProductDetailClient({
               <div className="shop-inner-info-row">
                 <Truck size={17} />
                 <span>
-                  Estimated delivery time: <strong>5â€“8 days</strong>
+                  Estimated delivery time: <strong>5–8 days</strong>
                 </span>
               </div>
-              <div className="shop-inner-info-divider" />
-              <div className="shop-inner-info-row">
-                <Sparkles size={17} />
-                <span>
-                  Use code <strong>&quot;STYLE20&quot;</strong> for an extra 20%
-                  off
-                </span>
-              </div>
-              <div className="shop-inner-info-divider" />
+
               <div className="shop-inner-info-row">
                 <PackageCheck size={17} />
                 <span>Standard shipping &amp; easy returns</span>
@@ -806,7 +798,7 @@ export default function ProductDetailClient({
                   <Truck />
                 </div>
                 <strong>Shipped</strong>
-                <span>{timelineDates?.shipped ?? "Within 1â€“2 days"}</span>
+                <span>{timelineDates?.shipped ?? "Within 1–2 days"}</span>
               </div>
               <div className="order-timeline-line" />
               <div className="order-timeline-step">
@@ -814,7 +806,7 @@ export default function ProductDetailClient({
                   <PackageCheck />
                 </div>
                 <strong>Delivered</strong>
-                <span>{timelineDates?.delivered ?? "In 5â€“8 days"}</span>
+                <span>{timelineDates?.delivered ?? "In 5–8 days"}</span>
               </div>
             </div>
 
@@ -884,8 +876,8 @@ export default function ProductDetailClient({
                 <div className="accordion-content">
                   <div className="accordion-inner">
                     <ul>
-                      <li>Orders are dispatched within 1â€“2 business days.</li>
-                      <li>Estimated delivery time is 5â€“8 business days.</li>
+                      <li>Orders are dispatched within 1–2 business days.</li>
+                      <li>Estimated delivery time is 5–8 business days.</li>
                       <li>
                         Rs 140 standard shipping on all orders, nationwide.
                       </li>

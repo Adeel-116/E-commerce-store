@@ -3,7 +3,7 @@
 import "../styles/OfferMarquee.css";
 
 const OFFERS: { text: string; code?: string }[] = [
-  { text: "Sale — Flat 20% Off on All Collection, Use Code", code: "STYLE20" },
+  { text: "Free Shipping & a Free Gift on Orders Above Rs 10,000" },
 ];
 
 export default function OfferMarquee() {

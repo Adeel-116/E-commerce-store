@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -43,7 +43,7 @@ export default function QuickAddModal({ product, image, onClose, onConfirm }: Pr
       <button className="qa-close" onClick={onClose} aria-label="Close"><X size={18} strokeWidth={1.7} /></button>
       <div className="qa-image"><img src={chosenImage ?? product.images[0]} alt={product.title} /></div>
       <div className="qa-content"><p className="qa-eyebrow">Quick add</p><h2 id={`qa-${product._id}`}>{product.title}</h2><p className="qa-price">Rs. {(product.sizePrices?.[size] ?? product.price).toLocaleString()}</p>
-        {colors.length > 0 && <fieldset><legend>Colour {color && <span>â€” {color}</span>}</legend><div className="qa-colors">{colors.map((item) => <button key={item.name} type="button" title={item.name} aria-label={item.name} aria-pressed={color === item.name} className={color === item.name ? "active" : ""} style={{backgroundColor:item.hex}} onClick={() => setColor(item.name)} />)}</div></fieldset>}
+        {colors.length > 0 && <fieldset><legend>Colour {color && <span>— {color}</span>}</legend><div className="qa-colors">{colors.map((item) => <button key={item.name} type="button" title={item.name} aria-label={item.name} aria-pressed={color === item.name} className={color === item.name ? "active" : ""} style={{backgroundColor:item.hex}} onClick={() => setColor(item.name)} />)}</div></fieldset>}
         {product.sizes.length > 0 && <fieldset><legend className="qa-size-legend"><span>Select size</span>{(product.measurementImage || product.measurementCharts?.length) && <button type="button" onClick={() => setSizeGuideOpen(true)}>Size Guide</button>}</legend><div className="qa-sizes">{product.sizes.map((item) => <button key={item} type="button" className={size === item ? "active" : ""} aria-pressed={size === item} onClick={() => setSize(item)}>{item}</button>)}</div></fieldset>}
         <button className="qa-submit" disabled={!ready} onClick={() => onConfirm(size, color || null, chosenImage)}><ShoppingBag size={16} strokeWidth={1.7} />{ready ? "Add to cart" : colors.length && !color ? "Select a colour" : "Select a size"}</button>
         <a className="qa-details" href={`/shop/${product.slug}`}>View full details <ArrowRight size={15} strokeWidth={1.7} /></a>

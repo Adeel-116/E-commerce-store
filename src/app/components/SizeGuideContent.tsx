@@ -26,7 +26,7 @@ export default function SizeGuideContent({
       {chart.rows?.length > 0 && <div className="size-guide-table-wrap">
         <table>
           <thead><tr><th>Measurement ({chart.unit || "inches"})</th>{chart.sizes.map(size => <th key={size}>{size}</th>)}</tr></thead>
-          <tbody>{chart.rows.map((row, rowIndex) => <tr key={rowIndex}><th scope="row">{row.label}</th>{chart.sizes.map((_, cellIndex) => <td key={cellIndex}>{row.values[cellIndex] ?? "â€”"}</td>)}</tr>)}</tbody>
+          <tbody>{chart.rows.map((row, rowIndex) => <tr key={rowIndex}><th scope="row">{row.label}</th>{chart.sizes.map((_, cellIndex) => <td key={cellIndex}>{row.values[cellIndex] ?? "—"}</td>)}</tr>)}</tbody>
         </table>
       </div>}
     </section>) : <img src={image} alt={`${title} measurement and size guide`} />}

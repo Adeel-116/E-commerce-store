@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -281,7 +281,7 @@ function ShopPageContent() {
         >
           <h3 className="shop-page__sidebar-title">Availability</h3>
           <span className="shop-page__sidebar-toggle">
-            {openSections.availability ? "âˆ’" : "+"}
+            {openSections.availability ? "−" : "+"}
           </span>
         </button>
         {openSections.availability && (
@@ -320,7 +320,7 @@ function ShopPageContent() {
           >
             <h3 className="shop-page__sidebar-title">Stitching</h3>
             <span className="shop-page__sidebar-toggle">
-              {openSections.stitching ? "âˆ’" : "+"}
+              {openSections.stitching ? "−" : "+"}
             </span>
           </button>
           {openSections.stitching && (
@@ -370,7 +370,7 @@ function ShopPageContent() {
         >
           <h3 className="shop-page__sidebar-title">Price</h3>
           <span className="shop-page__sidebar-toggle">
-            {openSections.price ? "âˆ’" : "+"}
+            {openSections.price ? "−" : "+"}
           </span>
         </button>
         {openSections.price && (
@@ -390,7 +390,7 @@ function ShopPageContent() {
                   setCurrentPage(1);
                 }}
               />
-              <span className="shop-page__price-dash">â€”</span>
+              <span className="shop-page__price-dash">—</span>
               <input
                 type="number"
                 className="shop-page__price-input"
@@ -452,7 +452,7 @@ function ShopPageContent() {
               <span className="shop-page__price-label-val">
                 Rs.{priceRange.min.toLocaleString()}
               </span>
-              {" â€” "}
+              {" — "}
               <span className="shop-page__price-label-val">
                 Rs.{priceRange.max.toLocaleString()}
               </span>
@@ -531,7 +531,7 @@ function ShopPageContent() {
           )}
         </div>
         <p className="shop-page__delivery-note">
-          Rs 140 standard shipping across Pakistan Â· Delivered in 4â€“6 days
+          Rs 140 standard shipping across Pakistan · Delivered in 4–6 days
         </p>
       </div>
 
@@ -571,7 +571,7 @@ function ShopPageContent() {
               onClick={() => setShowFilterModal(false)}
               aria-label="Close filters"
             >
-              Ã—
+              ×
             </button>
           </div>
           <div className="shop-filter-modal-body">

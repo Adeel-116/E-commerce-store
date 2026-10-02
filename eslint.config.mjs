@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "public/try-on/wasm/**",
+    "output/try-on/**",
   ]),
 ]);
 

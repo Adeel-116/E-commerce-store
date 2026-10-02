@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, type MouseEvent } from "react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
@@ -35,6 +36,10 @@ import { gaViewItem } from "@/app/lib/gaEvents";
 import { metaViewContent } from "@/app/lib/metaEvents";
 import { ProductCard, type GridProduct } from "@/app/components/ProductGrid";
 import SizeGuideContent, { type MeasurementChart } from "@/app/components/SizeGuideContent";
+import { getTryOnGarment } from "@/app/lib/virtualTryOn";
+import "../../styles/VirtualTryOn.css";
+
+const VirtualTryOn = dynamic(() => import("@/app/components/VirtualTryOn"), { ssr: false });
 
 type ColorVariant = {
   name: string;
@@ -127,6 +132,8 @@ export default function ProductDetailClient({
           : null,
   );
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [tryOnOpen, setTryOnOpen] = useState(false);
+  const closeTryOn = useCallback(() => setTryOnOpen(false), []);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   useEffect(() => {
@@ -319,6 +326,7 @@ export default function ProductDetailClient({
   }
 
   const discountPercent = getDiscountPercent(product);
+  const tryOnGarment = getTryOnGarment(product);
   const soldCount = seededRange(product._id, 8, 46);
   const viewingCount = seededRange(product._id + "v", 6, 28);
   const wishlisted = isWishlisted(product._id);
@@ -741,6 +749,15 @@ export default function ProductDetailClient({
                 <span>Standard shipping &amp; easy returns</span>
               </div>
             </div>
+
+            {tryOnGarment && (
+              <button type="button" className="vto-launch" onClick={() => setTryOnOpen(true)}>
+                <Sparkles size={18} /> Try It On · Live camera
+              </button>
+            )}
+            {tryOnOpen && tryOnGarment && (
+              <VirtualTryOn garment={tryOnGarment} productTitle={product.title} onClose={closeTryOn} />
+            )}
 
             {/* Qty + Cart */}
             <div className="qty-block">

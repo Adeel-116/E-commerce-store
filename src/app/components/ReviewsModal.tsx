@@ -2,19 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { BadgeCheck, Star, X } from "lucide-react";
-import api from "@/lib/axios";
+import { fetchCustomerReviews, type CustomerReview as Review } from "../lib/customerReviews";
 import "../styles/ReviewsModal.css";
 
-type Review = { _id: string; name: string; city?: string; text: string; rating: number; screenshot?: string; verified?: boolean; createdAt?: string };
 
 export default function ReviewsModal() {
   const [open, setOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    api.get("/reviews").then(({ data }) => {
-      setReviews(data.data ?? []);
+    let cancelled = false;
+    fetchCustomerReviews().then(reviews => {
+      if (!cancelled) setReviews(reviews);
     }).catch(() => undefined);
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {

@@ -1,5 +1,3 @@
-import { getCachedImageBlob } from "./imageBlobCache";
-
 const DB_NAME = "zarya-style-storefront";
 const STORE_NAME = "product-responses";
 const DB_VERSION = 1;
@@ -58,29 +56,4 @@ export async function getCachedProductResponse<T>(
     if (cached) return cached.data;
     throw error;
   }
-}
-
-type CacheableProduct = {
-  images?: string[];
-  measurementImage?: string;
-  colors?: Array<{ images?: string[] }>;
-};
-
-export function warmProductImages(products: CacheableProduct[]): void {
-  if (typeof indexedDB === "undefined") return;
-  const urls = Array.from(new Set(products.flatMap((product) => [
-    ...(product.images ?? []),
-    ...(product.colors ?? []).flatMap((color) => color.images ?? []),
-    ...(product.measurementImage ? [product.measurementImage] : []),
-  ]).filter(Boolean)));
-
-  // Keep network pressure low while still warming every catalog image.
-  const queue = [...urls];
-  const worker = async () => {
-    while (queue.length) {
-      const url = queue.shift();
-      if (url) await getCachedImageBlob(url).catch(() => {});
-    }
-  };
-  void Promise.all(Array.from({ length: Math.min(4, queue.length) }, worker));
 }

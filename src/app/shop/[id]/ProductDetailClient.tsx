@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductInnerButtons.css";
 import "../../styles/ProductGrid.css";
+import ProductReviews from "@/app/components/ProductReviews";
 import NavbarController from "@/app/components/NavbarController";
 import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
@@ -106,6 +107,8 @@ export default function ProductDetailClient({
   );
   const [loading, setLoading] = useState(!initialProduct);
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
 
   const [activeImage, setActiveImage] = useState(0);
@@ -205,6 +208,7 @@ export default function ProductDetailClient({
   // the page on a skeleton for an extra full round-trip on every visit.
   useEffect(() => {
     let cancelled = false;
+    setLoadError(false);
 
     (async () => {
       if (!initialProduct) {
@@ -245,7 +249,7 @@ export default function ProductDetailClient({
           setNotFound(true);
         }
       } catch {
-        if (!cancelled && !initialProduct) setNotFound(true);
+        if (!cancelled && !initialProduct) setLoadError(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -255,7 +259,7 @@ export default function ProductDetailClient({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  }, [slug, retryKey]);
 
   useEffect(() => {
     if (!product) return;
@@ -314,6 +318,10 @@ export default function ProductDetailClient({
         <ProductDetailSkeleton />
       </div>
     );
+  }
+
+  if (loadError && !product) {
+    return <div className="shop-inner-page"><NavbarController /><div className="shop-inner-status" role="alert"><p>Could not load the product. Check your connection and try again.</p><button onClick={() => setRetryKey(key => key + 1)}>Try again</button></div></div>;
   }
 
   if (notFound || !product) {
@@ -966,6 +974,8 @@ export default function ProductDetailClient({
             </div>
           </div>
         )}
+
+        <ProductReviews />
       </div>
     </div>
   );

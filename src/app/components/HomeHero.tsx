@@ -7,7 +7,7 @@ import gsap from "gsap";
 import api from "../lib/axios";
 
 type HeroSlide = { id: string | number; title: string; img: string; mobileImg: string; href: string; delay?: number; promo?: boolean; subtitle?: string; bg?: string; textless?: boolean };
-type ApiBanner = { _id: string; title: string; href: string; textless?: boolean; desktop: { url: string }; mobile: { url: string } };
+type ApiBanner = { _id: string; href: string; textless?: boolean; desktop: { url: string }; mobile: { url: string } };
 const defaultSlides: HeroSlide[] = [
   {
     id: "floral-editorial", title: "Floral Editorial", href: "/shop?category=fashion", textless: true,
@@ -79,9 +79,9 @@ const HomeHero = () => {
       setImagesReady(false);
       setActiveIndex(0);
       setHeroSlides(data.data.map((banner) => ({
-        id: banner._id, title: banner.title, href: banner.href,
+        id: banner._id, title: "Zarya Style collection", href: banner.href,
         img: banner.desktop.url, mobileImg: banner.mobile.url, promo: true,
-        textless: banner.textless ?? ["Floral Editorial", "Blue Floral Maxi"].includes(banner.title),
+        textless: true,
       })));
     }).catch(() => { /* Keep the default banners if the API is unavailable. */ });
     return () => controller.abort();

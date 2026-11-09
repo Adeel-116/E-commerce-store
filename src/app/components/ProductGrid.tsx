@@ -9,7 +9,7 @@ import { ProductGridSkeleton } from "./Skeleton";
 import ProductImageSwiper from "./ProductImageSwiper";
 import QuickAddModal from "./QuickAddModal";
 import type { MeasurementChart } from "./SizeGuideContent";
-import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
+import { getCachedProductResponse } from "../lib/storefrontCache";
 import {
   useProductCardImages,
   isRealColor,
@@ -29,6 +29,7 @@ export type GridProduct = {
   slug: string;
   description: string;
   images: string[];
+  cardImageDelivery?: Record<string, { src: string; srcSet?: string }>;
   measurementImage?: string;
   measurementCharts?: MeasurementChart[];
   price: number;
@@ -67,13 +68,13 @@ export function ProductCard({
     activeColorName,
     previewColor,
     activeImageIndex,
-    onIndexChange,
   } = useProductCardImages(product.images, product.colors ?? []);
 
   const wishlisted = isWishlisted(product._id);
   const visibleColors = product.category?.includes("western") ? [] : (product.colors ?? []).filter(isRealColor);
   const closeQuickAdd = useCallback(() => setQuickAddOpen(false), []);
   const startImageHover = () => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     if (displayImages.length < 2) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     hoverTimer.current = setTimeout(() => setHoverImageIndex(1), 180);
@@ -140,6 +141,7 @@ export function ProductCard({
     <>
     <article
       className={`cg-card${!product.stock ? " cg-card-outofstock" : ""}`}
+      data-navigation-href={`/shop/${product.slug}`}
       role="link"
       tabIndex={0}
       onClick={handleCardClick}
@@ -155,9 +157,9 @@ export function ProductCard({
       >
         <ProductImageSwiper
           images={displayImages}
+          delivery={product.cardImageDelivery}
           alt={product.title}
           activeIndex={hoverImageIndex ?? activeImageIndex}
-          onIndexChange={onIndexChange}
         />
 
         <div className="cg-card-scrim" />
@@ -301,7 +303,7 @@ const ProductGrid = ({
             limit,
           };
         const data = await getCachedProductResponse(
-          `home-products:${collection}:${limit}`,
+          `home-products:v3:${collection}:${limit}`,
           async () => (await api.get("/universalFilter", { params })).data,
         );
         if (!cancelled) {
@@ -310,7 +312,6 @@ const ProductGrid = ({
               collection !== "new-arrivals" || product.isNew,
           );
           setProducts(list);
-          warmProductImages(list);
           if (list.length > 0) {
             gaViewItemList({
               listName: title,

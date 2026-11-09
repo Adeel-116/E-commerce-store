@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import SmoothScrollProvider from "./SmoothScrollProvider";
 import { CartProvider } from "../context/CartContext";
@@ -28,7 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AnalyticsTracker />
-      <RouteLoadingOverlay />
+      <Suspense fallback={null}><RouteLoadingOverlay /></Suspense>
       <OfferMarquee />
       <AuthProvider>
         <FilterProvider>

@@ -176,3 +176,32 @@
     /* object-fit: cover; */
   }
 }
+
+.winter-banner,
+.winter-banner a,
+.winter-banner picture {
+  display: block;
+  width: 100%;
+}
+
+.winter-banner {
+  background: #f0e5da;
+}
+
+.winter-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1983 / 793;
+}
+
+.winter-banner a:focus-visible {
+  outline: 3px solid #6b1628;
+  outline-offset: -3px;
+}
+
+@media (max-width: 767px) {
+  .winter-banner img {
+    aspect-ratio: 4 / 5;
+  }
+}

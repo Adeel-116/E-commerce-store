@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             const { data } = await axios.get(`${BASE_URL}/refresh-token`, {
               withCredentials: true,
+              timeout: 15000,
             });
             const newToken = data.accessToken;
             setAccessToken(newToken);
@@ -102,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data } = await axios.get(`${BASE_URL}/refresh-token`, {
           withCredentials: true,
+              timeout: 15000,
         });
         setAccessToken(data.accessToken);
         accessTokenRef.current = data.accessToken;

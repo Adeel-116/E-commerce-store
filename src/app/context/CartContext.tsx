@@ -257,9 +257,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     loadBundles();
 
+    const initialTicket = refetchTicket.current;
     api
       .get("/cart")
       .then((res) => {
+        if (initialTicket !== refetchTicket.current) return;
         const { items, pricing } = mapCartResponse(res.data.cart);
         setCartItems(items);
         setPricing(pricing);
@@ -274,6 +276,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       "quantity" | "unitPrice" | "lineSubtotal" | "bundleApplied"
     > & { quantity?: number },
   ) => {
+    ++refetchTicket.current;
     const quantity = item.quantity ?? 1;
     const unitPrice = item.price ?? 0;
 

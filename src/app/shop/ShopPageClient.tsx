@@ -11,7 +11,7 @@ import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import LoadingRing from "../components/LoadingRing";
 import { CATEGORY_LABELS, type ShopProduct } from "./constants";
 import { gaViewItemList } from "../lib/gaEvents";
-import { getCachedProductResponse, warmProductImages } from "../lib/storefrontCache";
+import { getCachedProductResponse } from "../lib/storefrontCache";
 
 const PAGE_SIZE = 9;
 // Fixed, generous bounds for the price slider â€” avoids extra round-trips just
@@ -175,7 +175,7 @@ function ShopPageContent() {
           params.sort = sort;
         }
 
-        const cacheKey = `shop-products:v2:${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString()}`;
+        const cacheKey = `shop-products:v3:${new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString()}`;
         const data = await getCachedProductResponse(
           cacheKey,
           async () => (await api.get("/universalFilter", { params })).data,
@@ -184,7 +184,6 @@ function ShopPageContent() {
 
         const list: ShopProduct[] = data?.data ?? [];
         setProducts(list);
-        warmProductImages(list);
         setTotal(data?.total ?? 0);
         setTotalPages(data?.totalPages ?? 1);
         if (list.length > 0) {

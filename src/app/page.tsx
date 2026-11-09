@@ -4,9 +4,9 @@ import CategorySection from "./components/CategorySection";
 import HomeHero from "./components/HomeHero";
 import HomePerksMarquee from "./components/HomePerksMarquee";
 import NavbarController from "./components/NavbarController";
-import Banner, { SummerBanner } from "./components/Banner";
+import { WinterBanner } from "./components/Banner";
 import AboutUsReviews from "./components/AboutUsReviews";
-import VideoSlider from "./components/VideoSlider";
+// import VideoSlider from "./components/VideoSlider";
 import { SITE_NAME, SITE_DESCRIPTION } from "./lib/seo";
 
 export const metadata: Metadata = {
@@ -32,11 +32,10 @@ export default function Home() {
         subtitle="Discover the latest additions to our collection."
       />
       <CategorySection />
-      {/* <Banner /> */}
-      <SummerBanner />
+      <WinterBanner />
       <ProductGrid />
       <AboutUsReviews />
-      <VideoSlider />
+      {/* <VideoSlider /> */}
     </>
   );
 }

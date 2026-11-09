@@ -5,7 +5,7 @@ import { productJsonLd, breadcrumbJsonLd } from "../../lib/jsonld";
 import { CATEGORY_LABELS } from "../constants";
 import { optimizeCloudinaryData } from "@/lib/cloudinary";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 type ProductPageProps = {
   params: Promise<{ id: string }>;
@@ -45,7 +45,7 @@ async function fetchProduct(slug: string): Promise<FetchedProduct | null> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/getProductById?slug=${encodeURIComponent(slug)}`,
-      { next: { revalidate: 300 } },
+      { next: { revalidate: 300 }, signal: AbortSignal.timeout(8000) },
     );
     if (!res.ok) return null;
     const data = await res.json();

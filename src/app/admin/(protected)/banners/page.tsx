@@ -5,8 +5,8 @@ import axios from "axios";
 import api from "@/lib/axios";
 import "@/styles/admin-banners.css";
 
-type Banner = { _id: string; title: string; href: string; order: number; desktop: { url: string }; mobile: { url: string } };
-const empty = { title: "", href: "/shop", order: 0 };
+type Banner = { _id: string; href: string; order: number; desktop: { url: string }; mobile: { url: string } };
+const empty = { href: "/shop", order: 0 };
 const errorMessage = (error: unknown) => axios.isAxiosError(error) ? error.response?.data?.message || "Request failed. Please try again." : "Something went wrong. Please try again.";
 
 function ImageField({ variant, current, required }: { variant: string; current?: string; required: boolean }) {
@@ -67,7 +67,7 @@ export default function BannersPage() {
     finally { setBusy(false); }
   }
   async function remove(banner: Banner) {
-    if (!window.confirm(`Delete banner "${banner.title}" and both images?`)) return;
+    if (!window.confirm("Delete this banner and both images?")) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.delete(`/admin/banners/${banner._id}`);
@@ -87,7 +87,6 @@ export default function BannersPage() {
       <h2>{editing ? "Edit banner" : "Add banner"}</h2>
       <fieldset disabled={busy || loading}>
         <div className="banner-fields">
-          <label>Title / image description<input name="title" required maxLength={150} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></label>
           <label>Link<input name="href" required pattern="/[^/].*|/" value={form.href} onChange={(e) => setForm({ ...form, href: e.target.value })} placeholder="/shop" /></label>
           <label>Display order<input name="order" type="number" min="0" step="1" required value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} /></label>
         </div>
@@ -101,9 +100,9 @@ export default function BannersPage() {
     </form>
     {loading ? <p role="status">Loading banners…</p> : banners.length === 0 ? <p>No uploaded banners yet. The homepage uses the default banners until you add one.</p> :
       <div className="banner-list">{banners.map((banner) => <article className="banner-panel" key={banner._id}>
-        <h2>{banner.title}</h2><p>Order: {banner.order} · Link: {banner.href}</p>
-        <div className="banner-images"><figure><img src={banner.desktop.url} alt={`${banner.title} desktop`} /><figcaption>Desktop</figcaption></figure><figure><img src={banner.mobile.url} alt={`${banner.title} mobile`} /><figcaption>Mobile</figcaption></figure></div>
-        <div className="banner-actions"><button disabled={busy} onClick={() => { setEditing(banner); setForm({ title: banner.title, href: banner.href, order: banner.order }); setFormKey((key) => key + 1); setNotice(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit</button><button disabled={busy} onClick={() => remove(banner)}>Delete</button></div>
+        <h2>Homepage banner</h2><p>Order: {banner.order} · Link: {banner.href}</p>
+        <div className="banner-images"><figure><img src={banner.desktop.url} alt={"Desktop banner preview"} /><figcaption>Desktop</figcaption></figure><figure><img src={banner.mobile.url} alt={"Mobile banner preview"} /><figcaption>Mobile</figcaption></figure></div>
+        <div className="banner-actions"><button disabled={busy} onClick={() => { setEditing(banner); setForm({ href: banner.href, order: banner.order }); setFormKey((key) => key + 1); setNotice(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit</button><button disabled={busy} onClick={() => remove(banner)}>Delete</button></div>
       </article>)}</div>}
   </div>;
 }

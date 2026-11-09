@@ -48,3 +48,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local 3D prototype and backup
+/3D/
+/public/try-on/3d/
+/docs/3d-garment-prototype.md

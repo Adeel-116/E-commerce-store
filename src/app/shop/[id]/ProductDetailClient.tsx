@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductInnerButtons.css";
 import "../../styles/ProductGrid.css";
-import ProductReviews from "@/app/components/ProductReviews";
+import AboutUsReviews from "@/app/components/AboutUsReviews";
 import NavbarController from "@/app/components/NavbarController";
 import { ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
@@ -975,7 +975,7 @@ export default function ProductDetailClient({
           </div>
         )}
 
-        <ProductReviews />
+        <AboutUsReviews />
       </div>
     </div>
   );

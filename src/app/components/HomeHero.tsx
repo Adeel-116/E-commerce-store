@@ -1,18 +1,22 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/home-hero.css";
 import gsap from "gsap";
-import api from "../lib/axios";
 
 type HeroSlide = { id: string | number; title: string; img: string; mobileImg: string; href: string; delay?: number; promo?: boolean; subtitle?: string; bg?: string; textless?: boolean };
-type ApiBanner = { _id: string; href: string; textless?: boolean; desktop: { url: string }; mobile: { url: string } };
+/* Backend banners are the only hero source. */
 const defaultSlides: HeroSlide[] = [
+  { id: "banner-1", title: "Zarya Style collection", href: "/", img: "/banners/banner-1-desktop.png", mobileImg: "/banners/banner-1-mobile.png", textless: true, promo: true },
+  { id: "banner-2", title: "Zarya Style collection", href: "/shop/ethnc-studio-suit-e0763-106-226-226", img: "/banners/banner-2-desktop.png", mobileImg: "/banners/banner-2-mobile.png", textless: true, promo: true },
+];
+/*
   {
     id: "floral-editorial", title: "Floral Editorial", href: "/shop?category=fashion", textless: true,
-    img: "https://res.cloudinary.com/kop736vp/image/upload/v1789768804/banners/floral-editorial-desktop.png",
-    mobileImg: "https://res.cloudinary.com/kop736vp/image/upload/v1789768854/banners/floral-editorial-mobile.png",
+    img: "",
+    mobileImg: "",
   },
   // {
   //   id: 0,
@@ -32,8 +36,8 @@ const defaultSlides: HeroSlide[] = [
     title: "Define Your Style",
     subtitle: "New Season Clothing Collection",
     bg: "#1c1c1c",
-    img: "/clothing-hero-1-desktop.avif",
-    mobileImg: "/clothing-hero-1-mobile.avif",
+    img: "",
+    mobileImg: "",
     href: "/shop",
     delay: 5000,
     promo: true,
@@ -43,8 +47,8 @@ const defaultSlides: HeroSlide[] = [
     title: "Effortless Elegance",
     subtitle: "Crafted for Every Occasion",
     bg: "#1c1c1c",
-    img: "/clothing-hero-2-desktop.avif",
-    mobileImg: "/clothing-hero-2-mobile.avif",
+    img: "",
+    mobileImg: "",
     href: "/shop",
   },
   {
@@ -52,40 +56,26 @@ const defaultSlides: HeroSlide[] = [
     title: "Wear Your Confidence",
     subtitle: "Timeless Fits, Modern Comfort",
     bg: "#1c1c1c",
-    img: "/clothing-hero-3-desktop.avif",
-    mobileImg: "/clothing-hero-3-mobile.avif",
+    img: "",
+    mobileImg: "",
     href: "/shop",
   },
-];
+]; */
 
 const SLIDE_DELAY = 3000;
 const DRAG_THRESHOLD = 60;
 
 const HomeHero = () => {
-  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(defaultSlides);
+  const [heroSlides] = useState<HeroSlide[]>(defaultSlides);
   const [activeIndex, setActiveIndex] = useState(0);
   const [imagesReady, setImagesReady] = useState(false);
+  const [bannerSourceSettled] = useState(true);
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragState = useRef<{ startX: number; dragging: boolean }>({
     startX: 0,
     dragging: false,
   });
-
-  useEffect(() => {
-    const controller = new AbortController();
-    api.get<{ data: ApiBanner[] }>("/banners", { signal: controller.signal }).then(({ data }) => {
-      if (controller.signal.aborted || !data.data.length) return;
-      setImagesReady(false);
-      setActiveIndex(0);
-      setHeroSlides(data.data.map((banner) => ({
-        id: banner._id, title: "Zarya Style collection", href: banner.href,
-        img: banner.desktop.url, mobileImg: banner.mobile.url, promo: true,
-        textless: true,
-      })));
-    }).catch(() => { /* Keep the default banners if the API is unavailable. */ });
-    return () => controller.abort();
-  }, []);
 
   const animateIncoming = (index: number) => {
     const img = imgRefs.current[index];
@@ -128,6 +118,13 @@ const HomeHero = () => {
       cancelled = true;
     };
   }, [heroSlides]);
+
+  useEffect(() => {
+    if (bannerSourceSettled && imagesReady) {
+      document.documentElement.dataset.zaryaHeroReady = "true";
+      window.dispatchEvent(new CustomEvent("zarya:hero-ready"));
+    }
+  }, [bannerSourceSettled, imagesReady]);
 
   const goTo = (index: number) => {
     const next = (index + heroSlides.length) % heroSlides.length;
@@ -205,7 +202,7 @@ const HomeHero = () => {
               <div className="hero-copy-bottom hero-copy-reveal"><span>Designed for your story</span><span>Pakistan · 2026</span></div>
             </div>}
             <div className="hero-split-media">
-              <picture><source media="(max-width: 767px)" srcSet={slide.mobileImg} /><img src={slide.img} alt={slide.title} title={slide.title} className="hero-slide-img" ref={(element) => { imgRefs.current[index] = element; }} fetchPriority={index === 0 ? "high" : "auto"} draggable={false} /></picture>
+              <picture><source media="(max-width: 767px)" srcSet={slide.mobileImg} /><Image src={slide.img} alt={slide.title} title={slide.title} className="hero-slide-img" fill sizes="100vw" priority={index === 0} ref={(element) => { imgRefs.current[index] = element; }} draggable={false} /></picture>
               {!slide.textless && <div className="hero-media-shade" />}
               {/* <div className="hero-media-top"><span>Premium womenswear</span><span>Zarya Style</span></div> */}
               {!slide.textless && <div className="hero-media-caption"><span>{String(index + 1).padStart(2, "0")}</span><p>{slide.title}</p></div>}

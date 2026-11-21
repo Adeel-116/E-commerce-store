@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback, type MouseEvent } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { A11y, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import { useRouter } from "next/navigation";
 import "../../styles/ProductInner.css";
 import "../../styles/ProductInnerButtons.css";
@@ -971,6 +975,28 @@ export default function ProductDetailClient({
                   listName="People Also Bought"
                 />
               ))}
+            </div>
+            <div className="similar-products-mobile-slider">
+              <Swiper
+                modules={[A11y, Pagination]}
+                slidesPerView={1.35}
+                spaceBetween={14}
+                pagination={{ clickable: true }}
+                watchOverflow
+                aria-label="People Also Bought products"
+              >
+                {similarProducts.map((item) => (
+                  <SwiperSlide key={item._id}>
+                    <ProductCard
+                      product={item as unknown as GridProduct}
+                      listName="People Also Bought"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+            <div className="similar-products-action">
+              <Link href="/shop">View All Products</Link>
             </div>
           </div>
         )}

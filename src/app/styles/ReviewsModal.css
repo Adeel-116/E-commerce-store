@@ -129,7 +129,8 @@
 .review-story>img {
     display: block;
     width: 100%;
-    max-height: 430px;
+    height: auto;
+    max-height: none;
     object-fit: contain;
 }
 
@@ -214,9 +215,6 @@
     }
     .reviews-masonry {
         columns: 1
-    }
-    .review-story>img {
-        max-height: 520px
     }
 }
 

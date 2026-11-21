@@ -55,6 +55,7 @@
     height: 90px;
     width: 100px;
     object-fit: contain;
+    object-position: center;
     flex-shrink: 0;
 }
 
@@ -600,8 +601,8 @@
         width: 52px;
     }
     .navbar2-brand-mark {
-        height: 48px;
-        width: 54px;
+        height: 72px;
+        width: 72px;
     }
     .navbar2-links {
         display: none;
@@ -640,8 +641,8 @@
         width: 48px;
     }
     .navbar2-brand-mark {
-        height: 55px;
-        width: 55px;
+        height: 68px;
+        width: 68px;
     }
     .navbar2-actions {
         gap: 14px;

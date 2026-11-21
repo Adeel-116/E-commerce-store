@@ -17,7 +17,11 @@ let fetchedAt = 0;
 export function fetchCustomerReviews(): Promise<CustomerReview[]> {
   if (pending && Date.now() - fetchedAt < 60000) return pending;
   fetchedAt = Date.now();
-  pending = api.get("/reviews", { timeout: 15000 }).then(({ data }) => data.data ?? []).catch(error => {
+  pending = api.get("/reviews", { timeout: 15000 }).then(({ data }) => {
+    const reviews: CustomerReview[] = data.data ?? [];
+    // Keep customer screenshots ahead of text-only reviews on every surface.
+    return [...reviews].sort((a, b) => Number(Boolean(b.screenshot)) - Number(Boolean(a.screenshot)));
+  }).catch(error => {
     pending = null;
     throw error;
   });

@@ -141,6 +141,11 @@ export default function MarketingPage() {
   const [deleteRow, setDeleteRow] = useState<CampaignRow | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [marqueeText, setMarqueeText] = useState("");
+  const [marqueeLoading, setMarqueeLoading] = useState(true);
+  const [marqueeSaving, setMarqueeSaving] = useState(false);
+  const [marqueeNotice, setMarqueeNotice] = useState("");
+  const [marqueeError, setMarqueeError] = useState("");
 
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
@@ -170,8 +175,34 @@ export default function MarketingPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial API load owns the loading state
     fetchCampaigns();
   }, [fetchCampaigns]);
+
+  useEffect(() => {
+    api.get("/admin/storefront-settings")
+      .then(({ data }) => setMarqueeText(data?.data?.marqueeText ?? ""))
+      .catch(() => setMarqueeError("Could not load the current marquee text."))
+      .finally(() => setMarqueeLoading(false));
+  }, []);
+
+  const saveMarquee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = marqueeText.trim();
+    if (!value) return setMarqueeError("Marquee text is required.");
+    setMarqueeSaving(true);
+    setMarqueeError("");
+    setMarqueeNotice("");
+    try {
+      const { data } = await api.put("/admin/storefront-settings", { marqueeText: value });
+      setMarqueeText(data.data.marqueeText);
+      setMarqueeNotice("Storefront marquee updated.");
+    } catch (err: unknown) {
+      setMarqueeError((err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "Failed to update marquee text.");
+    } finally {
+      setMarqueeSaving(false);
+    }
+  };
 
   /* ── Open Add ── */
   const openAdd = () => {
@@ -266,6 +297,36 @@ export default function MarketingPage() {
           <Plus size={15} /> Add Campaign
         </button>
       </div>
+
+      <form onSubmit={saveMarquee} className="admin-card" style={{ marginBottom: "24px", padding: "20px" }}>
+        <div className="admin-card-header" style={{ padding: 0, marginBottom: "14px" }}>
+          <div>
+            <span className="admin-card-title">Storefront announcement marquee</span>
+            <p style={{ margin: "5px 0 0", color: "#888", fontSize: "12px" }}>
+              This text appears in the scrolling bar at the top of every storefront page.
+            </p>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 420px" }}>
+            <input
+              className="admin-modal-input"
+              value={marqueeText}
+              onChange={(event) => { setMarqueeText(event.target.value); setMarqueeNotice(""); setMarqueeError(""); }}
+              maxLength={160}
+              disabled={marqueeLoading || marqueeSaving}
+              placeholder={marqueeLoading ? "Loading current text…" : "Enter the storefront announcement"}
+              aria-label="Storefront marquee text"
+            />
+            <div style={{ marginTop: "6px", fontSize: "11px", color: marqueeError ? "#c62828" : marqueeNotice ? "#2e7d32" : "#999" }}>
+              {marqueeError || marqueeNotice || `${marqueeText.length}/160 characters`}
+            </div>
+          </div>
+          <button className="admin-btn admin-btn-primary" type="submit" disabled={marqueeLoading || marqueeSaving || !marqueeText.trim()}>
+            {marqueeSaving ? "Saving…" : "Save marquee"}
+          </button>
+        </div>
+      </form>
 
       {/* ── Summary Cards ── */}
       <div className="admin-stats-grid" style={{ marginBottom: "24px" }}>

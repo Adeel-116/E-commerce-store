@@ -1,0 +1,117 @@
+.zarya-loader {
+  --loader-progress: 0%;
+  position: fixed;
+  z-index: 99999;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(24px, 3.2vw, 52px);
+  overflow: hidden;
+  background: #11130f;
+  color: #f7f2e8;
+  pointer-events: all;
+}
+
+.zarya-loader__eyebrow,
+.zarya-loader__footer,
+.zarya-loader__center p {
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.zarya-loader__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(247, 242, 232, .72);
+}
+
+.zarya-loader__eyebrow i {
+  width: 22px;
+  height: 1px;
+  background: #d0a44e;
+}
+
+.zarya-loader__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(66vw, 760px);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.zarya-loader__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.zarya-loader__logo path {
+  fill: transparent;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.zarya-loader__center p {
+  margin: clamp(16px, 2vw, 24px) 0 0;
+  color: #d0a44e;
+}
+
+.zarya-loader__footer {
+  min-height: clamp(100px, 17vh, 170px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 24px;
+  color: rgba(247, 242, 232, .48);
+}
+
+.zarya-loader__count {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-width: .9em;
+  color: #f7f2e8;
+  font-family: var(--font-manrope), Arial, sans-serif;
+  font-size: clamp(96px, 12vw, 190px);
+  font-weight: 300;
+  line-height: .72;
+  letter-spacing: -.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.zarya-loader__count small {
+  margin: .08em 0 0 .12em;
+  color: #d0a44e;
+  font-size: .17em;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.zarya-loader__rule {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #d0a44e var(--loader-progress), rgba(247, 242, 232, .12) var(--loader-progress));
+}
+
+@media (max-width: 700px) {
+  .zarya-loader { padding: 24px 20px 30px; }
+  .zarya-loader__center { width: min(92vw, 520px); }
+  .zarya-loader__eyebrow,
+  .zarya-loader__footer,
+  .zarya-loader__center p { font-size: 8px; }
+  .zarya-loader__footer { min-height: 100px; }
+  .zarya-loader__count { font-size: clamp(72px, 24vw, 112px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zarya-loader { scroll-behavior: auto; }
+}

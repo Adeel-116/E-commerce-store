@@ -12,22 +12,26 @@ import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
 import WhatsAppFloat from "./WhatsAppFloat";
 import SubscribePopup from "./SubscribePopup";
-import RecentSalePopup from "./RecentSalePopup";
 import OfferMarquee from "./OfferMarquee";
 import RouteLoadingOverlay from "./RouteLoadingOverlay";
 import AnalyticsTracker from "./AnalyticsTracker";
 import ReviewsModal from "./ReviewsModal";
+import ZaryaPreloader from "./ZaryaPreloader";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith("/admin");
+  const isAdmin = pathname?.startsWith("/admin") || pathname?.startsWith("/dashboard");
+  const isPreloaderPreview = pathname === "/preloader";
 
   // The admin dashboard brings its own auth/layout/chrome (see src/app/admin) —
   // it doesn't need the storefront's cart/wishlist/footer/whatsapp float.
   if (isAdmin) return <>{children}</>;
 
+  // Keep the preview isolated so it can mount its own replayable loader.
+  if (isPreloaderPreview) return <>{children}</>;
+
   return (
-    <>
+    <ZaryaPreloader waitForHero={pathname === "/"}>
       <AnalyticsTracker />
       <Suspense fallback={null}><RouteLoadingOverlay /></Suspense>
       <OfferMarquee />
@@ -46,7 +50,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <ReviewsModal />
       <WhatsAppFloat />
       <SubscribePopup />
-      {/* <RecentSalePopup /> */}
-    </>
+    </ZaryaPreloader>
   );
 }

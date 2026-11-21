@@ -1,0 +1,70 @@
+.preloader-preview {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f7f5f2;
+  color: #1c1c1c;
+  font-family: var(--font-manrope), Arial, sans-serif;
+}
+
+.preloader-preview__panel {
+  width: min(100%, 620px);
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid rgba(28, 28, 28, 0.15);
+  background: #fff;
+  text-align: center;
+}
+
+.preloader-preview__eyebrow {
+  margin: 0 0 14px;
+  color: #9b7b33;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.preloader-preview h1 {
+  margin: 0;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(38px, 7vw, 68px);
+  font-weight: 600;
+}
+
+.preloader-preview__panel > p:not(.preloader-preview__eyebrow) {
+  max-width: 500px;
+  margin: 20px auto 0;
+  color: #5f5a53;
+  line-height: 1.7;
+}
+
+.preloader-preview__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.preloader-preview__actions button,
+.preloader-preview__actions a {
+  min-width: 170px;
+  padding: 13px 20px;
+  border: 1px solid #1c1c1c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.preloader-preview__actions button {
+  background: #1c1c1c;
+  color: #fff;
+}
+
+.preloader-preview__actions a {
+  background: transparent;
+  color: #1c1c1c;
+}

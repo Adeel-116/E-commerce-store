@@ -41,19 +41,11 @@ export async function getCachedProductResponse<T>(
   key: string,
   fetchFresh: () => Promise<T>,
 ): Promise<T> {
-  if (typeof indexedDB === "undefined") return fetchFresh();
-
-  let cached: CacheRecord<T> | undefined;
-  try { cached = await readRecord<T>(key); } catch { /* private mode / quota */ }
-
-  if (cached && Date.now() - cached.cachedAt < PRODUCT_TTL_MS) return cached.data;
-
-  try {
-    const fresh = await fetchFresh();
-    void writeRecord(key, fresh).catch(() => {});
-    return fresh;
-  } catch (error) {
-    if (cached) return cached.data;
-    throw error;
-  }
+  // Product listings must always reflect the current catalog. Returning an
+  // IndexedDB snapshot here made deleted products remain visible for up to
+  // five minutes (and made a cache clear appear to “fix” the site). Keep the
+  // helper API for callers, but use the authoritative API response directly.
+  // This also avoids IndexedDB work on low-end/low-network devices.
+  void key;
+  return fetchFresh();
 }

@@ -185,10 +185,6 @@ const Navbar2Inner = () => {
     return {
       className: active ? "navbar2-drawer-link--active" : "",
       "aria-current": active ? ("page" as const) : undefined,
-      // Next.js <Link> is a no-op when the target URL matches the current
-      // one, so tapping the already-active category in the mobile drawer
-      // used to just preventDefault() and do nothing. Force a real reload
-      // instead so it always refreshes the page/content, as on any other tap.
       onClick: closeDrawer,
     };
   };
@@ -203,9 +199,8 @@ const Navbar2Inner = () => {
           <Link href={"/"}>
             <div className="navbar2-text-logo" id="nav-logo">
               <img
-                src={isSolid ? "/white-version.avif" : "/updated-logo.avif"}
+                src="/white-version.avif"
                 alt="Zarya Style"
-                title="Zarya Style"
                 className="navbar2-brand-mark"
               />
 

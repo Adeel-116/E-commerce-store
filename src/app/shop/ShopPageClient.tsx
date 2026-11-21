@@ -45,14 +45,8 @@ function getPaginationRange(
   return range;
 }
 
-function ShopPageContent() {
+function ShopPageContent({ selectedCategory }: { selectedCategory?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category");
-
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    categoryParam || undefined,
-  );
   const [inStock, setInStock] = useState(false);
   const [outOfStock, setOutOfStock] = useState(false);
   const [stitching, setStitching] = useState<"" | "stitched" | "unstitched">("");
@@ -74,12 +68,35 @@ function ShopPageContent() {
     min: PRICE_MIN,
     max: PRICE_MAX,
   });
+  const [priceInputs, setPriceInputs] = useState({
+    min: String(PRICE_MIN),
+    max: String(PRICE_MAX),
+  });
+  const hasLoadedProducts = useRef(false);
   const [stockCounts, setStockCounts] = useState({ inStock: 0, outOfStock: 0 });
 
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Keep number-field typing responsive and apply the filter only after the
+  // customer pauses, rather than refetching the catalog for every digit.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const parsedMin = Number(priceInputs.min);
+      const parsedMax = Number(priceInputs.max);
+      if (!Number.isFinite(parsedMin) || !Number.isFinite(parsedMax)) return;
+      const min = Math.max(PRICE_MIN, Math.min(parsedMin, parsedMax, PRICE_MAX));
+      const max = Math.min(PRICE_MAX, Math.max(parsedMax, min));
+      setPriceRange((current) => {
+        if (current.min === min && current.max === max) return current;
+        return { min, max };
+      });
+      setCurrentPage(1);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [priceInputs]);
 
   useEffect(() => {
     const trimmed = searchQuery.trim();
@@ -206,7 +223,10 @@ function ShopPageContent() {
           setTotalPages(1);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          hasLoadedProducts.current = true;
+          setLoading(false);
+        }
       }
     })();
 
@@ -254,7 +274,7 @@ function ShopPageContent() {
   };
 
   const clearFilters = () => {
-    setSelectedCategory(undefined);
+    if (selectedCategory) router.push("/shop");
     setInStock(false);
     setOutOfStock(false);
     setStitching("");
@@ -263,6 +283,7 @@ function ShopPageContent() {
     setSort("");
     setCurrentPage(1);
     setPriceRange({ min: PRICE_MIN, max: PRICE_MAX });
+    setPriceInputs({ min: String(PRICE_MIN), max: String(PRICE_MAX) });
   };
 
   const renderFilterOptions = (variant: "sidebar" | "modal") => (
@@ -378,30 +399,22 @@ function ShopPageContent() {
               <input
                 type="number"
                 className="shop-page__price-input"
-                value={priceRange.min}
+                value={priceInputs.min}
                 min={PRICE_MIN}
                 max={priceRange.max}
                 onChange={(e) => {
-                  setPriceRange((prev) => ({
-                    ...prev,
-                    min: Math.max(PRICE_MIN, Math.min(Number(e.target.value), prev.max)),
-                  }));
-                  setCurrentPage(1);
+                  setPriceInputs((prev) => ({ ...prev, min: e.target.value }));
                 }}
               />
               <span className="shop-page__price-dash">—</span>
               <input
                 type="number"
                 className="shop-page__price-input"
-                value={priceRange.max}
+                value={priceInputs.max}
                 min={priceRange.min}
                 max={PRICE_MAX}
                 onChange={(e) => {
-                  setPriceRange((prev) => ({
-                    ...prev,
-                    max: Math.min(PRICE_MAX, Math.max(Number(e.target.value), prev.min)),
-                  }));
-                  setCurrentPage(1);
+                  setPriceInputs((prev) => ({ ...prev, max: e.target.value }));
                 }}
               />
             </div>
@@ -422,10 +435,9 @@ function ShopPageContent() {
                   max={PRICE_MAX}
                   value={priceRange.min}
                   onChange={(e) => {
-                    setPriceRange((prev) => ({
-                      ...prev,
-                      min: Math.min(Number(e.target.value), prev.max),
-                    }));
+                    const value = Math.min(Number(e.target.value), priceRange.max);
+                    setPriceRange((prev) => ({ ...prev, min: value }));
+                    setPriceInputs((prev) => ({ ...prev, min: String(value) }));
                     setCurrentPage(1);
                   }}
                 />
@@ -436,10 +448,9 @@ function ShopPageContent() {
                   max={PRICE_MAX}
                   value={priceRange.max}
                   onChange={(e) => {
-                    setPriceRange((prev) => ({
-                      ...prev,
-                      max: Math.max(Number(e.target.value), prev.min),
-                    }));
+                    const value = Math.max(Number(e.target.value), priceRange.min);
+                    setPriceRange((prev) => ({ ...prev, max: value }));
+                    setPriceInputs((prev) => ({ ...prev, max: String(value) }));
                     setCurrentPage(1);
                   }}
                 />
@@ -468,7 +479,7 @@ function ShopPageContent() {
     setCurrentPage(1);
   };
 
-  if (loading) {
+  if (loading && !hasLoadedProducts.current) {
     return (
       <main className="shop-loading-screen" role="status" aria-live="polite">
         <div className="rlo-stack">
@@ -700,10 +711,19 @@ function ShopPageContent() {
   );
 }
 
+function ShopCategoryRoute() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") || undefined;
+
+  // A category navigation starts a fresh result set and resets pagination and
+  // filters. Remounting also cancels pending requests for the previous category.
+  return <ShopPageContent key={category ?? "all"} selectedCategory={category} />;
+}
+
 export default function ShopPageClient() {
   return (
     <Suspense fallback={null}>
-      <ShopPageContent />
+      <ShopCategoryRoute />
     </Suspense>
   );
 }

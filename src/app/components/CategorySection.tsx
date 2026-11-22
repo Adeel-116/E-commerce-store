@@ -28,6 +28,11 @@ function CategoryCard({ category }: { category: StoreCategory }) {
 
 export default function CategorySection() {
   const { categories } = useCategories();
+  const mobileCategoryNames = new Set(["kids collection", "western fashion", "pakistani fashion", "maxi"]);
+  const mobileCategories = categories.filter((category, index, items) => {
+    const name = category.name.trim().toLowerCase();
+    return mobileCategoryNames.has(name) && items.findIndex((item) => item.name.trim().toLowerCase() === name) === index;
+  });
 
   return (
     <section className="category-section">
@@ -37,8 +42,8 @@ export default function CategorySection() {
         <span className="category-section-divider" />
       </div>
       <div className="category-grid">
-        {categories.map((category) => (
-          <div className="category-grid-item" key={category.slug}>
+        {mobileCategories.map((category) => (
+            <div className={`category-grid-item${["kids collection", "western fashion", "pakistani fashion", "maxi"].includes(category.name.trim().toLowerCase()) ? " category-grid-item--mobile-visible" : ""}`} key={category.slug}>
             <CategoryCard category={category} />
           </div>
         ))}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import api from "../lib/axios";
 import "../styles/OfferMarquee.css";
 
-const DEFAULT_TEXT = "Free Shipping & a Free Gift on Orders Above Rs 10,000";
+const DEFAULT_TEXT = "Free Shipping & a Free Gift on Orders Above PKR 8,000";
 
 export default function OfferMarquee() {
   const [text, setText] = useState(DEFAULT_TEXT);

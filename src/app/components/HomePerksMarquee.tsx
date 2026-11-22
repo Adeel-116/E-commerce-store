@@ -1,11 +1,10 @@
-import { Percent, Truck, PackageCheck, BadgeCheck } from "lucide-react";
+import { Truck, PackageCheck, BadgeCheck, Gift } from "lucide-react";
 import "../styles/HomePerksMarquee.css";
 
-const PERKS: { icon: typeof Percent; text: string; code?: string }[] = [
+const PERKS: { icon: typeof Gift; text: string; code?: string }[] = [
   {
-    icon: Percent,
-    text: "Sale — Flat 20% Off, Use Code",
-    code: "STYLE20",
+    icon: Gift,
+    text: "Free Shipping & Gift on Orders Above PKR 8,000",
   },
   {
     icon: Truck,

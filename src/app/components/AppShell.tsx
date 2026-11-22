@@ -31,7 +31,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (isPreloaderPreview) return <>{children}</>;
 
   return (
-    <ZaryaPreloader waitForHero={pathname === "/"}>
+    <ZaryaPreloader waitForHero={pathname === "/"} alwaysShow={pathname === "/"}>
       <AnalyticsTracker />
       <Suspense fallback={null}><RouteLoadingOverlay /></Suspense>
       <OfferMarquee />

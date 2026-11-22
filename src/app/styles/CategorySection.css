@@ -185,6 +185,13 @@
         position: relative;
         height: 280px;
     }
+    /* Keep the mobile category section to the four requested cards. */
+    .category-grid-item {
+        display: none;
+    }
+    .category-grid-item--mobile-visible {
+        display: block;
+    }
     .category-grid-item .category-card {
         /* border-radius: 8px; */
     }

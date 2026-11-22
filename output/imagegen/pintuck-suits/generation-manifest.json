@@ -1,0 +1,58 @@
+[
+  {
+    "key": "navy-detail",
+    "color": "navy",
+    "file": "04-detail.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-ebca7b20-08f6-4621-8015-b35e4457a23b.png",
+    "prompt": "Portrait navy product detail on ivory backdrop; preserve reference garment design, colour, covered buttons and pintucks."
+  },
+  {
+    "key": "navy-model",
+    "color": "navy",
+    "file": "03-model-alternate.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-592875a2-6774-4fe3-9514-e53c3e5cd325.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one alternate full length fashion photograph of the same adult model wearing the exact same navy suit. Change pose to relaxed three-quarter front view walking gently, both arms lowered, no phone. Same leafy courtyard, natural soft light, full trousers and sandals visible. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "black-model",
+    "color": "black",
+    "file": "03-model-alternate.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-7ab1de82-3264-4925-a332-c6ca3c6538f2.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one alternate full length fashion photograph of the same adult model wearing the exact same black suit. Change pose to relaxed three-quarter front view walking gently, both arms lowered, no phone. Same leafy courtyard, natural soft light, full trousers and sandals visible. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "red-model",
+    "color": "crimson",
+    "file": "03-model-alternate.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-9adab48d-d124-4d28-a998-17b2ce14d71d.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one alternate full length fashion photograph of the same adult model wearing the exact same crimson red suit. Change pose to relaxed three-quarter front view walking gently, both arms lowered, no phone. Same leafy courtyard, natural soft light, full trousers and sandals visible. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "blue-model",
+    "color": "powder-blue",
+    "file": "03-model-alternate.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-84308f9c-9ed2-46e7-8e99-95a74c941b32.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one alternate full length fashion photograph of the same adult model wearing the exact same powder blue suit. Change pose to relaxed three-quarter front view walking gently, both arms lowered, no phone. Same leafy courtyard, natural soft light, full trousers and sandals visible. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "black-detail",
+    "color": "black",
+    "file": "04-detail.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-765fb170-fa51-452b-8aa5-0c7890aadd11.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one portrait close detail studio photograph of this exact black shirt on wooden hanger against warm ivory background. Crop to showcase neckline, pintucks, covered buttons and gathered three-quarter cuffs, with small part of trousers visible at bottom. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "red-detail",
+    "color": "crimson",
+    "file": "04-detail.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-19455c73-5e87-4d09-aa90-30fcecbc83d2.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one portrait close detail studio photograph of this exact crimson red shirt on wooden hanger against warm ivory background. Crop to showcase neckline, pintucks, covered buttons and gathered three-quarter cuffs, with small part of trousers visible at bottom. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  },
+  {
+    "key": "blue-detail",
+    "color": "powder-blue",
+    "file": "04-detail.png",
+    "source": "C:\\Users\\Muhammad Adeel\\.codex\\generated_images\\01a1fcf0-c088-7341-88ab-fb18886d0dfd\\exec-9abfc42d-1b18-4436-9599-6093e515c941.png",
+    "prompt": "Use case: product-mockup. Input image: product reference. Create one portrait close detail studio photograph of this exact powder blue shirt on wooden hanger against warm ivory background. Crop to showcase neckline, pintucks, covered buttons and gathered three-quarter cuffs, with small part of trousers visible at bottom. Preserve exact garment colour, smooth shoulder seams, round split neck, symmetrical pintucks, button count, front slit, matte fabric and wide-leg palazzo design. Photorealistic ecommerce catalog quality. No text, watermark or collage."
+  }
+]

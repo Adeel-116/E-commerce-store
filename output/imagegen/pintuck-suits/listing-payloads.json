@@ -1,0 +1,586 @@
+[
+  {
+    "productId": 96112101,
+    "title": "Navy Blue Pintuck Two Piece Suit - China Crepe",
+    "slug": "navy-pintuck-two-piece-suit-china-crepe",
+    "description": "A fully stitched two piece suit in navy blue China crepe fabric. Includes a pintuck shirt with a split round neckline, fabric-covered buttons, gathered three-quarter sleeves and a front hem slit, paired with matching wide-leg palazzo trousers with an elasticated waist. Available in S, M and L. Please refer to the shared garment size guide before ordering. Accessories and footwear are not included.",
+    "images": [
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245477/pintuck-suits/navy/01-model.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245478/pintuck-suits/navy/02-hanger.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245479/pintuck-suits/navy/03-model-alternate.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245481/pintuck-suits/navy/04-detail.png"
+    ],
+    "measurementImage": "https://res.cloudinary.com/kop736vp/image/upload/v1795245476/pintuck-suits/shared-size-guide.png",
+    "measurementCharts": [
+      {
+        "title": "Top Shirt",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "34.5",
+              "35",
+              "35.5"
+            ]
+          },
+          {
+            "label": "Shoulders",
+            "values": [
+              "15.5",
+              "16",
+              "16.5"
+            ]
+          },
+          {
+            "label": "Chest (Round)",
+            "values": [
+              "45.5",
+              "46",
+              "46.5"
+            ]
+          },
+          {
+            "label": "Sleeve Length",
+            "values": [
+              "19.5",
+              "20",
+              "20.5"
+            ]
+          },
+          {
+            "label": "Sleeve Opening",
+            "values": [
+              "5.5",
+              "6",
+              "6.5"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Palazzo",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "37.5",
+              "38",
+              "38.5"
+            ]
+          },
+          {
+            "label": "Waist (Relaxed)",
+            "values": [
+              "27.5",
+              "28",
+              "28.5"
+            ]
+          },
+          {
+            "label": "Waist (Stretched)",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Hips",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Bottom Opening",
+            "values": [
+              "14",
+              "14.5",
+              "15"
+            ]
+          }
+        ]
+      }
+    ],
+    "price": 3500,
+    "comparePrice": 4000,
+    "sizePrices": {},
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "category": [
+      "western"
+    ],
+    "colors": [
+      {
+        "name": "Navy Blue",
+        "hex": "#101b43",
+        "images": [
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245477/pintuck-suits/navy/01-model.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245478/pintuck-suits/navy/02-hanger.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245479/pintuck-suits/navy/03-model-alternate.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245481/pintuck-suits/navy/04-detail.png"
+        ]
+      }
+    ],
+    "isStitched": true,
+    "isUnstitched": false,
+    "stitchedPrice": null,
+    "isNew": true,
+    "stock": true,
+    "status": "active"
+  },
+  {
+    "productId": 96112102,
+    "title": "Black Pintuck Two Piece Suit - China Crepe",
+    "slug": "black-pintuck-two-piece-suit-china-crepe",
+    "description": "A fully stitched two piece suit in black China crepe fabric. Includes a pintuck shirt with a split round neckline, fabric-covered buttons, gathered three-quarter sleeves and a front hem slit, paired with matching wide-leg palazzo trousers with an elasticated waist. Available in S, M and L. Please refer to the shared garment size guide before ordering. Accessories and footwear are not included.",
+    "images": [
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245482/pintuck-suits/black/01-model.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245484/pintuck-suits/black/02-hanger.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245486/pintuck-suits/black/03-model-alternate.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245487/pintuck-suits/black/04-detail.png"
+    ],
+    "measurementImage": "https://res.cloudinary.com/kop736vp/image/upload/v1795245476/pintuck-suits/shared-size-guide.png",
+    "measurementCharts": [
+      {
+        "title": "Top Shirt",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "34.5",
+              "35",
+              "35.5"
+            ]
+          },
+          {
+            "label": "Shoulders",
+            "values": [
+              "15.5",
+              "16",
+              "16.5"
+            ]
+          },
+          {
+            "label": "Chest (Round)",
+            "values": [
+              "45.5",
+              "46",
+              "46.5"
+            ]
+          },
+          {
+            "label": "Sleeve Length",
+            "values": [
+              "19.5",
+              "20",
+              "20.5"
+            ]
+          },
+          {
+            "label": "Sleeve Opening",
+            "values": [
+              "5.5",
+              "6",
+              "6.5"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Palazzo",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "37.5",
+              "38",
+              "38.5"
+            ]
+          },
+          {
+            "label": "Waist (Relaxed)",
+            "values": [
+              "27.5",
+              "28",
+              "28.5"
+            ]
+          },
+          {
+            "label": "Waist (Stretched)",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Hips",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Bottom Opening",
+            "values": [
+              "14",
+              "14.5",
+              "15"
+            ]
+          }
+        ]
+      }
+    ],
+    "price": 3500,
+    "comparePrice": 4000,
+    "sizePrices": {},
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "category": [
+      "western"
+    ],
+    "colors": [
+      {
+        "name": "Black",
+        "hex": "#151515",
+        "images": [
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245482/pintuck-suits/black/01-model.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245484/pintuck-suits/black/02-hanger.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245486/pintuck-suits/black/03-model-alternate.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245487/pintuck-suits/black/04-detail.png"
+        ]
+      }
+    ],
+    "isStitched": true,
+    "isUnstitched": false,
+    "stitchedPrice": null,
+    "isNew": true,
+    "stock": true,
+    "status": "active"
+  },
+  {
+    "productId": 96112103,
+    "title": "Crimson Red Pintuck Two Piece Suit - China Crepe",
+    "slug": "crimson-pintuck-two-piece-suit-china-crepe",
+    "description": "A fully stitched two piece suit in crimson red China crepe fabric. Includes a pintuck shirt with a split round neckline, fabric-covered buttons, gathered three-quarter sleeves and a front hem slit, paired with matching wide-leg palazzo trousers with an elasticated waist. Available in S, M and L. Please refer to the shared garment size guide before ordering. Accessories and footwear are not included.",
+    "images": [
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245489/pintuck-suits/crimson/01-model.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245492/pintuck-suits/crimson/02-hanger.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245494/pintuck-suits/crimson/03-model-alternate.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245495/pintuck-suits/crimson/04-detail.png"
+    ],
+    "measurementImage": "https://res.cloudinary.com/kop736vp/image/upload/v1795245476/pintuck-suits/shared-size-guide.png",
+    "measurementCharts": [
+      {
+        "title": "Top Shirt",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "34.5",
+              "35",
+              "35.5"
+            ]
+          },
+          {
+            "label": "Shoulders",
+            "values": [
+              "15.5",
+              "16",
+              "16.5"
+            ]
+          },
+          {
+            "label": "Chest (Round)",
+            "values": [
+              "45.5",
+              "46",
+              "46.5"
+            ]
+          },
+          {
+            "label": "Sleeve Length",
+            "values": [
+              "19.5",
+              "20",
+              "20.5"
+            ]
+          },
+          {
+            "label": "Sleeve Opening",
+            "values": [
+              "5.5",
+              "6",
+              "6.5"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Palazzo",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "37.5",
+              "38",
+              "38.5"
+            ]
+          },
+          {
+            "label": "Waist (Relaxed)",
+            "values": [
+              "27.5",
+              "28",
+              "28.5"
+            ]
+          },
+          {
+            "label": "Waist (Stretched)",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Hips",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Bottom Opening",
+            "values": [
+              "14",
+              "14.5",
+              "15"
+            ]
+          }
+        ]
+      }
+    ],
+    "price": 3500,
+    "comparePrice": 4000,
+    "sizePrices": {},
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "category": [
+      "western"
+    ],
+    "colors": [
+      {
+        "name": "Crimson Red",
+        "hex": "#ae0629",
+        "images": [
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245489/pintuck-suits/crimson/01-model.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245492/pintuck-suits/crimson/02-hanger.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245494/pintuck-suits/crimson/03-model-alternate.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245495/pintuck-suits/crimson/04-detail.png"
+        ]
+      }
+    ],
+    "isStitched": true,
+    "isUnstitched": false,
+    "stitchedPrice": null,
+    "isNew": true,
+    "stock": true,
+    "status": "active"
+  },
+  {
+    "productId": 96112104,
+    "title": "Powder Blue Pintuck Two Piece Suit - China Crepe",
+    "slug": "powder-blue-pintuck-two-piece-suit-china-crepe",
+    "description": "A fully stitched two piece suit in powder blue China crepe fabric. Includes a pintuck shirt with a split round neckline, fabric-covered buttons, gathered three-quarter sleeves and a front hem slit, paired with matching wide-leg palazzo trousers with an elasticated waist. Available in S, M and L. Please refer to the shared garment size guide before ordering. Accessories and footwear are not included.",
+    "images": [
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245497/pintuck-suits/powder-blue/01-model.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245499/pintuck-suits/powder-blue/02-hanger.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245501/pintuck-suits/powder-blue/03-model-alternate.png",
+      "https://res.cloudinary.com/kop736vp/image/upload/v1795245503/pintuck-suits/powder-blue/04-detail.png"
+    ],
+    "measurementImage": "https://res.cloudinary.com/kop736vp/image/upload/v1795245476/pintuck-suits/shared-size-guide.png",
+    "measurementCharts": [
+      {
+        "title": "Top Shirt",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "34.5",
+              "35",
+              "35.5"
+            ]
+          },
+          {
+            "label": "Shoulders",
+            "values": [
+              "15.5",
+              "16",
+              "16.5"
+            ]
+          },
+          {
+            "label": "Chest (Round)",
+            "values": [
+              "45.5",
+              "46",
+              "46.5"
+            ]
+          },
+          {
+            "label": "Sleeve Length",
+            "values": [
+              "19.5",
+              "20",
+              "20.5"
+            ]
+          },
+          {
+            "label": "Sleeve Opening",
+            "values": [
+              "5.5",
+              "6",
+              "6.5"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Palazzo",
+        "unit": "inches",
+        "sizes": [
+          "S",
+          "M",
+          "L"
+        ],
+        "rows": [
+          {
+            "label": "Length",
+            "values": [
+              "37.5",
+              "38",
+              "38.5"
+            ]
+          },
+          {
+            "label": "Waist (Relaxed)",
+            "values": [
+              "27.5",
+              "28",
+              "28.5"
+            ]
+          },
+          {
+            "label": "Waist (Stretched)",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Hips",
+            "values": [
+              "47.5",
+              "48",
+              "48.5"
+            ]
+          },
+          {
+            "label": "Bottom Opening",
+            "values": [
+              "14",
+              "14.5",
+              "15"
+            ]
+          }
+        ]
+      }
+    ],
+    "price": 3500,
+    "comparePrice": 4000,
+    "sizePrices": {},
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "category": [
+      "western"
+    ],
+    "colors": [
+      {
+        "name": "Powder Blue",
+        "hex": "#a3c4d6",
+        "images": [
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245497/pintuck-suits/powder-blue/01-model.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245499/pintuck-suits/powder-blue/02-hanger.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245501/pintuck-suits/powder-blue/03-model-alternate.png",
+          "https://res.cloudinary.com/kop736vp/image/upload/v1795245503/pintuck-suits/powder-blue/04-detail.png"
+        ]
+      }
+    ],
+    "isStitched": true,
+    "isUnstitched": false,
+    "stitchedPrice": null,
+    "isNew": true,
+    "stock": true,
+    "status": "active"
+  }
+]

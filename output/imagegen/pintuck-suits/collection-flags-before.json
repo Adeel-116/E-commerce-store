@@ -1,0 +1,34 @@
+[
+  {
+    "_id": "6b0145c58c34dfb338ce8369",
+    "slug": "black-pintuck-two-piece-suit-china-crepe",
+    "displayOrder": 0,
+    "isBestSeller": false,
+    "isNew": true,
+    "showInYouMayAlsoLike": false
+  },
+  {
+    "_id": "6b0145c58c34dfb338ce836a",
+    "slug": "crimson-pintuck-two-piece-suit-china-crepe",
+    "displayOrder": 0,
+    "isBestSeller": false,
+    "isNew": true,
+    "showInYouMayAlsoLike": false
+  },
+  {
+    "_id": "6b0145c58c34dfb338ce8368",
+    "slug": "navy-pintuck-two-piece-suit-china-crepe",
+    "displayOrder": 0,
+    "isBestSeller": false,
+    "isNew": true,
+    "showInYouMayAlsoLike": false
+  },
+  {
+    "_id": "6b0145c58c34dfb338ce836b",
+    "slug": "powder-blue-pintuck-two-piece-suit-china-crepe",
+    "displayOrder": 0,
+    "isBestSeller": false,
+    "isNew": true,
+    "showInYouMayAlsoLike": false
+  }
+]

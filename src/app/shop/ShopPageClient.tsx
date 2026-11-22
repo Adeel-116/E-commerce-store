@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import "../styles/ShopPage.css";
 import NavbarController from "../components/NavbarController";
-import VideoSlider from "../components/VideoSlider";
 import api from "../lib/axios";
 import { ProductCard, type GridProduct } from "../components/ProductGrid";
 import LoadingRing from "../components/LoadingRing";
@@ -706,7 +705,7 @@ function ShopPageContent({ selectedCategory }: { selectedCategory?: string }) {
           )}
         </div>
       </div>
-      <VideoSlider />
+      {/* Video section temporarily disabled on the shop page. */}
     </div>
   );
 }

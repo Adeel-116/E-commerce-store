@@ -1,0 +1,104 @@
+[
+  {
+    "title": "Top Shirt",
+    "unit": "inches",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "rows": [
+      {
+        "label": "Length",
+        "values": [
+          "34.5",
+          "35",
+          "35.5"
+        ]
+      },
+      {
+        "label": "Shoulders",
+        "values": [
+          "15.5",
+          "16",
+          "16.5"
+        ]
+      },
+      {
+        "label": "Chest (Round)",
+        "values": [
+          "45.5",
+          "46",
+          "46.5"
+        ]
+      },
+      {
+        "label": "Sleeve Length",
+        "values": [
+          "19.5",
+          "20",
+          "20.5"
+        ]
+      },
+      {
+        "label": "Sleeve Opening",
+        "values": [
+          "5.5",
+          "6",
+          "6.5"
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Palazzo",
+    "unit": "inches",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "rows": [
+      {
+        "label": "Length",
+        "values": [
+          "37.5",
+          "38",
+          "38.5"
+        ]
+      },
+      {
+        "label": "Waist (Relaxed)",
+        "values": [
+          "27.5",
+          "28",
+          "28.5"
+        ]
+      },
+      {
+        "label": "Waist (Stretched)",
+        "values": [
+          "47.5",
+          "48",
+          "48.5"
+        ]
+      },
+      {
+        "label": "Hips",
+        "values": [
+          "47.5",
+          "48",
+          "48.5"
+        ]
+      },
+      {
+        "label": "Bottom Opening",
+        "values": [
+          "14",
+          "14.5",
+          "15"
+        ]
+      }
+    ]
+  }
+]

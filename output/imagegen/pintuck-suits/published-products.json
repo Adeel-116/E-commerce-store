@@ -1,0 +1,38 @@
+[
+  {
+    "id": "6b0145c58c34dfb338ce8368",
+    "slug": "navy-pintuck-two-piece-suit-china-crepe",
+    "title": "Navy Blue Pintuck Two Piece Suit - China Crepe",
+    "images": 4,
+    "price": 3500,
+    "comparePrice": 4000,
+    "status": "active"
+  },
+  {
+    "id": "6b0145c58c34dfb338ce8369",
+    "slug": "black-pintuck-two-piece-suit-china-crepe",
+    "title": "Black Pintuck Two Piece Suit - China Crepe",
+    "images": 4,
+    "price": 3500,
+    "comparePrice": 4000,
+    "status": "active"
+  },
+  {
+    "id": "6b0145c58c34dfb338ce836a",
+    "slug": "crimson-pintuck-two-piece-suit-china-crepe",
+    "title": "Crimson Red Pintuck Two Piece Suit - China Crepe",
+    "images": 4,
+    "price": 3500,
+    "comparePrice": 4000,
+    "status": "active"
+  },
+  {
+    "id": "6b0145c58c34dfb338ce836b",
+    "slug": "powder-blue-pintuck-two-piece-suit-china-crepe",
+    "title": "Powder Blue Pintuck Two Piece Suit - China Crepe",
+    "images": 4,
+    "price": 3500,
+    "comparePrice": 4000,
+    "status": "active"
+  }
+]

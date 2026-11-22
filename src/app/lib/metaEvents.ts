@@ -4,7 +4,14 @@ declare global {
   }
 }
 
-export const META_CURRENCY = "PKR";
+/**
+ * Pakistani rupee (ISO 4217). Keep this as PKR: Meta's Pixel Helper has
+ * historically flagged PKR even though it is a valid ISO currency code and
+ * Meta accepts it for event payloads. Converting the value to USD just to
+ * silence that diagnostic would make purchase revenue incorrect.
+ */
+export const META_CURRENCY = "PKR" as const;
+export type MetaCurrency = typeof META_CURRENCY;
 
 export type MetaItem = {
   item_id: string;
@@ -43,7 +50,7 @@ export function metaIdentify(params: { email?: string | null; phone?: string | n
   });
 }
 
-export function metaViewContent(item: MetaItem & { value: number; currency?: string }) {
+export function metaViewContent(item: MetaItem & { value: number; currency?: MetaCurrency }) {
   track("ViewContent", {
     currency: item.currency ?? META_CURRENCY,
     value: item.value,
@@ -59,7 +66,7 @@ export function metaSearch(params: { searchString: string }) {
   track("Search", { search_string: params.searchString });
 }
 
-export function metaAddToWishlist(item: MetaItem & { value: number; currency?: string }) {
+export function metaAddToWishlist(item: MetaItem & { value: number; currency?: MetaCurrency }) {
   track("AddToWishlist", {
     currency: item.currency ?? META_CURRENCY,
     value: item.value,
@@ -70,7 +77,7 @@ export function metaAddToWishlist(item: MetaItem & { value: number; currency?: s
   });
 }
 
-export function metaAddToCart(item: MetaItem & { value: number; currency?: string }) {
+export function metaAddToCart(item: MetaItem & { value: number; currency?: MetaCurrency }) {
   track("AddToCart", {
     currency: item.currency ?? META_CURRENCY,
     value: item.value,
@@ -81,7 +88,7 @@ export function metaAddToCart(item: MetaItem & { value: number; currency?: strin
   });
 }
 
-export function metaInitiateCheckout(params: { items: MetaItem[]; value: number; currency?: string }) {
+export function metaInitiateCheckout(params: { items: MetaItem[]; value: number; currency?: MetaCurrency }) {
   track("InitiateCheckout", {
     currency: params.currency ?? META_CURRENCY,
     value: params.value,
@@ -92,7 +99,7 @@ export function metaInitiateCheckout(params: { items: MetaItem[]; value: number;
   });
 }
 
-export function metaAddPaymentInfo(params: { items: MetaItem[]; value: number; currency?: string }) {
+export function metaAddPaymentInfo(params: { items: MetaItem[]; value: number; currency?: MetaCurrency }) {
   track("AddPaymentInfo", {
     currency: params.currency ?? META_CURRENCY,
     value: params.value,
@@ -106,7 +113,7 @@ export function metaPurchase(params: {
   transactionId: string;
   items: MetaItem[];
   value: number;
-  currency?: string;
+  currency?: MetaCurrency;
 }) {
   track("Purchase", {
     currency: params.currency ?? META_CURRENCY,

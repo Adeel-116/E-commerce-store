@@ -6,6 +6,7 @@ import "../styles/zaryapreloader.css";
 import { WORDMARK_PATHS } from "./zarya-wordmark-paths";
 
 const MINIMUM_DISPLAY_MS = 3000;
+const PRELOADER_INTERVAL_MS = 5 * 60 * 60 * 1000;
 const SESSION_KEY = "zaryaPreloader";
 
 export default function ZaryaPreloader({ children, waitForHero = false, alwaysShow = false }) {
@@ -23,13 +24,18 @@ export default function ZaryaPreloader({ children, waitForHero = false, alwaysSh
       return;
     }
     try {
-      if (window.sessionStorage.getItem(SESSION_KEY) === "shown") {
+      const lastShownAt = Number(window.sessionStorage.getItem(SESSION_KEY));
+      const isWithinInterval = Number.isFinite(lastShownAt)
+        && lastShownAt > 0
+        && Date.now() - lastShownAt < PRELOADER_INTERVAL_MS;
+
+      if (isWithinInterval) {
         shouldAnimate.current = false;
         setVisible(false);
         setSessionChecked(true);
         return;
       }
-      window.sessionStorage.setItem(SESSION_KEY, "shown");
+      window.sessionStorage.setItem(SESSION_KEY, String(Date.now()));
       setSessionChecked(true);
     } catch {
       // Storage can be unavailable in strict privacy modes; show the loader normally.

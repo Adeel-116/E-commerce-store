@@ -199,7 +199,7 @@ const Navbar2Inner = () => {
           <Link href={"/"}>
             <div className="navbar2-text-logo" id="nav-logo">
               <img
-                src={isSolid ? "/white-version.avif" : "/updated-logo.avif"}
+                src="/white-version-transparent.webp"
                 alt="Zarya Style"
                 className="navbar2-brand-mark"
               />

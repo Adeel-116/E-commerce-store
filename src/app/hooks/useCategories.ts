@@ -19,14 +19,21 @@ export const FALLBACK_CATEGORIES: StoreCategory[] = [
   { name: "Maxi", slug: "maxi", image: { url: "/category-maxi.avif" }, status: "active", order: 4 },
 ];
 
+let categoriesCache: StoreCategory[] | null = null;
+let categoriesRequest: Promise<StoreCategory[]> | null = null;
+
 export function useCategories() {
-  const [categories, setCategories] = useState<StoreCategory[]>(FALLBACK_CATEGORIES);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<StoreCategory[]>(categoriesCache ?? FALLBACK_CATEGORIES);
+  const [loading, setLoading] = useState(!categoriesCache);
   const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
+    if (categoriesCache) {
+      setLoading(false);
+      return;
+    }
     const controller = new AbortController();
-    api.get("/categories", { signal: controller.signal })
+    categoriesRequest ??= api.get("/categories", { signal: controller.signal })
       .then(({ data }) => {
         if (!data?.success || !Array.isArray(data.data)) {
           throw new Error("Invalid category response");
@@ -38,15 +45,24 @@ export function useCategories() {
             typeof category.slug === "string" &&
             typeof category.image?.url === "string",
         );
-        setCategories(validCategories);
-        setUsingFallback(false);
+        categoriesCache = validCategories;
+        return validCategories;
       })
       .catch(() => {
-        if (!controller.signal.aborted) {
-          setCategories(FALLBACK_CATEGORIES);
-          setUsingFallback(true);
-        }
+        categoriesRequest = null;
+        throw new Error("Categories request failed");
       })
+    categoriesRequest.then((items) => {
+      if (!controller.signal.aborted) {
+        setCategories(items);
+        setUsingFallback(false);
+      }
+    }).catch(() => {
+      if (!controller.signal.aborted) {
+        setCategories(FALLBACK_CATEGORIES);
+        setUsingFallback(true);
+      }
+    })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });

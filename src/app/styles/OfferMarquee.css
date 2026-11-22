@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--offer-marquee-height, 36px);
+  height: var(--offer-marquee-height, 28px);
   z-index: 1001;
   background-color: var(--gold-accent);
   overflow: hidden;
@@ -65,7 +65,7 @@
 
 @media (max-width: 640px) {
   .offer-marquee {
-    height: var(--offer-marquee-height, 32px);
+    height: var(--offer-marquee-height, 26px);
   }
 
   .offer-marquee__item {

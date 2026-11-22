@@ -9,8 +9,7 @@ import gsap from "gsap";
 type HeroSlide = { id: string | number; title: string; img: string; mobileImg: string; href: string; delay?: number; promo?: boolean; subtitle?: string; bg?: string; textless?: boolean };
 /* Backend banners are the only hero source. */
 const defaultSlides: HeroSlide[] = [
-  { id: "banner-1", title: "Zarya Style collection", href: "/", img: "/banners/banner-1-desktop.png", mobileImg: "/banners/banner-1-mobile.png", textless: true, promo: true },
-  { id: "banner-2", title: "Zarya Style collection", href: "/shop/ethnc-studio-suit-e0763-106-226-226", img: "/banners/banner-2-desktop.png", mobileImg: "/banners/banner-2-mobile.png", textless: true, promo: true },
+  { id: "banner-1", title: "Winter Collection", href: "/shop", img: "/banners/banner-1-desktop.png", mobileImg: "/banners/banner-1-mobile.png", textless: true, promo: true },
 ];
 /*
   {
@@ -84,7 +83,7 @@ const HomeHero = () => {
     const copy = document.querySelectorAll(
       '.hero-slide[data-index="' + index + '"] .hero-copy-reveal',
     );
-    gsap.fromTo(img, { scale: 1.1 }, { scale: 1, duration: 1.5, ease: "power3.out" });
+    gsap.fromTo(img, { scale: 1 }, { scale: 1, duration: 1.5, ease: "power3.out" });
     if (copy.length > 0) {
       gsap.killTweensOf(copy);
       gsap.fromTo(

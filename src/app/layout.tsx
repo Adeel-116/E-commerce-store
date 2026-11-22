@@ -6,11 +6,15 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   variable: "--font-playfair",
+  display: "swap",
+  fallback: ["Georgia", "serif"],
 });
 
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
+  display: "swap",
+  fallback: ["Arial", "sans-serif"],
 });
 
 import "./globals.css";

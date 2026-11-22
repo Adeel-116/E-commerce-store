@@ -1,7 +1,8 @@
 .home-hero {
     width: 100%;
-    height: 100svh;
-    min-height: 680px;
+    margin-top: 94px;
+    height: calc(100svh - 122px);
+    min-height: 0;
     background: #0c0d0b;
     overflow: hidden;
 }
@@ -152,6 +153,7 @@
     height: 100%;
     display: block;
     object-fit: cover;
+    background: #f5f3f0;
     object-position: center top;
     pointer-events: none;
     -webkit-user-drag: none;
@@ -213,6 +215,11 @@
     bottom: clamp(32px, 5vh, 58px);
     display: flex;
     transform: translateX(-50%);
+}
+
+/* Banner navigation is swipe/drag only. */
+.hero-nav {
+    display: none !important;
 }
 
 .hero-nav button {
@@ -300,8 +307,9 @@
 
 @media(max-width:767px) {
     .home-hero {
-        height: 75vh;
-        min-height: 420px;
+        margin-top: 62px;
+        height: calc(100svh - 88px);
+        min-height: 0;
     }
     .hero-slide {
         display: block;
@@ -349,8 +357,8 @@
 
 @media(max-width:430px) {
     .home-hero {
-        height: 72svh;
-        min-height: 390px;
+        height: calc(100svh - 88px);
+        min-height: 0;
     }
     .hero-media-caption p {
         max-width: 130px;
@@ -410,3 +418,7 @@
 .hero-slide--textless{display:block}
 .hero-slide--textless .hero-split-media{position:absolute;inset:0}
 .hero-slide--textless .hero-slide-img{object-position:center center}
+@media (min-width: 768px) {
+    .hero-slide--textless .hero-slide-img { object-fit: cover; background: transparent; }
+    .hero-slide--textless .hero-split-media { background: transparent; }
+}

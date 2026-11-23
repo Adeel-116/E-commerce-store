@@ -112,6 +112,38 @@
   color: #fff;
 }
 
+.dash-custom-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 4px 8px 4px 12px;
+  border: 1px solid #e8e8e0;
+  border-radius: 20px;
+  background: #fff;
+  color: #555;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.dash-custom-range.active {
+  border-color: var(--admin-brandgreen);
+  background: #faf7ef;
+}
+
+.dash-custom-range input {
+  width: 118px;
+  height: 24px;
+  padding: 2px 6px;
+  border: 1px solid #d9d9d0;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+}
+
+.dash-custom-range-separator { color: #999; }
+
 .dash-calendar-wrap {
   position: relative;
 }

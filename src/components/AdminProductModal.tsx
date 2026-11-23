@@ -999,6 +999,7 @@ export default function AdminProductModal({
 
           <div className="admin-form-group admin-form-grid-full">
             <label className="admin-form-label">Description</label>
+            <p className="admin-form-help">Use a short paragraph, then add details on new lines with “-” (for example: - Powder blue color, - 2 piece).</p>
             <textarea
               className="admin-form-textarea"
               value={form.description}

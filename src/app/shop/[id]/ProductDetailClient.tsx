@@ -12,8 +12,9 @@ import "../../styles/ProductInner.css";
 import "../../styles/ProductInnerButtons.css";
 import "../../styles/ProductGrid.css";
 import AboutUsReviews from "@/app/components/AboutUsReviews";
+import ProductDescription from "@/app/components/ProductDescription";
 import NavbarController from "@/app/components/NavbarController";
-import { ProductDetailSkeleton } from "@/app/components/Skeleton";
+import { GridCardSkeleton, ProductDetailSkeleton } from "@/app/components/Skeleton";
 import api from "@/app/lib/axios";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
@@ -114,6 +115,7 @@ export default function ProductDetailClient({
   const [loadError, setLoadError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
+  const [similarProductsLoading, setSimilarProductsLoading] = useState(Boolean(initialProduct));
 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -203,7 +205,7 @@ export default function ProductDetailClient({
     setTimelineDates({
       ordered: fmt(addDays(0)),
       shipped: fmt(addDays(2)),
-      delivered: `${fmt(addDays(5))} → ${fmt(addDays(8))}`,
+      delivered: `${fmt(addDays(4))} → ${fmt(addDays(6))}`,
     });
   }, []);
 
@@ -288,6 +290,7 @@ export default function ProductDetailClient({
     let cancelled = false;
 
     setSimilarProducts([]);
+    setSimilarProductsLoading(true);
     (async () => {
       try {
         const isKidsCollection = product.category?.includes("kids-collection");
@@ -307,6 +310,8 @@ export default function ProductDetailClient({
         );
       } catch {
         if (!cancelled) setSimilarProducts([]);
+      } finally {
+        if (!cancelled) setSimilarProductsLoading(false);
       }
     })();
 
@@ -490,7 +495,7 @@ export default function ProductDetailClient({
           </div>
           <div className="shop-inner-bundle-banner-text">
             <p>
-              <strong>Rs 140 Delivery</strong> on all orders, delivered in 5–8
+              <strong>Rs 140 Delivery</strong> on all orders, delivered in 4–6
               days.
             </p>
           </div>
@@ -752,7 +757,7 @@ export default function ProductDetailClient({
               <div className="shop-inner-info-row">
                 <Truck size={17} />
                 <span>
-                  Estimated delivery time: <strong>5–8 days</strong>
+                  Estimated delivery time: <strong>4–6 days</strong>
                 </span>
               </div>
 
@@ -858,7 +863,7 @@ export default function ProductDetailClient({
                   <PackageCheck />
                 </div>
                 <strong>Delivered</strong>
-                <span>{timelineDates?.delivered ?? "In 5–8 days"}</span>
+                      <span>{timelineDates?.delivered ?? "In 4–6 days"}</span>
               </div>
             </div>
 
@@ -867,7 +872,7 @@ export default function ProductDetailClient({
                 <div className="perks-icon perks-icon-replacement">
                   <BadgeCheck />
                 </div>
-                <span>7 Days Replacement Policy</span>
+                <span>7 Days Return Policy</span>
               </div>
               <div className="perks-item">
                 <div className="perks-icon perks-icon-quality">
@@ -898,10 +903,7 @@ export default function ProductDetailClient({
                 </button>
                 <div className="accordion-content">
                   <div className="accordion-inner">
-                    <p>
-                      {product.description ||
-                        "No description available for this product."}
-                    </p>
+                    <ProductDescription description={product.description} />
                   </div>
                 </div>
               </div>
@@ -921,7 +923,7 @@ export default function ProductDetailClient({
                   <div className="accordion-inner">
                     <ul>
                       <li>Orders are dispatched within 1–2 business days.</li>
-                      <li>Estimated delivery time is 5–8 business days.</li>
+                      <li>Estimated delivery time is 4–6 business days.</li>
                       <li>
                         Rs 140 standard shipping on all orders, nationwide.
                       </li>
@@ -958,7 +960,7 @@ export default function ProductDetailClient({
         </div>
 
         {/* People Also Bought */}
-        {similarProducts.length > 0 && (
+        {(similarProductsLoading || similarProducts.length > 0) && (
           <div className="similar-products-section">
             <div className="similar-products-heading">
               <h2 id="similar-text">People Also Bought</h2>
@@ -968,7 +970,9 @@ export default function ProductDetailClient({
               </p>
             </div>
             <div className="cg-grid similar-products-grid">
-              {similarProducts.map((item) => (
+              {similarProductsLoading ? Array.from({ length: 4 }).map((_, index) => (
+                <GridCardSkeleton key={`similar-skeleton-${index}`} />
+              )) : similarProducts.map((item) => (
                 <ProductCard
                   key={item._id}
                   product={item as unknown as GridProduct}
@@ -985,7 +989,11 @@ export default function ProductDetailClient({
                 watchOverflow
                 aria-label="People Also Bought products"
               >
-                {similarProducts.map((item) => (
+                {similarProductsLoading ? Array.from({ length: 3 }).map((_, index) => (
+                  <SwiperSlide key={`similar-mobile-skeleton-${index}`}>
+                    <GridCardSkeleton />
+                  </SwiperSlide>
+                )) : similarProducts.map((item) => (
                   <SwiperSlide key={item._id}>
                     <ProductCard
                       product={item as unknown as GridProduct}
@@ -995,9 +1003,9 @@ export default function ProductDetailClient({
                 ))}
               </Swiper>
             </div>
-            <div className="similar-products-action">
+            {!similarProductsLoading && <div className="similar-products-action">
               <Link href="/shop">View All Products</Link>
-            </div>
+            </div>}
           </div>
         )}
 

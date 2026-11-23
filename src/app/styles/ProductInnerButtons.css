@@ -43,7 +43,12 @@
 
 @media(max-width:600px) {
     .add-to-cart-btn,
-    .checkout-btn,
+    .checkout-btn {
+        height: 44px;
+        min-height: 44px;
+        font-size: 12px
+    }
+
     .shop-inner-whatsapp-order {
         min-height: 50px;
         font-size: 12px

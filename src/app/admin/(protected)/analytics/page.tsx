@@ -27,16 +27,18 @@ function Ranking({ title, rows }: { title: string; rows: NamedStat[] }) {
 
 export default function AnalyticsPage() {
   const [days, setDays] = useState(30);
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
   const [data, setData] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
-    try { const response = await api.get<Report>("/admin/visitor-analytics", { params: { days, _t: Date.now() } }); setData(response.data); }
+    try { const params = customStart && customEnd ? { startDate: customStart, endDate: customEnd, _t: Date.now() } : { days, _t: Date.now() }; const response = await api.get<Report>("/admin/visitor-analytics", { params }); setData(response.data); }
     catch { setError("Unable to load visitor analytics."); }
     finally { setLoading(false); }
-  }, [days]);
+  }, [days, customStart, customEnd]);
 
   useEffect(() => { const timer = window.setTimeout(load, 0); return () => window.clearTimeout(timer); }, [load]);
 
@@ -44,7 +46,7 @@ export default function AnalyticsPage() {
   if (error || !data) return <div className="dash-error"><AlertCircle size={28} /><span>{error}</span><button className="dash-error-retry" onClick={load}>Try again</button></div>;
 
   return <>
-    <div className="dash-header"><div><h2 className="dash-title">Visitor Analytics</h2><p className="dash-subtitle">First-party traffic, page and checkout reporting. Localhost is excluded.</p></div><div className="dash-period-btns">{[7, 30, 90].map((value) => <button key={value} className={`dash-period-btn${days === value ? " active" : ""}`} onClick={() => setDays(value)}>{value} days</button>)}</div></div>
+    <div className="dash-header"><div><h2 className="dash-title">Visitor Analytics</h2><p className="dash-subtitle">First-party traffic, page and checkout reporting. Localhost is excluded.</p></div><div className="dash-period-btns">{[7, 30, 90].map((value) => <button key={value} className={`dash-period-btn${days === value && !customStart ? " active" : ""}`} onClick={() => { setCustomStart(""); setCustomEnd(""); setDays(value); }}>{value} days</button>)}<div className={`dash-custom-range${customStart && customEnd ? " active" : ""}`}><span>Custom</span><input type="date" aria-label="Custom analytics start date" value={customStart} onChange={(e) => setCustomStart(e.target.value)} /><span className="dash-custom-range-separator">to</span><input type="date" aria-label="Custom analytics end date" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} /></div></div></div>
 
     <div className="admin-stats-grid">
       <Metric icon={Users} label="Unique Visitors" value={data.visitors} sub={`${data.sessions} sessions`} />

@@ -11,7 +11,7 @@ export default function AnalyticsTracker() {
 
   useEffect(() => {
     const host = window.location.hostname;
-    if (process.env.NODE_ENV !== "production" || host === "localhost" || host === "127.0.0.1" || pathname.startsWith("/admin")) return;
+    if (process.env.NODE_ENV !== "production" || host === "localhost" || host === "127.0.0.1" || pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) return;
 
     let visitorId = localStorage.getItem("zarya_visitor_id");
     if (!visitorId) { visitorId = uuid(); localStorage.setItem("zarya_visitor_id", visitorId); }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BarChart3, Eye, ShoppingCart, Users, Loader2, AlertCircle } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
 import api from "@/lib/axios";
@@ -32,15 +32,22 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const requestNumber = useRef(0);
 
   const load = useCallback(async () => {
+    const requestId = ++requestNumber.current;
     setLoading(true); setError("");
-    try { const params = customStart && customEnd ? { startDate: customStart, endDate: customEnd, _t: Date.now() } : { days, _t: Date.now() }; const response = await api.get<Report>("/admin/visitor-analytics", { params }); setData(response.data); }
-    catch { setError("Unable to load visitor analytics."); }
-    finally { setLoading(false); }
+    try { const params = customStart && customEnd ? { startDate: customStart, endDate: customEnd, _t: Date.now() } : { days, _t: Date.now() }; const response = await api.get<Report>("/admin/visitor-analytics", { params }); if (requestId === requestNumber.current) setData(response.data); }
+    catch { if (requestId === requestNumber.current) setError("Unable to load visitor analytics."); }
+    finally { if (requestId === requestNumber.current) setLoading(false); }
   }, [days, customStart, customEnd]);
 
-  useEffect(() => { const timer = window.setTimeout(load, 0); return () => window.clearTimeout(timer); }, [load]);
+  useEffect(() => {
+    // Do not fall back to a preset while the user is entering the second date.
+    if ((customStart && !customEnd) || (!customStart && customEnd)) return;
+    const timer = window.setTimeout(load, 0);
+    return () => window.clearTimeout(timer);
+  }, [load, customStart, customEnd]);
 
   if (loading) return <div className="dash-loading"><Loader2 size={28} className="dash-spin" /><span>Loading analytics…</span></div>;
   if (error || !data) return <div className="dash-error"><AlertCircle size={28} /><span>{error}</span><button className="dash-error-retry" onClick={load}>Try again</button></div>;
